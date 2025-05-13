@@ -22,6 +22,8 @@ public class Donation {
 
     private String paymentMethod;
 
+    private String stripePaymentIntentId;
+
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
@@ -37,3 +39,4 @@ public class Donation {
         refunded
     }
 }
+

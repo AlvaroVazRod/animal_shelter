@@ -3,8 +3,6 @@ package com.login.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.login.model.Donation;
-import com.login.model.Animal;
-import com.login.model.User;
 import com.login.repository.AnimalRepository;
 import com.login.repository.DonationRepository;
 import com.login.repository.UserRepository;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/webhook")
@@ -52,39 +49,56 @@ public class StripeWebhookController {
         }
 
         try {
-            if ("payment_intent.succeeded".equals(event.getType())) {
-                JsonNode json = objectMapper.readTree(payload);
-                JsonNode object = json.at("/data/object");
-                String amountStr = object.get("amount").asText();
+            JsonNode json = objectMapper.readTree(payload);
+            JsonNode object = json.at("/data/object");
+            String stripePaymentIntentId = object.get("id").asText();
+            String amountStr = object.has("amount") ? object.get("amount").asText() : "0";
 
-                Donation donation = new Donation();
-                donation.setQuantity(Double.parseDouble(amountStr) / 100);
-                donation.setStatus("completed");
-                donation.setPaymentMethod("stripe");
-                donation.setDate(LocalDateTime.now());
+            Donation donation = new Donation();
+            donation.setStripePaymentIntentId(stripePaymentIntentId);
+            donation.setPaymentMethod("stripe");
+            donation.setDate(LocalDateTime.now());
+            donation.setQuantity(Double.parseDouble(amountStr) / 100); // safe default
 
-                // Leer metadata opcional
-                JsonNode metadata = object.get("metadata");
-                if (metadata != null) {
-                    if (metadata.has("id_user")) {
-                        Long userId = metadata.get("id_user").asLong();
-                        Optional<User> user = userRepository.findById(userId);
-                        user.ifPresent(donation::setUser);
-                    }
-                    if (metadata.has("id_animal")) {
-                        Long animalId = metadata.get("id_animal").asLong();
-                        Optional<Animal> animal = animalRepository.findById(animalId);
-                        animal.ifPresent(donation::setAnimal);
-                    }
-                }
+            Donation.Status status;
 
-                donationRepository.save(donation);
+            switch (event.getType()) {
+                case "payment_intent.succeeded":
+                    status = Donation.Status.completed;
+                    break;
+                case "payment_intent.canceled":
+                    status = Donation.Status.cancelled;
+                    break;
+                case "payment_intent.payment_failed":
+                    status = Donation.Status.failed;
+                    break;
+                case "charge.refunded":
+                    status = Donation.Status.refunded;
+                    break;
+                default:
+                    return ResponseEntity.ok("Evento ignorado: " + event.getType());
             }
+
+            donation.setStatus(status);
+
+            // Leer metadata opcional
+            JsonNode metadata = object.get("metadata");
+            if (metadata != null) {
+                if (metadata.has("id_user")) {
+                    Long userId = metadata.get("id_user").asLong();
+                    userRepository.findById(userId).ifPresent(donation::setUser);
+                }
+                if (metadata.has("id_animal")) {
+                    Long animalId = metadata.get("id_animal").asLong();
+                    animalRepository.findById(animalId).ifPresent(donation::setAnimal);
+                }
+            }
+
+            donationRepository.save(donation);
+            return ResponseEntity.ok("Webhook recibido | ID de Stripe: " + stripePaymentIntentId);
+
         } catch (IOException | NullPointerException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al procesar JSON");
         }
-
-        return ResponseEntity.ok("Webhook recibido");
     }
 }
-
