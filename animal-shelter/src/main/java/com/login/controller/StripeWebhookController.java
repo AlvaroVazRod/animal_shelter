@@ -59,7 +59,7 @@ public class StripeWebhookController {
 
                 Donation donation = new Donation();
                 donation.setQuantity(Double.parseDouble(amountStr) / 100);
-                
+                donation.setStatus("completed");
                 donation.setPaymentMethod("stripe");
                 donation.setDate(LocalDateTime.now());
 
