@@ -1,13 +1,17 @@
 package com.login.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
 @ConfigurationProperties(prefix = "stripe")
+@Validated
 public class StripeProperties {
-
+	@NotBlank
     private String apiKey;
+	@NotBlank
     private String webhookSecret;
 
     public String getApiKey() {
@@ -25,7 +29,5 @@ public class StripeProperties {
     public void setWebhookSecret(String webhookSecret) {
         this.webhookSecret = webhookSecret;
     }
-    public void init() {
-        System.out.println("⚙️ StripeProperties inicializado con apiKey: " + apiKey);
-    }
+
 }

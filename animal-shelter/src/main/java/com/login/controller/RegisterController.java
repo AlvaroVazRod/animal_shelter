@@ -38,7 +38,7 @@ public class RegisterController {
         user.setSurname(userMap.get("surname"));
         user.setPhone(userMap.get("phone"));
         user.setCountry(userMap.get("country"));
-        user.setRole(User.Role.user);
+        user.setRole(User.Role.USER);
 
         userRepository.save(user);
 

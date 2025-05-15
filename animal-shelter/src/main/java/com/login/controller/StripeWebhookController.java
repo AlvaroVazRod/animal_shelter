@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @CrossOrigin
 public class StripeWebhookController {
 
-    @Value("${stripe.webhook.secret}")
+    @Value("${stripe.webhookSecret}")
     private String endpointSecret;
 
     @Autowired
