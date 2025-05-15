@@ -1,13 +1,12 @@
 package com.login.controller;
 
+import com.login.config.StripeProperties;
 import com.login.model.Donation;
 import com.login.service.DonationService;
-import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -17,17 +16,17 @@ import java.util.*;
 @CrossOrigin
 public class DonationController {
 
-    @Value("${stripe.api.key}")
-    private String stripeSecretKey;
+    private final DonationService donationService;
 
     @Autowired
-    private DonationService donationService;
+    public DonationController(DonationService donationService) {
+        this.donationService = donationService;
+    }
 
-    // POST /api/donaciones/checkout → Stripe
     @PostMapping("/checkout")
-    public Map<String, String> createCheckoutSession(@RequestBody Map<String, Object> data) throws StripeException {
-        Stripe.apiKey = stripeSecretKey;
-
+    public Map<String, String> createCheckoutSession(
+        @RequestBody Map<String, Object> data
+    ) throws StripeException {
         Long amount = Long.valueOf(data.get("amount").toString());
         String successUrl = data.getOrDefault("success_url", "http://localhost:3000/success").toString();
         String cancelUrl = data.getOrDefault("cancel_url", "http://localhost:3000/cancel").toString();
@@ -71,7 +70,6 @@ public class DonationController {
         return response;
     }
 
-    // GET /api/donaciones?status=completed&userId=1
     @GetMapping
     public List<Donation> getFiltered(
         @RequestParam(required = false) String status,
@@ -88,7 +86,6 @@ public class DonationController {
         }
     }
 
-    // GET /api/donaciones/stripe/pi_XXX
     @GetMapping("/stripe/{stripeId}")
     public Optional<Donation> getByStripePaymentIntentId(@PathVariable String stripeId) {
         return donationService.findByStripePaymentIntentId(stripeId);
