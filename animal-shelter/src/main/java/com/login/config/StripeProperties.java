@@ -25,4 +25,7 @@ public class StripeProperties {
     public void setWebhookSecret(String webhookSecret) {
         this.webhookSecret = webhookSecret;
     }
+    public void init() {
+        System.out.println("⚙️ StripeProperties inicializado con apiKey: " + apiKey);
+    }
 }
