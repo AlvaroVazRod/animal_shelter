@@ -1,10 +1,9 @@
-import React from "react";
 import Main from "../../components/Main";
-import PawBtton from "../../components/PawBtton";
-import Login from "../../components/Login";
-import Register from "../../components/Register";
+import Navbar from "../../components/Navbar";
+
 export const MainPage = () => {
-  return (
+  return (<>
+    <Navbar></Navbar>
     <div
       className="relative z-0 min-h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
       style={{
@@ -15,6 +14,7 @@ export const MainPage = () => {
     >
       <Main />
     </div>
+    </>
   );
 };
 export default MainPage;

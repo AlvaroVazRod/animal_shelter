@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useUser } from "../services/users/useUser";
 
 interface LoginCredentials {
   email: string;
@@ -19,6 +20,7 @@ export default function Login() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {login} = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,9 +35,10 @@ export default function Login() {
 
     if (!credentials.email) {
       newErrors.email = "Email es requerido";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
-      newErrors.email = "Email no válido";
     }
+    //  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
+    //   newErrors.email = "Email no válido";
+    // }
 
     if (!credentials.password) {
       newErrors.password = "Contraseña es requerida";
@@ -44,6 +47,7 @@ export default function Login() {
     }
 
     setErrors(newErrors);
+    
     return Object.keys(newErrors).length === 0;
   };
 
@@ -54,8 +58,15 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setIsLoggedIn(true);
+      const loginResult = await login(credentials.email, credentials.password)
+      if(loginResult){
+        setIsLoggedIn(true);
+        setIsLoading(false);
+      }
+      setIsLoading(false);
+      setErrors({
+        form: "Error al iniciar sesión. Verifica tus credenciales.",
+      });
     } catch (error) {
       setErrors({
         form: "Error al iniciar sesión. Verifica tus credenciales.",
@@ -117,7 +128,7 @@ export default function Login() {
                 <input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
                   autoComplete="email"
                   value={credentials.email}
                   onChange={handleChange}
