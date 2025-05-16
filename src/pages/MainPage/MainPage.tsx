@@ -13,7 +13,7 @@ export const MainPage = () => {
         backgroundPosition: "center",
       }}
     >
-      <Register />
+      <Main />
     </div>
   );
 };
