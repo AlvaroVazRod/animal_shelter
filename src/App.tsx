@@ -8,7 +8,7 @@ function App() {
   return (
     // Proveedores de contexto y peticiones
     <UserProvider>
-      <Login/>
+      <Register/>
     </UserProvider>
   );
 }

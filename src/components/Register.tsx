@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import PawBtton from "../components/PawBtton";
+import { useUser } from "../services/users/useUser";
 
 interface RegisterData {
   nombre: string;
@@ -34,7 +35,8 @@ export default function Register() {
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-
+  const {register} = useUser();
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -85,18 +87,9 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      // Simulación de llamada a API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Aquí iría tu lógica real de registro
-      // const response = await fetch('/api/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-
-      // Simulamos registro exitoso
-      setIsRegistered(true);
+      const res = await register(formData.email, formData.password, formData.nombre, formData.apellido, formData.telefono ?? null);
+      console.log(res)
+      // setIsRegistered(true);
     } catch (error) {
       setErrors({ form: "Error al registrar. Por favor intenta nuevamente." });
     } finally {

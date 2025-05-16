@@ -5,6 +5,7 @@ export interface UserContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
+    register: (email: string, password: string, name:string, surname:string, phone:string|null) => Promise<boolean>;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(
@@ -75,11 +76,33 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         
     }
 
+    const register = async (email: string, password: string, name:string, surname:string, phone:string|null) => {
+        try {
+            const username = email;
+            const res = await fetch("http://localhost:8080/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authoritation": "Bearer"+localStorage.getItem("token") },
+                body: JSON.stringify(
+                    { username, email, password, name, surname, phone }
+                ),
+            });
+
+            if (!res.ok) throw new Error((await res.json()).message);
+            const data = await res.json();
+
+            console.log(data)
+            return true;
+        } catch (err: any) {
+            console.error("Error al registrar:", err.message);
+            return false;
+        }
+    }
+
     const logout = () => setUser(null);
 
     return (
         <UserContext.Provider
-            value={{ user, login, logout }}
+            value={{ user, login, logout, register }}
         >
             {children}
         </UserContext.Provider>
