@@ -1,7 +1,7 @@
 import Main from "../../components/Main";
 import Navbar from "../../components/Navbar";
 
-export const MainPage = () => {
+export const Home = () => {
   return (<>
     <Navbar></Navbar>
     <div
@@ -17,4 +17,4 @@ export const MainPage = () => {
     </>
   );
 };
-export default MainPage;
+export default Home;
