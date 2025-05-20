@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,29 +17,31 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtUtils jwtUtils;
+	@Autowired
+	private JwtUtils jwtUtils;
 
-    @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> loginRequest,
-                                     HttpServletResponse response) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
+	@PostMapping("/login")
+	public Map<String, String> login(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
+		String username = loginRequest.get("username");
+		String password = loginRequest.get("password");
 
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-            );
+		try {
+			Authentication auth = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-            String token = jwtUtils.generateToken(username);
-            return Map.of("token", token);
+			UserDetails userDetails = (UserDetails) auth.getPrincipal();
+			String token = jwtUtils.generateToken(userDetails);
+			String role = userDetails.getAuthorities().stream().findFirst()
+					.map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", "")).orElse("USER");
 
-        } catch (AuthenticationException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return Map.of("error", "Usuario o contraseña incorrectos");
-        }
-    }
+			return Map.of("token", token, "role", role);
+
+		} catch (AuthenticationException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return Map.of("error", "Usuario o contraseña incorrectos");
+		}
+	}
 }

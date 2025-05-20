@@ -2,6 +2,8 @@ package com.login.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import com.login.config.JwtProperties;
 
@@ -20,9 +22,16 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
+    public String generateToken(UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        String role = userDetails.getAuthorities().stream()
+            .findFirst()
+            .map(auth -> auth.getAuthority().replace("ROLE_", "")) 
+            .orElse("USER");
+
         return Jwts.builder()
             .setSubject(username)
+            .claim("role", role) 
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
             .signWith(key, SignatureAlgorithm.HS256)
@@ -36,6 +45,14 @@ public class JwtUtils {
             .parseClaimsJws(token)
             .getBody();
         return claims.getSubject();
+    }
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        return claims.get("role", String.class);
     }
 
     public boolean validateToken(String token) {
