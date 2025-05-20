@@ -6,9 +6,9 @@ import AnimalsPage from "../../components/AnimalsPage";
 
 export const Home = () => {
   return (<>
-    <Navbar></Navbar>
+    <Navbar/>
     <div>
-      <Login />
+      <Main/>
     </div>
     </>
   );

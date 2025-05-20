@@ -56,7 +56,7 @@ export default function Register() {
       newErrors.email = "Email no válido";
 
     if (!formData.password) newErrors.password = "Contraseña es requerida";
-    else if (formData.password.length < 6)
+    else if (formData.password.length < 6) //Añadir en un futuro mas requisitos (Upper, Lower, Numbers & Symbols)
       newErrors.password = "Mínimo 6 caracteres";
 
     if (formData.password !== formData.confirmPassword)
@@ -94,9 +94,12 @@ export default function Register() {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
         <div className="max-w-md w-full bg-[#F2DCB3] p-8 rounded-lg shadow-lg text-center border-2 border-[#A65638]">
-          <h2 className="text-2xl font-bold text-[#A65638] mb-4">¡Registro exitoso!</h2>
+          <h2 className="text-2xl font-bold text-[#A65638] mb-4">
+            ¡Registro exitoso!
+          </h2>
           <p className="text-[#40170E] mb-6">
-            Gracias por unirte a nuestra protectora. Te hemos enviado un email de confirmación.
+            Gracias por unirte a nuestra protectora. Te hemos enviado un email
+            de confirmación.
           </p>
           <button
             onClick={() => setIsRegistered(false)}
@@ -115,10 +118,12 @@ export default function Register() {
       style={{ backgroundImage: "url('./mainBg.jpg')" }}
     >
       <div className="flex-1 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div className="max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638] my-20">
+        <div className="max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638] my-10">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-[#40170E]">Registrarse</h2>
-            <p className="mt-2 text-[#A65638]">Únete a nuestra protectora de mascotas</p>
+            <p className="mt-2 text-[#A65638]">
+              Únete a nuestra protectora de mascotas
+            </p>
           </div>
 
           {errors.form && (
@@ -142,8 +147,9 @@ export default function Register() {
                   type="text"
                   value={formData.nombre}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.nombre ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.nombre ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.nombre && (
                   <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
@@ -163,8 +169,9 @@ export default function Register() {
                   type="text"
                   value={formData.apellido}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.apellido ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.apellido ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.apellido && (
                   <p className="mt-1 text-sm text-red-600">{errors.apellido}</p>
@@ -186,8 +193,9 @@ export default function Register() {
                 autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.email ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -207,8 +215,9 @@ export default function Register() {
                 type="tel"
                 value={formData.telefono}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.telefono ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.telefono ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 placeholder="+34 123 456 789"
               />
               {errors.telefono && (
@@ -230,8 +239,9 @@ export default function Register() {
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.password ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -251,10 +261,11 @@ export default function Register() {
                   type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.confirmPassword
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.confirmPassword
                       ? "border-red-500"
                       : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">
@@ -281,92 +292,93 @@ export default function Register() {
               </label>
             </div>
 
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform ${isLoading ? "cursor-not-allowed" : "cursor-pointer"
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform ${
+                  isLoading ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
-            >
-              {isLoading ? (
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* Mantenemos la huella pero sin texto */}
-                  <circle
-                    cx="10"
-                    cy="35"
-                    r="10"
-                    fill="#D97236"
-                    opacity="0.6"
-                  />
-                  <circle
-                    cx="35"
-                    cy="18"
-                    r="12"
-                    fill="#D97236"
-                    opacity="0.6"
-                  />
-                  <circle
-                    cx="65"
-                    cy="18"
-                    r="12"
-                    fill="#D97236"
-                    opacity="0.6"
-                  />
-                  <circle
-                    cx="90"
-                    cy="35"
-                    r="10"
-                    fill="#D97236"
-                    opacity="0.6"
-                  />
-                  <ellipse
-                    cx="50"
-                    cy="55"
-                    rx="35"
-                    ry="25"
-                    fill="#D97236"
-                    opacity="0.6"
-                  />
+              >
+                {isLoading ? (
+                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* Mantenemos la huella pero sin texto */}
+                    <circle
+                      cx="10"
+                      cy="35"
+                      r="10"
+                      fill="#D97236"
+                      opacity="0.6"
+                    />
+                    <circle
+                      cx="35"
+                      cy="18"
+                      r="12"
+                      fill="#D97236"
+                      opacity="0.6"
+                    />
+                    <circle
+                      cx="65"
+                      cy="18"
+                      r="12"
+                      fill="#D97236"
+                      opacity="0.6"
+                    />
+                    <circle
+                      cx="90"
+                      cy="35"
+                      r="10"
+                      fill="#D97236"
+                      opacity="0.6"
+                    />
+                    <ellipse
+                      cx="50"
+                      cy="55"
+                      rx="35"
+                      ry="25"
+                      fill="#D97236"
+                      opacity="0.6"
+                    />
 
-                  {/* Círculo de carga centrado en la almohadilla */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="15"
-                    fill="transparent"
-                    stroke="white"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeDasharray="80"
-                    className="animate-spin origin-center"
-                  />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* Dedos */}
-                  <ellipse cx="15" cy="28" rx="10" ry="12" fill="#D97236" />
-                  <ellipse cx="37" cy="15" rx="12" ry="15" fill="#D97236" />
-                  <ellipse cx="63" cy="15" rx="12" ry="15" fill="#D97236" />
-                  <ellipse cx="85" cy="28" rx="10" ry="12" fill="#D97236" />
+                    {/* Círculo de carga centrado en la almohadilla */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="15"
+                      fill="transparent"
+                      stroke="white"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeDasharray="80"
+                      className="animate-spin origin-center"
+                    />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* Dedos */}
+                    <ellipse cx="15" cy="28" rx="10" ry="12" fill="#D97236" />
+                    <ellipse cx="37" cy="15" rx="12" ry="15" fill="#D97236" />
+                    <ellipse cx="63" cy="15" rx="12" ry="15" fill="#D97236" />
+                    <ellipse cx="85" cy="28" rx="10" ry="12" fill="#D97236" />
 
-                  {/* Almohadilla */}
-                  <ellipse cx="50" cy="55" rx="35" ry="25" fill="#D97236" />
-                  {/* Texto */}
-                  <text
-                    x="50"
-                    y="55"
-                    fill="white"
-                    fontSize="10"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
-                    Registrarse
-                  </text>
-                </svg>
-              )}
-            </button>
-
+                    {/* Almohadilla */}
+                    <ellipse cx="50" cy="55" rx="35" ry="25" fill="#D97236" />
+                    {/* Texto */}
+                    <text
+                      x="50"
+                      y="55"
+                      fill="white"
+                      fontSize="10"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      Registrarse
+                    </text>
+                  </svg>
+                )}
+              </button>
+            </div>
           </form>
 
           <div className="text-center text-sm text-[#40170E]">
@@ -378,7 +390,6 @@ export default function Register() {
               Iniciar Sesión
             </Link>
           </div>
-
         </div>
       </div>
     </div>
