@@ -2,7 +2,14 @@ import { useState } from "react";
 
 export const Main = () => {
   return (
-    <div>
+    <div 
+    className="relative z-0 min-h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4"
+      style={{
+        backgroundImage: "url('./mainBg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Overlay oscuro para mejorar legibilidad */}
       <div className="absolute inset-0 bg-black/40 "></div>
 
