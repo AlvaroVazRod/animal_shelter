@@ -3,6 +3,7 @@ import Main from "../../components/Main";
 import PawBtton from "../../components/PawBtton";
 import Login from "../../components/Login";
 import Register from "../../components/Register";
+import AnimalsPage from "../../components/AnimalsPage";
 export const MainPage = () => {
   return (
     <div
@@ -13,7 +14,7 @@ export const MainPage = () => {
         backgroundPosition: "center",
       }}
     >
-      <Main />
+      <AnimalsPage />
     </div>
   );
 };
