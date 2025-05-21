@@ -1,8 +1,11 @@
 package com.login.controller;
 
+import com.login.dto.RegisterRequest;
 import com.login.model.User;
 import com.login.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,28 +23,21 @@ public class RegisterController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public Map<String, String> register(@RequestBody Map<String, String> userMap) {
-        String username = userMap.get("username");
-        String rawPassword = userMap.get("password");
-
-        if (userRepository.findByUsername(username).isPresent()) {
-            return Map.of("error", "El usuario ya existe");
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El usuario ya existe"));
         }
 
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(encodedPassword);
-        user.setEmail(userMap.get("email"));
-        user.setName(userMap.get("name"));
-        user.setSurname(userMap.get("surname"));
-        user.setPhone(userMap.get("phone"));
-        user.setCountry(userMap.get("country"));
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setName(request.getName());
+        user.setSurname(request.getSurname());
+        user.setPhone(request.getPhone());
         user.setRole(User.Role.USER);
 
         userRepository.save(user);
-
-        return Map.of("message", "Usuario registrado con éxito");
+        return ResponseEntity.ok(Map.of("message", "Usuario registrado con éxito"));
     }
 }

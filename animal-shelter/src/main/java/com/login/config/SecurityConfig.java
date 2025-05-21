@@ -18,51 +18,39 @@ import com.login.service.impl.CustomUserDetailsService;
 @Configuration
 public class SecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JwtAuthFilter jwtAuthFilter;
+	private final CustomUserDetailsService customUserDetailsService;
+	private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
-                          JwtAuthFilter jwtAuthFilter) {
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
+	public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtAuthFilter jwtAuthFilter) {
+		this.customUserDetailsService = customUserDetailsService;
+		this.jwtAuthFilter = jwtAuthFilter;
+	}
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-            	    .requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
-            	    .requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/animales/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/animales/**").hasRole("ADMIN")
-            	    .requestMatchers("/auth/**").permitAll()
-            	    .requestMatchers(HttpMethod.GET, "/api/usuarios/**").authenticated()
-            	    .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").authenticated()
-            	    .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").authenticated()
-            	    .requestMatchers("/api/donaciones/**").permitAll()
-            	    .requestMatchers("/api/stripe/**").permitAll()
-            	    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-            	    .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationManager(authenticationManager(http))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PUT, "/api/animales/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/api/animales/**").hasRole("ADMIN")
+				.requestMatchers("/api/usuarios").hasRole("ADMIN")
+				.requestMatchers("/auth/**", "/api/stripe/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+				.permitAll().anyRequest().authenticated())
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authenticationManager(authenticationManager(http))
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(customUserDetailsService)
-            .passwordEncoder(passwordEncoder())
-            .and()
-            .build();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+		return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(customUserDetailsService)
+				.passwordEncoder(passwordEncoder()).and().build();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }

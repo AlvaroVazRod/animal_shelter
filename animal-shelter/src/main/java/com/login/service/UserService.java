@@ -1,15 +1,18 @@
 package com.login.service;
 
-import com.login.model.User;
+import com.login.dto.UserDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+
 import java.util.List;
 
 public interface UserService {
-    List<User> getAll();
-    ResponseEntity<User> getById(Long id);
-    User save(User user);
-    User update(Long id, User user);
-    void delete(Long id);
-    User findByUsername(String username);
 
+    List<UserDto> getAllDto();
+
+    ResponseEntity<UserDto> getByIdSecure(Long id, Authentication authentication);
+
+    ResponseEntity<UserDto> updateSecure(Long id, UserDto userDto, Authentication authentication);
+
+    ResponseEntity<Void> deleteSecure(Long id, Authentication authentication);
 }

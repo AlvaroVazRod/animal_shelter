@@ -1,12 +1,15 @@
 package com.login.controller;
 
-import com.login.model.Animal;
+import com.login.dto.AnimalDto;	
 import com.login.service.AnimalService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/animales")
@@ -17,27 +20,35 @@ public class AnimalController {
     private AnimalService animalService;
 
     @GetMapping
-    public List<Animal> getAll() {
-        return animalService.getAll();
+    public ResponseEntity<Page<AnimalDto>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) String gender) {
+
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(animalService.getFilteredAnimals(gender, breed, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Animal> getById(@PathVariable Long id) {
-        return animalService.getById(id);
+    public ResponseEntity<AnimalDto> getById(@PathVariable Long id) {
+        return animalService.getDtoById(id);
     }
 
     @PostMapping
-    public Animal create(@RequestBody Animal animal) {
-        return animalService.save(animal);
+    public ResponseEntity<AnimalDto> create(@Valid @RequestBody AnimalDto animalDto) {
+        return animalService.createDto(animalDto);
     }
 
     @PutMapping("/{id}")
-    public Animal update(@PathVariable Long id, @RequestBody Animal animal) {
-        return animalService.update(id, animal);
+    public ResponseEntity<AnimalDto> update(@PathVariable Long id,
+                                            @Valid @RequestBody AnimalDto animalDto) {
+        return animalService.updateDto(id, animalDto);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        animalService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return animalService.delete(id);
     }
 }

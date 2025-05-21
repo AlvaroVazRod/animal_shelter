@@ -18,6 +18,7 @@ public class Animal {
     private Double height;
     private Double length;
     private Integer age;
+    private boolean gender;
     private String color;
     private String image;
     private String species;

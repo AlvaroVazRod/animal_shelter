@@ -18,7 +18,6 @@ public class User {
     private String name;
     private String surname;
     private String phone;
-    private String country;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -22,16 +22,10 @@ public class JwtUtils {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(UserDetails userDetails) {
-        String username = userDetails.getUsername();
-        String role = userDetails.getAuthorities().stream()
-            .findFirst()
-            .map(auth -> auth.getAuthority().replace("ROLE_", "")) 
-            .orElse("USER");
-
+    public String generateToken(String username, String role) {
         return Jwts.builder()
             .setSubject(username)
-            .claim("role", role) 
+            .claim("role", role)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
             .signWith(key, SignatureAlgorithm.HS256)
