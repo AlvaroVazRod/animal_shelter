@@ -9,6 +9,7 @@ import Main from "./components/Main";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import AnimalsPage from "./components/AnimalsPage";
+import Contact from "./components/Contact";
 import NotFound from "./components/NotFound";
 
 const ProtectedRoute = ({
@@ -51,6 +52,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/main" element={<Main />} />
         <Route path="/AnimalsPage" element={<AnimalsPage />} />
+        <Route path="/Contact" element={<Contact />} />
         <Route
           path="/admin"
           element={
