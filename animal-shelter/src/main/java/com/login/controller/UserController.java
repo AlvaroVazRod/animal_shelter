@@ -1,7 +1,6 @@
 package com.login.controller;
 
-import com.login.dto.UserDto;
-import com.login.model.User;
+import com.login.dto.UserDto;	
 import com.login.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +38,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
         return userService.deleteSecure(id, authentication);
+    }
+    @PutMapping("/{id}/image")
+    public ResponseEntity<UserDto> updateUserImage(@PathVariable Long id,
+                                                   @RequestParam String image,
+                                                   Authentication authentication) {
+        return userService.updateUserImage(id, image, authentication);
     }
 }

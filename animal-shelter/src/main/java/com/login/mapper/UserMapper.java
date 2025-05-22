@@ -11,6 +11,7 @@ public class UserMapper {
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole().name());
+        dto.setImage(user.getImage());
         return dto;
     }
 
@@ -19,6 +20,7 @@ public class UserMapper {
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
+        user.setImage(dto.getImage());
         // NOTA: no se establece la contraseña ni otros campos sensibles desde el DTO
         return user;
     }

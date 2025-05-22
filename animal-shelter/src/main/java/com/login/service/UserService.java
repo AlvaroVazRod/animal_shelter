@@ -1,6 +1,6 @@
 package com.login.service;
 
-import com.login.dto.UserDto;
+import com.login.dto.UserDto;	
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
@@ -15,4 +15,6 @@ public interface UserService {
     ResponseEntity<UserDto> updateSecure(Long id, UserDto userDto, Authentication authentication);
 
     ResponseEntity<Void> deleteSecure(Long id, Authentication authentication);
+    
+    ResponseEntity<UserDto> updateUserImage(Long id, String filename, Authentication authentication);
 }

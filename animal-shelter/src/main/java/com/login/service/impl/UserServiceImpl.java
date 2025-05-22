@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
         dto.setSurname(user.getSurname());
         dto.setPhone(user.getPhone());
         dto.setRole(user.getRole().name());
+        dto.setImage(user.getImage());
         return dto;
     }
 
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setSurname(dto.getSurname());
         user.setPhone(dto.getPhone());
         user.setRole(User.Role.valueOf(dto.getRole()));
+        user.setImage(dto.getImage());
         return user;
     }
 
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
         }
         return ResponseEntity.status(403).build();
     }
-
+    
     @Override
     public ResponseEntity<UserDto> updateSecure(Long id, UserDto dto, Authentication auth) {
         User user = userRepository.findById(id)
@@ -84,6 +86,19 @@ public class UserServiceImpl implements UserService {
                 || user.getUsername().equals(auth.getName())) {
             userRepository.delete(user);
             return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(403).build();
+    }
+
+    @Override
+    public ResponseEntity<UserDto> updateUserImage(Long id, String filename, Authentication auth) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                || user.getUsername().equals(auth.getName())) {
+            user.setImage(filename);
+            return ResponseEntity.ok(mapToDto(userRepository.save(user)));
         }
         return ResponseEntity.status(403).build();
     }
