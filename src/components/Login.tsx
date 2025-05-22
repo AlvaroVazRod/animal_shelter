@@ -54,14 +54,24 @@ export default function Login() {
     try {
       const loginResult = await login(credentials.email, credentials.password);
       if (loginResult) {
+        // Guarda el estado de autenticación
+        localStorage.setItem("isLoggedIn", "true");
+
         const role = localStorage.getItem("role");
         if (role === "ADMIN") navigate("/admin");
-        else navigate("/");
+        else {
+          navigate("/main");
+          window.location.reload(); // Forzar actualización para reflejar cambios
+        }
         return;
       }
-      setErrors({ form: "Error al iniciar sesión. Verifica tus credenciales." });
+      setErrors({
+        form: "Error al iniciar sesión. Verifica tus credenciales.",
+      });
     } catch {
-      setErrors({ form: "Error al iniciar sesión. Verifica tus credenciales." });
+      setErrors({
+        form: "Error al iniciar sesión. Verifica tus credenciales.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +90,9 @@ export default function Login() {
       <div className="relative z-10 max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638]">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-[#40170E]">Iniciar Sesión</h2>
-          <p className="mt-2 text-[#A65638]">Accede a tu cuenta de la protectora</p>
+          <p className="mt-2 text-[#A65638]">
+            Accede a tu cuenta de la protectora
+          </p>
         </div>
 
         {errors.form && (
@@ -92,7 +104,10 @@ export default function Login() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#40170E]">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-[#40170E]"
+              >
                 Email
               </label>
               <input
@@ -105,11 +120,16 @@ export default function Login() {
                   errors.email ? "border-red-500" : "border-[#A65638]"
                 } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
               />
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#40170E]">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-[#40170E]"
+              >
                 Contraseña
               </label>
               <input
@@ -136,12 +156,18 @@ export default function Login() {
                 type="checkbox"
                 className="h-4 w-4 text-[#A65638] focus:ring-[#40170E] border-[#A65638] rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-[#40170E]">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-[#40170E]"
+              >
                 Recordarme
               </label>
             </div>
             <div className="text-sm">
-              <a href="#" className="font-medium text-[#A65638] hover:text-[#40170E]">
+              <a
+                href="#"
+                className="font-medium text-[#A65638] hover:text-[#40170E]"
+              >
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -188,7 +214,10 @@ export default function Login() {
 
         <div className="text-center text-sm text-[#40170E] mt-4">
           ¿No tienes una cuenta?{" "}
-          <a href="/register" className="font-medium text-[#A65638] hover:text-[#40170E]">
+          <a
+            href="/register"
+            className="font-medium text-[#A65638] hover:text-[#40170E]"
+          >
             Regístrate
           </a>
         </div>

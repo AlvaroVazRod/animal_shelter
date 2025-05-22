@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { useUser } from "../services/users/useUser";
+
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
