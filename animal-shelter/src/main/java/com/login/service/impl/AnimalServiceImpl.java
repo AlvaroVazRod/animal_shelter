@@ -104,17 +104,17 @@ public class AnimalServiceImpl implements AnimalService {
         return ResponseEntity.noContent().build();
     }
     @Override
-    public Page<AnimalDto> getFilteredAnimals(String breed, String genderText, Pageable pageable) {
+    public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
         Page<Animal> animals;
 
         // Si hay filtro de raza y sexo
-        if (breed != null && genderText != null) {
+        if (species != null && genderText != null) {
             boolean gender = convertGender(genderText);
-            animals = animalRepository.findByBreedAndGender(breed, gender, pageable);
+            animals = animalRepository.findByBreedAndGender(species, gender, pageable);
         }
         // Solo filtro por raza
-        else if (breed != null) {
-            animals = animalRepository.findByBreed(breed, pageable);
+        else if (species != null) {
+            animals = animalRepository.findByBreed(species, pageable);
         }
         // Solo filtro por sexo
         else if (genderText != null) {
@@ -128,6 +128,15 @@ public class AnimalServiceImpl implements AnimalService {
 
         return animals.map(this::mapToDto);
     }
+    
+    @Override
+    public ResponseEntity<AnimalDto> updateImage(Long id, String filename) {
+        Animal animal = animalRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+        animal.setImage(filename);
+        return ResponseEntity.ok(mapToDto(animalRepository.save(animal)));
+    }
+
 
     private boolean convertGender(String genderText) {
         if ("masculino".equalsIgnoreCase(genderText)) return true;

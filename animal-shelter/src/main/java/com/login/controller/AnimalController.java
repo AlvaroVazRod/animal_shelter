@@ -24,11 +24,11 @@ public class AnimalController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) String species,
             @RequestParam(required = false) String gender) {
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return ResponseEntity.ok(animalService.getFilteredAnimals(gender, breed, pageable));
+        return ResponseEntity.ok(animalService.getFilteredAnimals(gender, species, pageable));
     }
 
     @GetMapping("/{id}")
@@ -51,4 +51,12 @@ public class AnimalController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         return animalService.delete(id);
     }
+    
+    @PutMapping("/{id}/image")
+    public ResponseEntity<AnimalDto> updateAnimalImage(
+            @PathVariable Long id,
+            @RequestParam String filename) {
+        return animalService.updateImage(id, filename);
+    }
+
 }

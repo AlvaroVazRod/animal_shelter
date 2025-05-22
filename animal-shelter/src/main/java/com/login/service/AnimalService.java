@@ -18,9 +18,9 @@ public interface AnimalService {
 
     ResponseEntity<Void> delete(Long id);
     
-    Page<AnimalDto> getFilteredAnimals(String breed, String genderText, Pageable pageable);
+    Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable);
 
-
+    ResponseEntity<AnimalDto> updateImage(Long id, String filename);
 }
 
 
