@@ -4,6 +4,7 @@ import type { User } from "../../types/User";
 
 export interface UserContextType {
   user: User | null;
+  loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (
@@ -19,16 +20,20 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
+    const image = localStorage.getItem("img");
 
     if (token && username && role) {
-      setUser({ username, role });
+      setUser({ username, role , image: 'user.jpg'});
     }
+
+    setLoading(false); // ✅ Terminó la comprobación
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
@@ -46,8 +51,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
+      localStorage.setItem("img", 'user.jpg');
 
-      setUser({ username, role });
+      setUser({ username, role , image:'user.jpg'});
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -74,7 +80,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     name: string,
     surname: string,
     phone: string | null
-  ) => {
+  ): Promise<boolean> => {
     try {
       const token = localStorage.getItem("token");
 
@@ -97,7 +103,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, register }}>
+    <UserContext.Provider value={{ user, loading, login, logout, register }}>
       {children}
     </UserContext.Provider>
   );
