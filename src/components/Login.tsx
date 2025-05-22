@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useUser } from "../services/users/useUser";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface LoginCredentials {
   email: string;
@@ -116,9 +116,8 @@ export default function Login() {
                 type="text"
                 value={credentials.email}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${
-                  errors.email ? "border-red-500" : "border-[#A65638]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -138,9 +137,8 @@ export default function Login() {
                 type="password"
                 value={credentials.password}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${
-                  errors.password ? "border-red-500" : "border-[#A65638]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
               />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -177,9 +175,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                isLoading ? "bg-[#A65638]" : "bg-[#D97236] hover:bg-[#A65638]"
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${isLoading ? "bg-[#A65638]" : "bg-[#D97236] hover:bg-[#A65638]"
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
             >
               {isLoading ? (
                 <>
@@ -214,12 +211,12 @@ export default function Login() {
 
         <div className="text-center text-sm text-[#40170E] mt-4">
           ¿No tienes una cuenta?{" "}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="font-medium text-[#A65638] hover:text-[#40170E]"
           >
             Regístrate
-          </a>
+          </Link>
         </div>
       </div>
     </div>
