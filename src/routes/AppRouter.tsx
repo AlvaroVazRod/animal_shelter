@@ -11,6 +11,7 @@ import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
 import Main from "../components/Main";
 import AnimalsPage from "../components/AnimalsPage";
+import { AnimalDetails } from "../components/AnimalDetails";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -21,6 +22,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/contacto" element={<Contact />} />
+                {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
                 {/* <Route path="/main" element={<Main />} /> */}
                 <Route path="/animales" element={<AnimalsPage />} />
 

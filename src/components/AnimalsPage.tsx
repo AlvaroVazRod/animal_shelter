@@ -1,30 +1,35 @@
 import { useState, useEffect } from "react";
-import type { Animal } from "../types/Animals"; // Assuming you have a type definition
+import type { Animal } from "../types/Animals";
 import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
-// Assuming you have a type definition
+import { AnimalDetails } from "../components/AnimalDetails"; // ajusta la ruta si es necesario
 
 export const AnimalsPage = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const handleAnimalClick = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedAnimal(null);
+  };
+
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/animales");
-        if (!response.ok) {
-          throw new Error("Failed to fetch animals");
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch animals");
         const data = await response.json();
-        console.log("API response:", data);
-
-        setAnimals(data.content); // ✅ Aquí es donde estaba el error
-
+        setAnimals(data.content);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
+        setError(err instanceof Error ? err.message : "Error desconocido");
       } finally {
         setLoading(false);
       }
@@ -33,21 +38,12 @@ export const AnimalsPage = () => {
     fetchAnimals();
   }, []);
 
-
-  if (loading) {
+  if (loading || error) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-2xl" style={{ color: "#F2DCB3" }}>
-          Loading...
+          {loading ? "Cargando..." : `Error: ${error}`}
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl text-red-500">Error: {error}</div>
       </div>
     );
   }
@@ -59,10 +55,7 @@ export const AnimalsPage = () => {
         style={{ backgroundColor: "#40170E" }}
       >
         <div className="max-w-7xl mx-auto mt-6">
-          <h1
-            className="text-4xl font-bold mb-12 text-center"
-            style={{ color: "#F2DCB3" }}
-          >
+          <h1 className="text-4xl font-bold mb-12 text-center" style={{ color: "#F2DCB3" }}>
             Nuestros Peludos en Busca de Hogar
           </h1>
 
@@ -80,39 +73,29 @@ export const AnimalsPage = () => {
                   />
                 </div>
                 <div className="p-4 bg-[#F2DCB3] hover:filter hover:brightness-80 transition-all duration-200">
-                  <h2
-                    className="text-xl font-bold mb-2"
-                    style={{ color: "#40170E" }}
-                  >
+                  <h2 className="text-xl font-bold mb-2" style={{ color: "#40170E" }}>
                     {animal.name}
                   </h2>
                   <div className="mb-2">
-                    <span className="font-semibold" style={{ color: "#D97236" }}>
-                      Edad:{" "}
-                    </span>
+                    <span className="font-semibold text-[#D97236]">Edad: </span>
                     <span style={{ color: "#40170E" }}>
                       {animal.age} {animal.age === 1 ? "año" : "años"}
                     </span>
                   </div>
                   <div className="mb-2">
-                    <span className="font-semibold" style={{ color: "#D97236" }}>
-                      Tamaño:{" "}
-                    </span>
-                    <span style={{ color: "#40170E" }}>{animal.weight} (Kg)</span>
+                    <span className="font-semibold text-[#D97236]">Tamaño: </span>
+                    <span style={{ color: "#40170E" }}>{animal.weight} Kg</span>
                   </div>
                   <div className="mb-2">
-                    <span className="font-semibold" style={{ color: "#D97236" }}>
-                      Sexo:{" "}
-                    </span>
+                    <span className="font-semibold text-[#D97236]">Sexo: </span>
                     <span style={{ color: "#40170E" }}>{animal.gender}</span>
                   </div>
                   <div className="mb-2">
-                    <span className="font-semibold" style={{ color: "#D97236" }}>
-                      Raza:{" "}
-                    </span>
+                    <span className="font-semibold text-[#D97236]">Raza: </span>
                     <span style={{ color: "#40170E" }}>{animal.breed}</span>
                   </div>
                   <button
+                    onClick={() => handleAnimalClick(animal)}
                     className="mt-4 w-full py-2 rounded-lg font-bold transition-colors duration-300"
                     style={{
                       backgroundColor: "#D97236",
@@ -126,6 +109,10 @@ export const AnimalsPage = () => {
             ))}
           </div>
         </div>
+
+        {isModalOpen && selectedAnimal && (
+          <AnimalDetails animal={selectedAnimal} onClose={closeModal} />
+        )}
       </div>
     </DefaultPageTemplate>
   );
