@@ -23,6 +23,9 @@ public class AnimalDto {
 
 	@Min(value = 0, message = "La edad debe ser positiva")
 	private Integer age;
+	
+	@NotNull(message = "El genero debe de identarse")
+	private Boolean gender;
 
 	private String color;
 
@@ -106,6 +109,13 @@ public class AnimalDto {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+	public Boolean getGender() {
+		return gender;
+	}
+	
+	public void setGender(Boolean gender) {
+		this.gender=gender;
 	}
 
 	public String getColor() {

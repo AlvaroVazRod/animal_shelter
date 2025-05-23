@@ -18,6 +18,7 @@ public class AnimalMapper {
         dto.setHeight(animal.getHeight());
         dto.setLength(animal.getLength());
         dto.setAge(animal.getAge());
+        dto.setGender(animal.isGender());
         dto.setColor(animal.getColor());
         dto.setImage(animal.getImage());
         dto.setSpecies(animal.getSpecies());
@@ -53,6 +54,7 @@ public class AnimalMapper {
         animal.setHeight(dto.getHeight());
         animal.setLength(dto.getLength());
         animal.setAge(dto.getAge());
+        animal.setGender(dto.getGender());
         animal.setColor(dto.getColor());
         animal.setImage(dto.getImage());
         animal.setSpecies(dto.getSpecies());
