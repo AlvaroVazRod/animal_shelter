@@ -1,116 +1,190 @@
 package com.login.dto;
 
+import java.util.List;
 import jakarta.validation.constraints.*;
 
 public class AnimalDto {
 
-    private Long id;
+	private Long id;
 
-    @NotBlank(message = "El nombre no puede estar vacío")
-    private String name;
+	@NotBlank(message = "El nombre no puede estar vacío")
+	private String name;
 
-    private String description;
+	private String description;
 
-    @DecimalMin(value = "0.0", message = "El peso debe ser positivo")
-    private Double weight;
+	@DecimalMin(value = "0.0", message = "El peso debe ser positivo")
+	private Double weight;
 
-    @DecimalMin(value = "0.0", message = "La altura debe ser positiva")
-    private Double height;
+	@DecimalMin(value = "0.0", message = "La altura debe ser positiva")
+	private Double height;
 
-    @DecimalMin(value = "0.0", message = "La longitud debe ser positiva")
-    private Double length;
+	@DecimalMin(value = "0.0", message = "La longitud debe ser positiva")
+	private Double length;
 
-    @Min(value = 0, message = "La edad debe ser positiva")
-    private Integer age;
+	@Min(value = 0, message = "La edad debe ser positiva")
+	private Integer age;
 
-    private String color;
+	private String color;
 
-    private String image;
+	private String image;
 
-    private String species;
+	private String species;
 
-    private String breed;
+	private String breed;
 
-    @NotNull(message = "La cantidad máxima de donaciones es obligatoria")
-    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-    private Double maxDonations;
+	@NotNull(message = "La cantidad máxima de donaciones es obligatoria")
+	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+	private Double maxDonations;
 
-    @NotNull(message = "El precio de adopción es obligatorio")
-    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-    private Double adoptionPrice;
+	@NotNull(message = "El precio de adopción es obligatorio")
+	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+	private Double adoptionPrice;
 
-    @NotNull(message = "El precio de apadrinamiento es obligatorio")
-    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-    private Double sponsorPrice;
+	@NotNull(message = "El precio de apadrinamiento es obligatorio")
+	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+	private Double sponsorPrice;
 
-    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-    private Double collected;
+	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+	private Double collected;
 
-    private String status;
+	private String status;
 
-    // Getters y Setters
+	private List<AnimalImageDto> images;
 
-    public Long getId() { return id; }
 
-    public void setId(Long id) { this.id = id; }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() { return name; }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name) { this.name = name; }
+	public String getName() {
+		return name;
+	}
 
-    public String getDescription() { return description; }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setDescription(String description) { this.description = description; }
+	public String getDescription() {
+		return description;
+	}
 
-    public Double getWeight() { return weight; }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setWeight(Double weight) { this.weight = weight; }
+	public Double getWeight() {
+		return weight;
+	}
 
-    public Double getHeight() { return height; }
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
 
-    public void setHeight(Double height) { this.height = height; }
+	public Double getHeight() {
+		return height;
+	}
 
-    public Double getLength() { return length; }
+	public void setHeight(Double height) {
+		this.height = height;
+	}
 
-    public void setLength(Double length) { this.length = length; }
+	public Double getLength() {
+		return length;
+	}
 
-    public Integer getAge() { return age; }
+	public void setLength(Double length) {
+		this.length = length;
+	}
 
-    public void setAge(Integer age) { this.age = age; }
+	public Integer getAge() {
+		return age;
+	}
 
-    public String getColor() { return color; }
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
-    public void setColor(String color) { this.color = color; }
+	public String getColor() {
+		return color;
+	}
 
-    public String getImage() { return image; }
+	public void setColor(String color) {
+		this.color = color;
+	}
 
-    public void setImage(String image) { this.image = image; }
+	public String getImage() {
+		return image;
+	}
 
-    public String getSpecies() { return species; }
+	public void setImage(String image) {
+		this.image = image;
+	}
 
-    public void setSpecies(String species) { this.species = species; }
+	public String getSpecies() {
+		return species;
+	}
 
-    public String getBreed() { return breed; }
+	public void setSpecies(String species) {
+		this.species = species;
+	}
 
-    public void setBreed(String breed) { this.breed = breed; }
+	public String getBreed() {
+		return breed;
+	}
 
-    public Double getMaxDonations() { return maxDonations; }
+	public void setBreed(String breed) {
+		this.breed = breed;
+	}
 
-    public void setMaxDonations(Double maxDonations) { this.maxDonations = maxDonations; }
+	public Double getMaxDonations() {
+		return maxDonations;
+	}
 
-    public Double getAdoptionPrice() { return adoptionPrice; }
+	public void setMaxDonations(Double maxDonations) {
+		this.maxDonations = maxDonations;
+	}
 
-    public void setAdoptionPrice(Double adoptionPrice) { this.adoptionPrice = adoptionPrice; }
+	public Double getAdoptionPrice() {
+		return adoptionPrice;
+	}
 
-    public Double getSponsorPrice() { return sponsorPrice; }
+	public void setAdoptionPrice(Double adoptionPrice) {
+		this.adoptionPrice = adoptionPrice;
+	}
 
-    public void setSponsorPrice(Double sponsorPrice) { this.sponsorPrice = sponsorPrice; }
+	public Double getSponsorPrice() {
+		return sponsorPrice;
+	}
 
-    public Double getCollected() { return collected; }
+	public void setSponsorPrice(Double sponsorPrice) {
+		this.sponsorPrice = sponsorPrice;
+	}
 
-    public void setCollected(Double collected) { this.collected = collected; }
+	public Double getCollected() {
+		return collected;
+	}
 
-    public String getStatus() { return status; }
+	public void setCollected(Double collected) {
+		this.collected = collected;
+	}
 
-    public void setStatus(String status) { this.status = status; }
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public List<AnimalImageDto> getImages() {
+		return images;
+	}
+
+	public void setImages(List<AnimalImageDto> images) {
+		this.images = images;
+	}
 }

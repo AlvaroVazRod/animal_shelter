@@ -1,7 +1,11 @@
 package com.login.mapper;
 
 import com.login.dto.AnimalDto;
+import com.login.dto.AnimalImageDto;
 import com.login.model.Animal;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AnimalMapper {
 
@@ -20,6 +24,23 @@ public class AnimalMapper {
         dto.setBreed(animal.getBreed());
         dto.setMaxDonations(animal.getMaxDonations());
         dto.setCollected(animal.getCollected());
+        dto.setAdoptionPrice(animal.getAdoptionPrice());
+        dto.setSponsorPrice(animal.getSponsorPrice());
+        dto.setStatus(animal.getStatus());
+        if (animal.getImages() != null) {
+            List<AnimalImageDto> imageDtos = animal.getImages()
+                .stream()
+                .map(image -> {
+                    AnimalImageDto imageDto = new AnimalImageDto();
+                    imageDto.setId(image.getId());
+                    imageDto.setFilename(image.getFilename());
+                    imageDto.setFechaSubida(image.getFechaSubida());
+                    imageDto.setAnimalId(animal.getId());
+                    return imageDto;
+                })
+                .collect(Collectors.toList());
+            dto.setImages(imageDtos);
+        }
         return dto;
     }
 
@@ -38,6 +59,10 @@ public class AnimalMapper {
         animal.setBreed(dto.getBreed());
         animal.setMaxDonations(dto.getMaxDonations());
         animal.setCollected(dto.getCollected());
+        animal.setAdoptionPrice(dto.getAdoptionPrice());
+        animal.setSponsorPrice(dto.getSponsorPrice());
+        animal.setStatus(dto.getStatus());
+
         return animal;
     }
 }

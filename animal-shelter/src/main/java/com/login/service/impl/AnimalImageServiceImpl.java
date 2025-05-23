@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
@@ -27,11 +28,18 @@ public class AnimalImageServiceImpl implements AnimalImageService {
     @Value("${animal.image.upload-dir:uploads/animals}")
     private String uploadDir;
 
+    private Path uploadPath;
+
     public AnimalImageServiceImpl(AnimalImageRepository imageRepository, AnimalRepository animalRepository) {
         this.imageRepository = imageRepository;
         this.animalRepository = animalRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.uploadPath = Paths.get(uploadDir);
         try {
-            Files.createDirectories(Paths.get(uploadDir));
+            Files.createDirectories(uploadPath);
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el directorio de imágenes de animales", e);
         }
@@ -52,7 +60,7 @@ public class AnimalImageServiceImpl implements AnimalImageService {
 
         String extension = getFileExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID() + extension;
-        Path filePath = Paths.get(uploadDir, fileName);
+        Path filePath = uploadPath.resolve(fileName);
 
         try {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);

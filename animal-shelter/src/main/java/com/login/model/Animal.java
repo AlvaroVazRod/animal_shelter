@@ -3,9 +3,12 @@ package com.login.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
-@Table(name = "animals") 
+@Table(name = "animals")
 public class Animal {
 
     @Id
@@ -25,4 +28,10 @@ public class Animal {
     private String breed;
     private Double maxDonations;
     private Double collected;
+    private Double adoptionPrice;
+    private Double sponsorPrice;
+    private String status;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnimalImage> images = new ArrayList<>();
 }

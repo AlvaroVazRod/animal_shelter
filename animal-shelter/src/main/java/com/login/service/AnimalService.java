@@ -21,6 +21,8 @@ public interface AnimalService {
     Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable);
 
     ResponseEntity<AnimalDto> updateImage(Long id, String filename);
+    
+
 }
 
 

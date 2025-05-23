@@ -14,15 +14,17 @@ import java.util.List;
 @CrossOrigin
 public class AnimalImageController {
 
-    private final AnimalImageService imageService;
 
-    public AnimalImageController(AnimalImageService imageService) {
-        this.imageService = imageService;
+    private final AnimalImageService animalImageService;
+
+    public AnimalImageController(AnimalImageService animalImageService) {
+        this.animalImageService = animalImageService;
     }
+
 
     @GetMapping("/{animalId}")
     public ResponseEntity<List<AnimalImageDto>> getImagesByAnimal(@PathVariable Long animalId) {
-        return ResponseEntity.ok(imageService.getImagesByAnimalId(animalId));
+        return ResponseEntity.ok(animalImageService.getImagesByAnimalId(animalId));
     }
 
     @PostMapping("/upload/{animalId}")
@@ -30,6 +32,6 @@ public class AnimalImageController {
     public ResponseEntity<AnimalImageDto> uploadAnimalImage(
             @PathVariable Long animalId,
             @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(imageService.uploadImage(file, animalId));
+        return ResponseEntity.ok(animalImageService.uploadImage(file, animalId));
     }
 }
