@@ -23,14 +23,17 @@ public class AnimalController {
     public ResponseEntity<Page<AnimalDto>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(required = false) String species,
-            @RequestParam(required = false) String gender) {
+            @RequestParam(defaultValue = "gender") String sortBy,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String species) {
+
+        if (!sortBy.equals("gender") && !sortBy.equals("species")) {
+            return ResponseEntity.badRequest().body(Page.empty());
+        }
 
         PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
         return ResponseEntity.ok(animalService.getFilteredAnimals(gender, species, pageable));
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<AnimalDto> getById(@PathVariable Long id) {
         return animalService.getDtoById(id);
