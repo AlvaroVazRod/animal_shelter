@@ -1,16 +1,16 @@
 import Main from "../../components/Main";
-import Login from "../../components/Login";
 import Navbar from "../../components/Navbar";
-import AnimalsPage from "../../components/AnimalsPage";
+import { DefaultPageTemplate } from "../templates/DefaultTemplate";
 
 
 export const Home = () => {
-  return (<>
-    <Navbar/>
-    <div>
+
+  return (
+  <>
+    <DefaultPageTemplate>
       <Main/>
-    </div>
-    </>
+    </DefaultPageTemplate>
+  </>
   );
 };
 export default Home;

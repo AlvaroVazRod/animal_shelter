@@ -31,13 +31,13 @@ const Footer = () => {
               <li>
                 <Link
                   className="hover:text-[#D97236] transition-colors"
-                  to="/AnimalsPage"
+                  to="/animales"
                   onClick={(e) => {
                     if (window.scrollY > 0) {
                       e.preventDefault();
                       window.scrollTo({ top: 0, behavior: "smooth" });
                       setTimeout(() => {
-                        navigate("/AnimalsPage"); // Usa useNavigate de react-router-dom
+                        navigate("/animales"); // Usa useNavigate de react-router-dom
                       }, 100); // Espera 500ms (ajusta según la duración de tu scroll)
                     }
                   }}
@@ -47,14 +47,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/Contact"
+                  to="/contacto"
                   className="hover:text-[#D97236] transition-colors"
                   onClick={(e) => {
                     if (window.scrollY > 0) {
                       e.preventDefault();
                       window.scrollTo({ top: 0, behavior: "smooth" });
                       setTimeout(() => {
-                        navigate("/Contact"); // Usa useNavigate de react-router-dom
+                        navigate("/contacto"); // Usa useNavigate de react-router-dom
                       }, 100); // Espera 500ms (ajusta según la duración de tu scroll)
                     }
                   }}
