@@ -14,4 +14,6 @@ export interface Animal {
   gender: string; //por implementar en la api
   maxDonations: 0;
   collected: 0;
+  priority: boolean;
+
 }

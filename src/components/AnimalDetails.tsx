@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import type { Animal } from "../types/Animals";
+
 
 interface AnimalDetailsProps {
     animal: Animal;
@@ -6,9 +8,27 @@ interface AnimalDetailsProps {
 }
 
 export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
+    const modalContentRef = useRef<HTMLParagraphElement>(null);
+
+     const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Verifica si el clic fue fuera del contenido del modal
+    if (
+      modalContentRef.current &&
+      !modalContentRef.current.contains(event.target as Node)
+    ) {
+      onClose();
+    }
+  };
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg max-w-md w-full p-6 relative shadow-xl">
+        <div
+            onClick={handleOverlayClick}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        >
+            <div
+                ref={modalContentRef}
+                className="bg-white rounded-lg max-w-md w-full p-6 relative shadow-xl"
+            >
                 <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
                     onClick={onClose}

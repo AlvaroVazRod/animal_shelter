@@ -122,14 +122,20 @@ export const AnimalsPage = () => {
                     onClick={() => handleAnimalClick(animal)}
                     className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
                   >
-                    <div className="h-48 overflow-hidden">
+                    <div className="h-48 overflow-hidden relative">
+                      {!animal.priority && (
+                        <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                          PRIORIDAD
+                        </span>
+                      )}
+
                       <img
                         src={`http://localhost:8080/images/animal/${animal.image}`}
                         alt={animal.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="p-4 bg-[#F2DCB3]">
+                    <div className="p-4 bg-[#F2DCB3] ">
                       <h2
                         className="text-xl font-bold mb-2"
                         style={{ color: "#40170E" }}
