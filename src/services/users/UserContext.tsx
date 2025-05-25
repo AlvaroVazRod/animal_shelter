@@ -30,7 +30,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const image = localStorage.getItem("img");
 
     if (token && username && role) {
-      setUser({ username, role , image: 'user.jpg'});
+      setUser({ username, role , image: 'users.jpg'});
     }
 
     setLoading(false); // ✅ Terminó la comprobación
@@ -51,9 +51,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", 'user.jpg');
+      localStorage.setItem("img", 'users.jpg');
 
-      setUser({ username, role , image:'user.jpg'});
+      setUser({ username, role , image:'users.jpg'});
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
