@@ -1,6 +1,7 @@
 package com.login.service.impl;
 
-import com.login.dto.AnimalDto;	
+import com.login.dto.AnimalDto;
+import com.login.dto.AnimalImageDto;
 import com.login.exception.ResourceNotFoundException;
 import com.login.model.Animal;
 import com.login.repository.AnimalRepository;
@@ -28,12 +29,29 @@ public class AnimalServiceImpl implements AnimalService {
         dto.setHeight(animal.getHeight());
         dto.setLength(animal.getLength());
         dto.setAge(animal.getAge());
+        dto.setGender(animal.getGender() != null ? (animal.getGender() ? "masculino" : "femenino") : "");
         dto.setColor(animal.getColor());
         dto.setImage(animal.getImage());
         dto.setSpecies(animal.getSpecies());
         dto.setBreed(animal.getBreed());
-        dto.setMaxDonations(animal.getMaxDonations());
+        dto.setAdoptionPrice(animal.getAdoptionPrice());
+        dto.setSponsorPrice(animal.getSponsorPrice());
         dto.setCollected(animal.getCollected());
+        dto.setStatus(animal.getStatus().name());
+        if (animal.getImages() != null) {
+            List<AnimalImageDto> imageDtos = animal.getImages()
+                .stream()
+                .map(image -> {
+                    AnimalImageDto imageDto = new AnimalImageDto();
+                    imageDto.setId(image.getId());
+                    imageDto.setFilename(image.getFilename());
+                    imageDto.setFechaSubida(image.getFechaSubida());
+                    imageDto.setAnimalId(animal.getId());
+                    return imageDto;
+                })
+                .collect(Collectors.toList());
+            dto.setImages(imageDtos);
+        }
         return dto;
     }
 
@@ -49,7 +67,6 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setImage(dto.getImage());
         animal.setSpecies(dto.getSpecies());
         animal.setBreed(dto.getBreed());
-        animal.setMaxDonations(dto.getMaxDonations());
         animal.setCollected(dto.getCollected());
         return animal;
     }
@@ -90,7 +107,6 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setImage(dto.getImage());
         animal.setSpecies(dto.getSpecies());
         animal.setBreed(dto.getBreed());
-        animal.setMaxDonations(dto.getMaxDonations());
         animal.setCollected(dto.getCollected());
 
         return ResponseEntity.ok(mapToDto(animalRepository.save(animal)));
@@ -110,17 +126,17 @@ public class AnimalServiceImpl implements AnimalService {
         // Si hay filtro de raza y sexo
         if (species != null && genderText != null) {
             boolean gender = convertGender(genderText);
-            animals = animalRepository.findByBreedAndGender(species, gender, pageable);
-        }
+            animals = animalRepository.findBySpeciesAndGender(species, gender, pageable);
+        } 
         // Solo filtro por raza
         else if (species != null) {
-            animals = animalRepository.findByBreed(species, pageable);
+            animals = animalRepository.findBySpecies(species, pageable);
         }
         // Solo filtro por sexo
         else if (genderText != null) {
             boolean gender = convertGender(genderText);
             animals = animalRepository.findByGender(gender, pageable);
-        }
+        } 
         // Sin filtros
         else {
             animals = animalRepository.findAll(pageable);
@@ -128,6 +144,7 @@ public class AnimalServiceImpl implements AnimalService {
 
         return animals.map(this::mapToDto);
     }
+
     
     @Override
     public ResponseEntity<AnimalDto> updateImage(Long id, String filename) {

@@ -18,6 +18,7 @@ public class User {
     private String name;
     private String surname;
     private String phone;
+    private boolean newsletter;
     private String image;
 
     @Enumerated(EnumType.STRING)
@@ -25,5 +26,12 @@ public class User {
 
     public enum Role {
        USER, ADMIN
+    }
+    
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    public enum UserStatus {
+       active, inactive
     }
 }

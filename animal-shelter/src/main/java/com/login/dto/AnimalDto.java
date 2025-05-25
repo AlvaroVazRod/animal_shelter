@@ -24,8 +24,8 @@ public class AnimalDto {
 	@Min(value = 0, message = "La edad debe ser positiva")
 	private Integer age;
 	
-	@NotNull(message = "El genero debe de identarse")
-	private Boolean gender;
+	@Pattern(regexp = "^(masculino|femenino)?$", message = "El género debe ser 'masculino', 'femenino' o estar vacío")
+	private String gender;
 
 	private String color;
 
@@ -34,10 +34,6 @@ public class AnimalDto {
 	private String species;
 
 	private String breed;
-
-	@NotNull(message = "La cantidad máxima de donaciones es obligatoria")
-	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-	private Double maxDonations;
 
 	@NotNull(message = "El precio de adopción es obligatorio")
 	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
@@ -110,12 +106,12 @@ public class AnimalDto {
 	public void setAge(Integer age) {
 		this.age = age;
 	}
-	public Boolean getGender() {
-		return gender;
+	public String getGender() {
+	    return gender;
 	}
-	
-	public void setGender(Boolean gender) {
-		this.gender=gender;
+
+	public void setGender(String gender) {
+	    this.gender = gender;
 	}
 
 	public String getColor() {
@@ -148,14 +144,6 @@ public class AnimalDto {
 
 	public void setBreed(String breed) {
 		this.breed = breed;
-	}
-
-	public Double getMaxDonations() {
-		return maxDonations;
-	}
-
-	public void setMaxDonations(Double maxDonations) {
-		this.maxDonations = maxDonations;
 	}
 
 	public Double getAdoptionPrice() {

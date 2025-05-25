@@ -18,16 +18,15 @@ public class AnimalMapper {
         dto.setHeight(animal.getHeight());
         dto.setLength(animal.getLength());
         dto.setAge(animal.getAge());
-        dto.setGender(animal.isGender());
+        dto.setGender(animal.getGender() != null ? (animal.getGender() ? "masculino" : "femenino") : "");
         dto.setColor(animal.getColor());
         dto.setImage(animal.getImage());
         dto.setSpecies(animal.getSpecies());
         dto.setBreed(animal.getBreed());
-        dto.setMaxDonations(animal.getMaxDonations());
         dto.setCollected(animal.getCollected());
         dto.setAdoptionPrice(animal.getAdoptionPrice());
         dto.setSponsorPrice(animal.getSponsorPrice());
-        dto.setStatus(animal.getStatus());
+        dto.setStatus(animal.getStatus().name());
         if (animal.getImages() != null) {
             List<AnimalImageDto> imageDtos = animal.getImages()
                 .stream()
@@ -54,16 +53,18 @@ public class AnimalMapper {
         animal.setHeight(dto.getHeight());
         animal.setLength(dto.getLength());
         animal.setAge(dto.getAge());
-        animal.setGender(dto.getGender());
+        animal.setGender(dto.getGender() != null ? (dto.getGender() == "masculino" ? true : false ) : null);
         animal.setColor(dto.getColor());
         animal.setImage(dto.getImage());
         animal.setSpecies(dto.getSpecies());
         animal.setBreed(dto.getBreed());
-        animal.setMaxDonations(dto.getMaxDonations());
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
-        animal.setStatus(dto.getStatus());
+        // Convertir el string a Enum
+        if (dto.getStatus() != null) {
+            animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+        }
 
         return animal;
     }

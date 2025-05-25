@@ -3,6 +3,7 @@ package com.login.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +22,29 @@ public class Animal {
     private Double height;
     private Double length;
     private Integer age;
-    private boolean gender;
+    private Boolean gender;
     private String color;
     private String image;
     private String species;
     private String breed;
-    private Double maxDonations;
     private Double collected;
     private Double adoptionPrice;
     private Double sponsorPrice;
-    private String status;
+    private LocalDateTime arrivalDate;
+
+    @Enumerated(EnumType.STRING)
+    private AnimalStatus status;
+
+    @PrePersist
+    public void prePersist() {
+        if (arrivalDate == null) {
+            arrivalDate = LocalDateTime.now();
+        }
+    }
+
+    public enum AnimalStatus {
+        draft, active, adopted, requires_funding
+    }
 
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnimalImage> images = new ArrayList<>();

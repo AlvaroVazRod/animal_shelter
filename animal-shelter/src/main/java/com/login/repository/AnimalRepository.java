@@ -7,9 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnimalRepository extends JpaRepository<Animal, Long> {
-	Page<Animal> findByBreed(String breed, Pageable pageable);
-	Page<Animal> findByGender(boolean gender, Pageable pageable);
-	Page<Animal> findByBreedAndGender(String breed, boolean gender, Pageable pageable);
-
-
+    Page<Animal> findBySpecies(String species, Pageable pageable);
+    Page<Animal> findByGender(boolean gender, Pageable pageable);
+    Page<Animal> findBySpeciesAndGender(String species, boolean gender, Pageable pageable);
 }
