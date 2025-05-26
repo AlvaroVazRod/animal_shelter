@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
             user.setName(dto.getName());
             user.setSurname(dto.getSurname());
             user.setPhone(dto.getPhone());
+            user.setImage(dto.getImage());
             return ResponseEntity.ok(mapToDto(userRepository.save(user)));
         }
         return ResponseEntity.status(403).build();
