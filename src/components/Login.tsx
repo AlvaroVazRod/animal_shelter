@@ -60,7 +60,7 @@ export default function Login() {
         const role = localStorage.getItem("role");
         if (role === "ADMIN") navigate("/admin");
         else {
-          navigate("/main");
+          navigate("/");
           window.location.reload(); // Forzar actualización para reflejar cambios
         }
         return;
