@@ -14,6 +14,10 @@ export interface Animal {
   gender: string; //por implementar en la api
   maxDonations: 0;
   collected: 0;
-  priority: boolean;
+  priority: 'low' | 'medium' | 'high';
+  type?: string; // Ej: "Perro", "Gato"
+  vaccines?: string[]; // Ej: ["Antirrábica", "Parvovirus"]
+  surgery?: boolean; // Si tuvo cirugía
+  specialNeeds?: boolean; // Si requiere cuidados especiales
 
 }
