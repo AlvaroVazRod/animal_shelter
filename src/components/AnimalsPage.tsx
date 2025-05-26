@@ -28,15 +28,15 @@ export const AnimalsPage = () => {
 
   const fetchAnimals = async (
     pageNumber: number,
-    breed?: string,
+    species?: string,
     gender?: string
   ) => {
     setLoading(true);
     try {
       const query = new URLSearchParams({
         page: String(pageNumber),
-        size: "10",
-        ...(breed ? { breed } : {}),
+        size: "4",
+        ...(species ? { species } : {}),
         ...(gender ? { gender } : {}),
       });
 
@@ -89,8 +89,8 @@ export const AnimalsPage = () => {
               style={{ color: "#40170E", backgroundColor: "#F2DCB3" }}
             >
               <option value="">Todas las espécies</option>
-              <option value="perro">Perro</option>
-              <option value="gato">Gato</option>
+              <option value="dog">Perro</option>
+              <option value="cat">Gato</option>
             </select>
 
             <select
@@ -122,14 +122,20 @@ export const AnimalsPage = () => {
                     onClick={() => handleAnimalClick(animal)}
                     className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
                   >
-                    <div className="h-48 overflow-hidden">
+                    <div className="h-48 overflow-hidden relative">
+                      {animal.status === 'requires_funding' && (
+                        <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                          PRIORIDAD
+                        </span>
+                      )}
+
                       <img
                         src={`http://localhost:8080/images/animal/${animal.image}`}
                         alt={animal.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="p-4 bg-[#F2DCB3]">
+                    <div className="p-4 bg-[#F2DCB3] ">
                       <h2
                         className="text-xl font-bold mb-2"
                         style={{ color: "#40170E" }}
