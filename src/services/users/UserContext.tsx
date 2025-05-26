@@ -14,7 +14,6 @@ export interface UserContextType {
     surname: string,
     phone: string | null
   ) => Promise<boolean>;
-  getToken: () => string | null;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -23,9 +22,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const getToken = (): string | null => {
-    return localStorage.getItem("token");
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -107,7 +103,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, register }}>
+    <UserContext.Provider value={{ user, loading, login, logout, register }}>
       {children}
     </UserContext.Provider>
   );
