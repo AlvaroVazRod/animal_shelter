@@ -1,4 +1,4 @@
-import { DefaultPageTemplate } from "../../pages/templates/DefaultTemplate";
+import { AdminPageTemplate } from "../templates/AdminTemplate";
 import { useEffect, useState, useRef } from "react";
 import { useUser } from "../../services/users/useUser";
 import {
@@ -19,7 +19,7 @@ interface UserDTO {
   role: string;
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboardUsers() {
   const { getToken } = useUser();
   const [users, setUsers] = useState<UserDTO[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,114 +100,114 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <DefaultPageTemplate>
+      <AdminPageTemplate>
         <div className="flex justify-center items-center h-64">
-          <div className="text-2xl" style={{ color: "#F2DCB3" }}>
+          <div className="text-2xl" style={{ color: "#4ECCA320" }}>
             Cargando usuarios...
           </div>
         </div>
-      </DefaultPageTemplate>
+      </AdminPageTemplate>
     );
   }
 
   if (error) {
     return (
-      <DefaultPageTemplate>
+      <AdminPageTemplate>
         <div className="flex justify-center items-center h-64">
           <div className="text-2xl text-red-500">Error: {error}</div>
         </div>
-      </DefaultPageTemplate>
+      </AdminPageTemplate>
     );
   }
 
   return (
-    <DefaultPageTemplate>
+    <AdminPageTemplate>
       <div
         className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-20"
-        style={{ backgroundColor: "#40170E" }}
+        style={{ backgroundColor: "#2D2A32" }}
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: "#F2DCB3" }}>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: "#F5F5F5" }}>
               Panel de Administración
             </h1>
-            <p className="text-lg" style={{ color: "#D97236" }}>
+            <p className="text-lg" style={{ color: "#F5F5F5" }}>
               Gestión de usuarios registrados
             </p>
           </div>
 
           {users.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-xl" style={{ color: "#F2DCB3" }}>
+              <p className="text-xl" style={{ color: "#4ECCA320" }}>
                 No hay usuarios registrados
               </p>
             </div>
           ) : (
-            <div className="bg-[#F2DCB3]/90 rounded-lg shadow-lg border-2 border-[#A65638] overflow-hidden">
+            <div className="bg-[#4ECCA320]/90 rounded-lg shadow-lg border-2 border-[#4ECCA3] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-[#A65638]/50">
-                  <thead className="bg-[#A65638]">
+                  <thead className="bg-[#4ECCA3]">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#F2DCB3] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
                       >
                         Usuario
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#F2DCB3] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
                       >
                         Información
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#F2DCB3] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
                       >
                         Rol
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-right text-xs font-bold text-[#F2DCB3] uppercase tracking-wider"
+                        className="px-6 py-3 text-right text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
                       >
                         Acciones
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-[#F2DCB3]/80 divide-y divide-[#A65638]/30">
+                  <tbody className="bg-[#4ECCA320]/80 divide-y divide-[#a4ebd4]/30">
                     {users.map((user) => (
                       <tr
                         key={user.id}
-                        className="hover:bg-[#F2DCB3] transition-colors"
+                        className="hover:bg-[#4ECCA320] transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#A65638] flex items-center justify-center text-[#F2DCB3]">
+                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#4ECCA3] flex items-center justify-center text-[#f5f5f5]">
                               <FiUser className="h-5 w-5" />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-[#40170E]">
+                              <div className="text-sm font-medium text-[#f5f5f5]">
                                 {user.username}
                               </div>
-                              <div className="text-sm text-[#40170E]/80">
+                              <div className="text-sm text-[#f5f5f5]/80">
                                 ID: {user.id}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-[#40170E]">
+                          <div className="text-sm text-[#f5f5f5]">
                             <div className="flex items-center">
-                              <FiMail className="mr-2 text-[#A65638]" />
+                              <FiMail className="mr-2 text-[#a4ebd4]" />
                               {user.email}
                             </div>
                             <div className="flex items-center mt-1">
-                              <FiUser className="mr-2 text-[#A65638]" />
+                              <FiUser className="mr-2 text-[#a4ebd4]" />
                               {user.name} {user.surname}
                             </div>
                             {user.phone && (
                               <div className="flex items-center mt-1">
-                                <FiPhone className="mr-2 text-[#A65638]" />
+                                <FiPhone className="mr-2 text-[#f5f5f5]" />
                                 {user.phone}
                               </div>
                             )}
@@ -217,8 +217,8 @@ export default function AdminDashboard() {
                           <span
                             className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                               user.role === "ADMIN"
-                                ? "bg-[#40170E] text-[#F2DCB3]"
-                                : "bg-[#D97236] text-[#40170E]"
+                                ? "bg-[#a4ebd4] text-[#3d5950]"
+                                : "bg-[#84ab9e] text-[#3d5950]"
                             }`}
                           >
                             {user.role}
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
             onClick={closeEditModal}
           >
             <div
-              className={`bg-[#F2DCB3] rounded-lg shadow-lg max-w-lg w-full p-6
+              className={`bg-[#4ECCA320] rounded-lg shadow-lg max-w-lg w-full p-6
                 transform transition-transform duration-300 ease-out
                 ${isModalOpen ? "scale-100" : "scale-90"}`}
               onClick={(e) => e.stopPropagation()}
@@ -434,12 +434,12 @@ export default function AdminDashboard() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#40170E] text-[#F2DCB3] font-semibold rounded-md hover:bg-[#2B0F07] flex items-center justify-center space-x-2"
+                    className="px-4 py-2 bg-[#40170E] text-[#4ECCA320] font-semibold rounded-md hover:bg-[#2B0F07] flex items-center justify-center space-x-2"
                     disabled={isSaving}
                   >
                     {isSaving && (
                       <svg
-                        className="animate-spin h-5 w-5 text-[#F2DCB3]"
+                        className="animate-spin h-5 w-5 text-[#4ECCA320]"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -467,6 +467,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
-    </DefaultPageTemplate>
+    </AdminPageTemplate>
   );
 }
