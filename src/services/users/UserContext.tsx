@@ -10,10 +10,12 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
+    phone: string | null,
+    newsletter: boolean
   ) => Promise<boolean>;
   getToken: () => string | null;
 }
@@ -31,17 +33,41 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     return localStorage.getItem("token");
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-    const role = localStorage.getItem("role");
-    const image = localStorage.getItem("img");
+  const fetchCurrentUser = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
 
-    if (token && username && role) {
-      setUser({ username, role, image: image || "" });
+      const res = await fetch("http://localhost:8080/api/usuarios/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("No se pudo obtener el usuario actual");
+
+      const data = await res.json();
+      setUser({
+        username: data.username,
+        role: data.role,
+        image: data.image,
+      });
+      localStorage.setItem("img", data.image || "");
+    } catch (err) {
+      console.error("Error al cargar el usuario:", err);
+      logout();
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      fetchCurrentUser();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (
@@ -64,8 +90,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
 
-      // Por defecto, inicializa imagen vacía (debe actualizarse desde /me)
-      setUser({ username, role, image: "" });
+      await fetchCurrentUser();
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -87,14 +112,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (
+    username: string,
     email: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
+    phone: string | null,
+    newsletter: boolean,
   ): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
@@ -103,12 +130,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          username: email,
+          username,
           email,
           password,
           name,
           surname,
           phone,
+          newsletter
         }),
       });
 

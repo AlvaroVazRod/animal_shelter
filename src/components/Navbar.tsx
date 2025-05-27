@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "../services/users/useUser";
 
@@ -7,7 +8,6 @@ export const Navbar = () => {
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    
     function handleClickOutside(event: MouseEvent) {
       if (
         profileMenuRef.current &&
