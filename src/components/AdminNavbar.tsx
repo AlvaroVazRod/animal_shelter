@@ -34,14 +34,14 @@ export const AdminNavbar = () => {
 
           <div className="flex items-center space-x-4">
             <a
-              href="/admin-dashboard"
+              href="/adminU"
               className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
               style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
             >
               Panel Usuarios
             </a>
             <a
-              href="/admin-dashboard2"
+              href="/adminU"
               className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
               style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
             >

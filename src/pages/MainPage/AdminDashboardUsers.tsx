@@ -128,10 +128,10 @@ export default function AdminDashboardUsers() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: "#F5F5F5" }}>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: "#e8e8e8" }}>
               Panel de Administración
             </h1>
-            <p className="text-lg" style={{ color: "#F5F5F5" }}>
+            <p className="text-lg" style={{ color: "#e8e8e8" }}>
               Gestión de usuarios registrados
             </p>
           </div>
@@ -145,30 +145,30 @@ export default function AdminDashboardUsers() {
           ) : (
             <div className="bg-[#4ECCA320]/90 rounded-lg shadow-lg border-2 border-[#4ECCA3] overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-[#A65638]/50">
+                <table className="min-w-full divide-y divide-[#4ECCA3]/50">
                   <thead className="bg-[#4ECCA3]">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
                         Usuario
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
                         Información
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
                         Rol
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-right text-xs font-bold text-[#f5f5f5] uppercase tracking-wider"
+                        className="px-6 py-3 text-right text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
                         Acciones
                       </th>
@@ -182,21 +182,21 @@ export default function AdminDashboardUsers() {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#4ECCA3] flex items-center justify-center text-[#f5f5f5]">
+                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#4ECCA3] flex items-center justify-center text-[#e8e8e8]">
                               <FiUser className="h-5 w-5" />
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-[#f5f5f5]">
+                              <div className="text-sm font-medium text-[#e8e8e8]">
                                 {user.username}
                               </div>
-                              <div className="text-sm text-[#f5f5f5]/80">
+                              <div className="text-sm text-[#e8e8e8]/80">
                                 ID: {user.id}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-[#f5f5f5]">
+                          <div className="text-sm text-[#e8e8e8]">
                             <div className="flex items-center">
                               <FiMail className="mr-2 text-[#a4ebd4]" />
                               {user.email}
@@ -207,7 +207,7 @@ export default function AdminDashboardUsers() {
                             </div>
                             {user.phone && (
                               <div className="flex items-center mt-1">
-                                <FiPhone className="mr-2 text-[#f5f5f5]" />
+                                <FiPhone className="mr-2 text-[#a4ebd4]" />
                                 {user.phone}
                               </div>
                             )}
@@ -218,7 +218,7 @@ export default function AdminDashboardUsers() {
                             className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                               user.role === "ADMIN"
                                 ? "bg-[#a4ebd4] text-[#3d5950]"
-                                : "bg-[#84ab9e] text-[#3d5950]"
+                                : "bg-[#a4ebad] text-[#3d5950]"
                             }`}
                           >
                             {user.role}
@@ -227,13 +227,13 @@ export default function AdminDashboardUsers() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
                             onClick={() => deleteUser(user.id)}
-                            className="text-[#40170E] hover:text-red-600 mr-4 transition-colors"
+                            className="text-[#7ddb8f] hover:text-red-600 mr-4 transition-colors"
                             title="Eliminar usuario"
                           >
                             <FiTrash2 className="h-5 w-5" />
                           </button>
                           <button
-                            className="text-[#40170E] hover:text-[#A65638] transition-colors"
+                            className="text-[#7ddb8f] hover:text-[#7ddbc8] transition-colors"
                             title="Editar usuario"
                             onClick={() => openEditModal(user)}
                           >
@@ -252,18 +252,18 @@ export default function AdminDashboardUsers() {
         {/* Modal edición */}
         {editingUser && (
           <div
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50
-              transition-opacity duration-300 ease-out
+            className={`fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50
+              transition-opacity duration-600 ease-out
               ${isModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             onClick={closeEditModal}
           >
             <div
-              className={`bg-[#4ECCA320] rounded-lg shadow-lg max-w-lg w-full p-6
-                transform transition-transform duration-300 ease-out
-                ${isModalOpen ? "scale-100" : "scale-90"}`}
+              className={`bg-[#2D2A32] rounded-lg shadow-lg max-w-lg w-full p-6
+                transform transition-transform duration-600
+                ${isModalOpen ? "ease-in scale-100" : "scale-90"}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-2xl font-bold mb-4 text-[#40170E]">
+              <h3 className="text-2xl font-bold mb-4 text-[#e8e8e8]">
                 Editar Usuario
               </h3>
 
@@ -307,7 +307,7 @@ export default function AdminDashboardUsers() {
                 <div className="mb-4">
                   <label
                     htmlFor="username"
-                    className="block text-[#40170E] font-semibold mb-1"
+                    className="block text-[#e8e8e8] font-semibold mb-1"
                   >
                     Usuario
                   </label>
@@ -316,8 +316,8 @@ export default function AdminDashboardUsers() {
                     id="username"
                     value={editForm.username || ""}
                     onChange={(e) => handleChange("username", e.target.value)}
-                    className="w-full border border-[#A65638] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                     ref={usernameInputRef}
                     required
                   />
@@ -326,7 +326,7 @@ export default function AdminDashboardUsers() {
                 <div className="mb-4">
                   <label
                     htmlFor="email"
-                    className="block text-[#40170E] font-semibold mb-1"
+                    className="block text-[#e8e8e8] font-semibold mb-1"
                   >
                     Email
                   </label>
@@ -335,8 +335,8 @@ export default function AdminDashboardUsers() {
                     id="email"
                     value={editForm.email || ""}
                     onChange={(e) => handleChange("email", e.target.value)}
-                    className="w-full border border-[#A65638] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                     required
                   />
                 </div>
@@ -345,7 +345,7 @@ export default function AdminDashboardUsers() {
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-[#40170E] font-semibold mb-1"
+                      className="block text-[#e8e8e8] font-semibold mb-1"
                     >
                       Nombre
                     </label>
@@ -354,8 +354,8 @@ export default function AdminDashboardUsers() {
                       id="name"
                       value={editForm.name || ""}
                       onChange={(e) => handleChange("name", e.target.value)}
-                      className="w-full border border-[#A65638] rounded-md px-3 py-2
-                        focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                      className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                        focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                       required
                     />
                   </div>
@@ -363,7 +363,7 @@ export default function AdminDashboardUsers() {
                   <div>
                     <label
                       htmlFor="surname"
-                      className="block text-[#40170E] font-semibold mb-1"
+                      className="block text-[#e8e8e8] font-semibold mb-1"
                     >
                       Apellido
                     </label>
@@ -372,8 +372,8 @@ export default function AdminDashboardUsers() {
                       id="surname"
                       value={editForm.surname || ""}
                       onChange={(e) => handleChange("surname", e.target.value)}
-                      className="w-full border border-[#A65638] rounded-md px-3 py-2
-                        focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                      className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                        focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                       required
                     />
                   </div>
@@ -382,7 +382,7 @@ export default function AdminDashboardUsers() {
                 <div className="mb-4">
                   <label
                     htmlFor="phone"
-                    className="block text-[#40170E] font-semibold mb-1"
+                    className="block text-[#e8e8e8] font-semibold mb-1"
                   >
                     Teléfono
                   </label>
@@ -391,8 +391,8 @@ export default function AdminDashboardUsers() {
                     id="phone"
                     value={editForm.phone || ""}
                     onChange={(e) => handleChange("phone", e.target.value)}
-                    className="w-full border border-[#A65638] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                    className=" w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                     placeholder="Opcional"
                   />
                 </div>
@@ -400,7 +400,7 @@ export default function AdminDashboardUsers() {
                 <div className="mb-6">
                   <label
                     htmlFor="role"
-                    className="block text-[#40170E] font-semibold mb-1"
+                    className="block text-[#e8e8e8] font-semibold mb-1"
                   >
                     Rol
                   </label>
@@ -408,12 +408,12 @@ export default function AdminDashboardUsers() {
                     id="role"
                     value={editForm.role || "USER"}
                     onChange={(e) => handleChange("role", e.target.value)}
-                    className="w-full border border-[#A65638] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#D97236]"
+                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                     required
                   >
-                    <option value="USER">Usuario</option>
-                    <option value="ADMIN">Administrador</option>
+                    <option value="USER" className="text-black">Usuario</option>
+                    <option value="ADMIN" className="text-black">Administrador</option>
                   </select>
                 </div>
 
@@ -427,19 +427,19 @@ export default function AdminDashboardUsers() {
                   <button
                     type="button"
                     onClick={closeEditModal}
-                    className="px-4 py-2 bg-[#D97236] text-[#40170E] font-semibold rounded-md hover:bg-[#A65638] transition-colors"
+                    className="px-4 py-2 bg-[#48e0af] text-[#294a3f] font-semibold rounded-md hover:bg-[#4ECCA3] transition-colors"
                     disabled={isSaving}
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#40170E] text-[#4ECCA320] font-semibold rounded-md hover:bg-[#2B0F07] flex items-center justify-center space-x-2"
+                    className="px-4 py-2 bg-[#48e0af] text-[#294a3f] font-semibold rounded-md hover:bg-[#4ECCA3] flex items-center justify-center space-x-2"
                     disabled={isSaving}
                   >
                     {isSaving && (
                       <svg
-                        className="animate-spin h-5 w-5 text-[#4ECCA320]"
+                        className="animate-spin h-5 w-5 text-[#e8e8e8]"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
