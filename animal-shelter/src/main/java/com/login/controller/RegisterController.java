@@ -36,6 +36,7 @@ public class RegisterController {
         user.setSurname(request.getSurname());
         user.setPhone(request.getPhone());
         user.setRole(User.Role.USER);
+        user.setNewsletter(request.isNewslatter());
 
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "Usuario registrado con éxito"));

@@ -7,6 +7,7 @@ public class RegisterRequest {
     private String name;
     private String surname;
     private String phone;
+    private boolean newslatter;
 
     // Getters y setters
     public String getUsername() {
@@ -56,4 +57,12 @@ public class RegisterRequest {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+	public boolean isNewslatter() {
+		return newslatter;
+	}
+
+	public void setNewslatter(boolean newslatter) {
+		this.newslatter = newslatter;
+	}
 }
