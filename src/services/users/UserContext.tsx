@@ -10,10 +10,12 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
+    phone: string | null,
+    newsletter: boolean
   ) => Promise<boolean>;
   getToken: () => string | null;
 }
@@ -110,11 +112,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (
+    username: string,
     email: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
+    phone: string | null,
+    newsletter: boolean,
   ): Promise<boolean> => {
     try {
       const token = getToken();
@@ -126,12 +130,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          username: email,
+          username,
           email,
           password,
           name,
           surname,
           phone,
+          newsletter
         }),
       });
 
