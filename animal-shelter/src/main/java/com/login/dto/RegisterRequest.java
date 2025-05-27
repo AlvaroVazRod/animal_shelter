@@ -7,7 +7,7 @@ public class RegisterRequest {
     private String name;
     private String surname;
     private String phone;
-    private boolean newslatter;
+    private boolean newsletter;
 
     // Getters y setters
     public String getUsername() {
@@ -58,11 +58,11 @@ public class RegisterRequest {
         this.phone = phone;
     }
 
-	public boolean isNewslatter() {
-		return newslatter;
+	public boolean isNewsletter() {
+		return newsletter;
 	}
 
-	public void setNewslatter(boolean newslatter) {
-		this.newslatter = newslatter;
+	public void setNewsletter(boolean newsletter) {
+		this.newsletter = newsletter;
 	}
 }
