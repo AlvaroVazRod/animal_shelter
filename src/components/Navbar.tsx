@@ -7,6 +7,7 @@ export const Navbar = () => {
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    
     function handleClickOutside(event: MouseEvent) {
       if (
         profileMenuRef.current &&

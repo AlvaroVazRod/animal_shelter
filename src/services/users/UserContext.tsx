@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../types/User";
@@ -9,6 +10,7 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
@@ -23,17 +25,34 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchCurrentUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:8080/api/usuarios/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Error al obtener el usuario");
+
+      const data = await res.json();
+      setUser({ username: data.username, role: data.role, image: data.image });
+      localStorage.setItem("img", data.image);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error al cargar el usuario:", err);
+      logout();
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-    const role = localStorage.getItem("role");
-    const image = localStorage.getItem("img");
-
-    if (token && username && role) {
-      setUser({ username, role , image: 'users.jpg'});
+    if (token) {
+      fetchCurrentUser();
+    } else {
+      setLoading(false);
     }
-
-    setLoading(false); // ✅ Terminó la comprobación
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
@@ -51,9 +70,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", 'users.jpg');
 
-      setUser({ username, role , image:'users.jpg'});
+      await fetchCurrentUser(); // ⬅️ carga imagen y más datos desde la API
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -76,6 +94,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
@@ -90,7 +109,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username: email, email, password, name, surname, phone }),
+        body: JSON.stringify({ username, email, password, name, surname, phone }),
       });
 
       if (!res.ok) throw new Error((await res.json()).message || "Registro fallido");
