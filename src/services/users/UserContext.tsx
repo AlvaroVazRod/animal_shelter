@@ -10,7 +10,6 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
-    username: string,
     password: string,
     name: string,
     surname: string,
@@ -28,6 +27,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
@@ -35,10 +38,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const image = localStorage.getItem("img");
 
     if (token && username && role) {
-      setUser({ username, role , image: 'users.jpg'});
+      setUser({ username, role, image: image || "" });
     }
 
-    setLoading(false); // ✅ Terminó la comprobación
+    setLoading(false);
   }, []);
 
   const login = async (
@@ -60,9 +63,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", 'users.jpg');
 
-      setUser({ username, role , image:'users.jpg'});
+      // Por defecto, inicializa imagen vacía (debe actualizarse desde /me)
+      setUser({ username, role, image: "" });
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -85,7 +88,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (
     email: string,
-    username: string,
     password: string,
     name: string,
     surname: string,
@@ -100,7 +102,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username: email, email, password, name, surname, phone }),
+        body: JSON.stringify({
+          username: email,
+          email,
+          password,
+          name,
+          surname,
+          phone,
+        }),
       });
 
       if (!res.ok)
@@ -121,7 +130,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         register,
-        getToken, // <-- Exponemos la función aquí
+        getToken,
       }}
     >
       {children}
