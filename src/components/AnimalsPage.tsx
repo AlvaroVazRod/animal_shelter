@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import type { Animal } from "../types/Animals";
 import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
-import { AnimalDetails } from "../components/AnimalDetails"; // Ajusta esta ruta si es necesario
+import { AnimalDetails } from "../components/AnimalDetails";
+
+const PAGE_SIZE = 10;
+const API_URL = "http://localhost:8080/api/animales";
 
 export const AnimalsPage = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [breed, setBreed] = useState<string>("");
-  const [gender, setGender] = useState<string>("");
+  const [breed, setBreed] = useState("");
+  const [gender, setGender] = useState("");
 
-  // Modal
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAnimalClick = (animal: Animal) => {
     setSelectedAnimal(animal);
@@ -26,26 +28,20 @@ export const AnimalsPage = () => {
     setIsModalOpen(false);
   };
 
-  const fetchAnimals = async (
-    pageNumber: number,
-    breed?: string,
-    gender?: string
-  ) => {
+  const fetchAnimals = async (pageNumber: number, breed?: string, gender?: string) => {
     setLoading(true);
     try {
-      const query = new URLSearchParams({
-        page: String(pageNumber),
-        size: "10",
-        ...(breed ? { breed } : {}),
-        ...(gender ? { gender } : {}),
+      const params = new URLSearchParams({
+        page: pageNumber.toString(),
+        size: PAGE_SIZE.toString(),
+        ...(breed && { breed }),
+        ...(gender && { gender }),
       });
 
-      const response = await fetch(
-        `http://localhost:8080/api/animales?${query}`
-      );
-      if (!response.ok) throw new Error("Error al obtener los animales");
-      const data = await response.json();
+      const res = await fetch(`${API_URL}?${params}`);
+      if (!res.ok) throw new Error("Error al obtener los animales");
 
+      const data = await res.json();
       setAnimals(data.content);
       setTotalPages(data.totalPages);
       setPage(data.number);
@@ -66,29 +62,44 @@ export const AnimalsPage = () => {
     }
   };
 
+  const renderAnimalCard = (animal: Animal) => (
+    <div
+      key={animal.id}
+      onClick={() => handleAnimalClick(animal)}
+      className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
+    >
+      <div className="h-48 overflow-hidden">
+        <img
+          src={`http://localhost:8080/images/animal/${animal.image}`}
+          alt={animal.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-4 bg-[#F2DCB3]">
+        <h2 className="text-xl font-bold mb-2 text-[#40170E]">{animal.name}</h2>
+        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Edad: </strong>{animal.age} {animal.age === 1 ? "año" : "años"}</p>
+        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Peso: </strong>{animal.weight} Kg</p>
+        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Sexo: </strong>{animal.gender ? "Masculino" : "Femenino"}</p>
+        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Raza: </strong>{animal.breed}</p>
+      </div>
+    </div>
+  );
+
   return (
     <DefaultPageTemplate>
-      <div
-        className="min-h-screen py-12 px-4 sm:px-6 lg:px-8"
-        style={{ backgroundColor: "#40170E" }}
-      >
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-[#40170E]">
         <div className="max-w-7xl mx-auto mt-6">
-          <h1
-            className="text-4xl font-bold mb-8 text-center"
-            style={{ color: "#F2DCB3" }}
-          >
+          <h1 className="text-4xl font-bold mb-8 text-center text-[#F2DCB3]">
             Nuestros Peludos en Busca de Hogar
           </h1>
 
-          {/* Filtros */}
           <div className="flex justify-center gap-6 mb-10">
             <select
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
-              className="px-4 py-2 rounded font-bold"
-              style={{ color: "#40170E", backgroundColor: "#F2DCB3" }}
+              className="px-4 py-2 rounded font-bold text-[#40170E] bg-[#F2DCB3]"
             >
-              <option value="">Todas las espécies</option>
+              <option value="">Todas las especies</option>
               <option value="perro">Perro</option>
               <option value="gato">Gato</option>
             </select>
@@ -96,8 +107,7 @@ export const AnimalsPage = () => {
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="px-4 py-2 rounded font-bold"
-              style={{ color: "#40170E", backgroundColor: "#F2DCB3" }}
+              className="px-4 py-2 rounded font-bold text-[#40170E] bg-[#F2DCB3]"
             >
               <option value="">Ambos géneros</option>
               <option value="masculino">Masculino</option>
@@ -106,58 +116,15 @@ export const AnimalsPage = () => {
           </div>
 
           {loading ? (
-            <div className="text-2xl text-center text-[#F2DCB3]">
-              Cargando...
-            </div>
+            <p className="text-2xl text-center text-[#F2DCB3]">Cargando...</p>
           ) : error ? (
-            <div className="text-2xl text-center text-red-500">
-              Error: {error}
-            </div>
+            <p className="text-2xl text-center text-red-500">Error: {error}</p>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {animals.map((animal) => (
-                  <div
-                    key={animal.id}
-                    onClick={() => handleAnimalClick(animal)}
-                    className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
-                  >
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={`http://localhost:8080/images/animal/${animal.image}`}
-                        alt={animal.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-4 bg-[#F2DCB3]">
-                      <h2
-                        className="text-xl font-bold mb-2"
-                        style={{ color: "#40170E" }}
-                      >
-                        {animal.name}
-                      </h2>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Edad: </strong>
-                        {animal.age} {animal.age === 1 ? "año" : "años"}
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Peso: </strong>
-                        {animal.weight} Kg
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Sexo: </strong>
-                        {animal.gender}
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Raza: </strong>
-                        {animal.breed}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {animals.map(renderAnimalCard)}
               </div>
 
-              {/* Paginación */}
               <div className="flex justify-center mt-10 gap-4">
                 <button
                   onClick={() => handlePageChange(page - 1)}
