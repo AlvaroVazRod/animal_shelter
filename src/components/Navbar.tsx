@@ -60,6 +60,15 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center">
+            {user && user.role === "ADMIN" && (
+              <a
+                href="/admin"
+                className="hidden md:inline-block px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2 mr-4"
+                style={{ color: "#F2DCB3", backgroundColor: "#96442E" }}
+              >
+                🛠️ Panel Admin
+              </a>
+            )}
             {user ? (
               <div
                 className="flex items-center space-x-3 relative"
@@ -102,7 +111,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         👤 Mi perfil
@@ -115,7 +125,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         ⚙️ Configuración
@@ -131,7 +142,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         🚪 Cerrar sesión

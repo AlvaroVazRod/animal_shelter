@@ -16,46 +16,35 @@ export interface UserContextType {
     surname: string,
     phone: string | null
   ) => Promise<boolean>;
+  getToken: () => string | null;
 }
 
-export const UserContext = createContext<UserContextType | undefined>(undefined);
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined
+);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchCurrentUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/usuarios/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Error al obtener el usuario");
-
-      const data = await res.json();
-      setUser({ username: data.username, role: data.role, image: data.image });
-      localStorage.setItem("img", data.image);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error al cargar el usuario:", err);
-      logout();
-    }
-  };
-
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      fetchCurrentUser();
-    } else {
-      setLoading(false);
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+    const image = localStorage.getItem("img");
+
+    if (token && username && role) {
+      setUser({ username, role , image: 'users.jpg'});
     }
+
+    setLoading(false); // ✅ Terminó la comprobación
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       const res = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -63,15 +52,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) throw new Error((await res.json()).message || "Login fallido");
+      if (!res.ok)
+        throw new Error((await res.json()).message || "Login fallido");
 
       const { token, role } = await res.json();
 
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
+      localStorage.setItem("img", 'users.jpg');
 
-      await fetchCurrentUser(); // ⬅️ carga imagen y más datos desde la API
+      setUser({ username, role , image:'users.jpg'});
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -109,10 +100,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username, email, password, name, surname, phone }),
+        body: JSON.stringify({ username: email, email, password, name, surname, phone }),
       });
 
-      if (!res.ok) throw new Error((await res.json()).message || "Registro fallido");
+      if (!res.ok)
+        throw new Error((await res.json()).message || "Registro fallido");
 
       return true;
     } catch (err) {
@@ -122,7 +114,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, register }}>
+    <UserContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        register,
+        getToken, // <-- Exponemos la función aquí
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
