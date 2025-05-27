@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
                 || user.getUsername().equals(auth.getName())) {
+        	user.setUsername(dto.getUsername()); 
             user.setEmail(dto.getEmail());
             user.setName(dto.getName());
             user.setSurname(dto.getSurname());

@@ -1,15 +1,34 @@
+
 package com.login.dto;
 
-public class RegisterRequest {
-    private String username;
-    private String email;
-    private String password;
-    private String name;
-    private String surname;
-    private String phone;
-    private boolean newsletter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    // Getters y setters
+public class RegisterRequest {
+
+    @NotBlank(message = "El nombre de usuario es obligatorio")
+    private String username;
+
+    @NotBlank(message = "El correo electrónico es obligatorio")
+    @Email(message = "Debe proporcionar un correo válido")
+    private String email;
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    private String password;
+
+    @NotBlank(message = "El nombre es obligatorio")
+    private String name;
+
+    @NotBlank(message = "El apellido es obligatorio")
+    private String surname;
+
+    private String phone;
+
+    private boolean newsletter; 
+
+
     public String getUsername() {
         return username;
     }
@@ -58,11 +77,12 @@ public class RegisterRequest {
         this.phone = phone;
     }
 
-	public boolean isNewsletter() {
-		return newsletter;
-	}
+    public boolean isNewsletter() {
+        return newsletter;
+    }
 
-	public void setNewsletter(boolean newsletter) {
-		this.newsletter = newsletter;
-	}
+    public void setNewsletter(boolean newsletter) {
+        this.newsletter = newsletter;
+    }
 }
+
