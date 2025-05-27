@@ -14,14 +14,20 @@ export interface UserContextType {
     surname: string,
     phone: string | null
   ) => Promise<boolean>;
+  getToken: () => string | null;
 }
 
-export const UserContext = createContext<UserContextType | undefined>(undefined);
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined
+);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,13 +36,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const image = localStorage.getItem("img");
 
     if (token && username && role) {
-      setUser({ username, role , image: 'user.jpg'});
+      setUser({ username, role, image: "users.jpg" });
     }
 
     setLoading(false); // ✅ Terminó la comprobación
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       const res = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -44,16 +53,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) throw new Error((await res.json()).message || "Login fallido");
+      if (!res.ok)
+        throw new Error((await res.json()).message || "Login fallido");
 
       const { token, role } = await res.json();
 
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", 'user.jpg');
+      localStorage.setItem("img", "users.jpg");
 
-      setUser({ username, role , image:'user.jpg'});
+      setUser({ username, role, image: "users.jpg" });
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -90,10 +100,18 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username: email, email, password, name, surname, phone }),
+        body: JSON.stringify({
+          username: email,
+          email,
+          password,
+          name,
+          surname,
+          phone,
+        }),
       });
 
-      if (!res.ok) throw new Error((await res.json()).message || "Registro fallido");
+      if (!res.ok)
+        throw new Error((await res.json()).message || "Registro fallido");
 
       return true;
     } catch (err) {
@@ -103,7 +121,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, register }}>
+    <UserContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        register,
+        getToken, // <-- Exponemos la función aquí
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
