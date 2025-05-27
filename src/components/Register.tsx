@@ -54,13 +54,15 @@ export default function Register() {
 
     if (!formData.nombre.trim()) newErrors.nombre = "Nombre es requerido";
     if (!formData.apellido.trim()) newErrors.apellido = "Apellido es requerido";
-    if (!formData.username.trim()) newErrors.username = "Nombre de usuario es requerido";
+    if (!formData.username.trim())
+      newErrors.username = "Nombre de usuario es requerido";
     if (!formData.email) newErrors.email = "Email es requerido";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = "Email no válido";
 
     if (!formData.password) newErrors.password = "Contraseña es requerida";
-    else if (formData.password.length < 6) //Añadir en un futuro mas requisitos (Upper, Lower, Numbers & Symbols)
+    else if (formData.password.length < 6)
+      //Añadir en un futuro mas requisitos (Upper, Lower, Numbers & Symbols)
       newErrors.password = "Mínimo 6 caracteres";
 
     if (formData.password !== formData.confirmPassword)
@@ -89,7 +91,7 @@ export default function Register() {
         formData.newsletter
       );
       // console.log(formData.email, formData.username, formData.password, formData.nombre, formData.apellido)
-      console.log(res)
+      console.log(res);
       if (res) setIsRegistered(true);
     } catch {
       setErrors({ form: "Error al registrar. Por favor intenta nuevamente." });
@@ -110,10 +112,10 @@ export default function Register() {
             de confirmación.
           </p>
           <button
-            onClick={() => setIsRegistered(false)}
+            onClick={() => navigate("/")}
             className="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-[#D97236] hover:bg-[#A65638] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors"
           >
-            Volver al formulario
+            Volver al inicio
           </button>
         </div>
       </div>
@@ -155,8 +157,9 @@ export default function Register() {
                   type="text"
                   value={formData.nombre}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.nombre ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.nombre ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.nombre && (
                   <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
@@ -176,8 +179,9 @@ export default function Register() {
                   type="text"
                   value={formData.apellido}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.apellido ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.apellido ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.apellido && (
                   <p className="mt-1 text-sm text-red-600">{errors.apellido}</p>
@@ -198,8 +202,9 @@ export default function Register() {
                 autoComplete="username"
                 value={formData.username}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.username ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.username ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
               />
               {errors.username && (
                 <p className="mt-1 text-sm text-red-600">{errors.username}</p>
@@ -219,8 +224,9 @@ export default function Register() {
                 autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.email ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -240,8 +246,9 @@ export default function Register() {
                 type="tel"
                 value={formData.telefono}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.telefono ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.telefono ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 placeholder="+34 123 456 789"
               />
               {errors.telefono && (
@@ -263,8 +270,9 @@ export default function Register() {
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.password ? "border-red-500" : "border-[#A65638]"
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -284,10 +292,11 @@ export default function Register() {
                   type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.confirmPassword
+                  className={`mt-1 block w-full px-3 py-2 border ${
+                    errors.confirmPassword
                       ? "border-red-500"
                       : "border-[#A65638]"
-                    } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">
@@ -318,8 +327,9 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform ${isLoading ? "cursor-not-allowed" : "cursor-pointer"
-                  }`}
+                className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform ${
+                  isLoading ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
               >
                 {isLoading ? (
                   <svg viewBox="0 0 100 100" className="w-full h-full">
