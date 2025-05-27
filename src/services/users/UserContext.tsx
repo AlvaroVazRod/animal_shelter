@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../types/User";
@@ -9,6 +10,7 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
@@ -25,9 +27,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const getToken = () => {
-    return localStorage.getItem("token");
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,7 +35,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const image = localStorage.getItem("img");
 
     if (token && username && role) {
-      setUser({ username, role, image: "users.jpg" });
+      setUser({ username, role , image: 'users.jpg'});
     }
 
     setLoading(false); // ✅ Terminó la comprobación
@@ -61,9 +60,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", "users.jpg");
+      localStorage.setItem("img", 'users.jpg');
 
-      setUser({ username, role, image: "users.jpg" });
+      setUser({ username, role , image:'users.jpg'});
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -86,6 +85,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
@@ -100,14 +100,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          username: email,
-          email,
-          password,
-          name,
-          surname,
-          phone,
-        }),
+        body: JSON.stringify({ username: email, email, password, name, surname, phone }),
       });
 
       if (!res.ok)

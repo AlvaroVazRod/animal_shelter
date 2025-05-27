@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 interface RegisterData {
   nombre: string;
   apellido: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -15,6 +16,7 @@ interface RegisterData {
 interface RegisterErrors {
   nombre?: string;
   apellido?: string;
+  username?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -26,6 +28,7 @@ export default function Register() {
   const [formData, setFormData] = useState<RegisterData>({
     nombre: "",
     apellido: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -51,6 +54,7 @@ export default function Register() {
 
     if (!formData.nombre.trim()) newErrors.nombre = "Nombre es requerido";
     if (!formData.apellido.trim()) newErrors.apellido = "Apellido es requerido";
+    if (!formData.username.trim()) newErrors.username = "Nombre de usuario es requerido";
     if (!formData.email) newErrors.email = "Email es requerido";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = "Email no válido";
@@ -77,6 +81,7 @@ export default function Register() {
     try {
       const res = await register(
         formData.email,
+        formData.username,
         formData.password,
         formData.nombre,
         formData.apellido,
@@ -178,7 +183,28 @@ export default function Register() {
                 )}
               </div>
             </div>
-
+<div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-[#40170E]"
+              >
+                Username*
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="usernamee"
+                autoComplete="username"
+                value={formData.username}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.username ? "border-red-500" : "border-[#A65638]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3]/70 text-[#40170E]`}
+              />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+              )}
+            </div>
             <div>
               <label
                 htmlFor="email"
