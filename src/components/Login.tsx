@@ -58,7 +58,7 @@ export default function Login() {
         localStorage.setItem("isLoggedIn", "true");
 
         const role = localStorage.getItem("role");
-        if (role === "ADMIN") navigate("/admin");
+        if (role === "ADMIN") navigate("/adminU");
         else {
           navigate("/");
           window.location.reload(); // Forzar actualización para reflejar cambios

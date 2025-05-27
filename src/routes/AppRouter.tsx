@@ -6,7 +6,7 @@ import Login from "../components/Login";
 import Register from "../components/Register";
 import { PrivateGuard } from "./PrivateGuard";
 import { AdminGuard } from "./AdminGuard";
-import AdminDashboard from "../pages/MainPage/AdminDashboard";
+import AdminDashboardUsers from "../pages/MainPage/AdminDashboardUsers";
 import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
 import Main from "../components/Main";
@@ -31,7 +31,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
 
                     {/* Rutas solo para admins */}
                     <Route element={<AdminGuard />}>
-                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/adminU" element={<AdminDashboardUsers />} />
                     </Route>
                 </Route>
             </NotFoundRouter>

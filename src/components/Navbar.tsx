@@ -61,7 +61,7 @@ export const Navbar = () => {
           <div className="flex items-center">
             {user && user.role === "ADMIN" && (
               <a
-                href="/admin"
+                href="/adminU"
                 className="hidden md:inline-block px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2 mr-4"
                 style={{ color: "#F2DCB3", backgroundColor: "#96442E" }}
               >
