@@ -103,4 +103,12 @@ public class UserServiceImpl implements UserService {
         }
         return ResponseEntity.status(403).build();
     }
+    
+    @Override
+    public ResponseEntity<UserDto> getByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        return ResponseEntity.ok(mapToDto(user));
+    }
+
 }

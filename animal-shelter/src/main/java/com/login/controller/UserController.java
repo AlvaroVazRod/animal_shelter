@@ -27,6 +27,11 @@ public class UserController {
     public ResponseEntity<UserDto> getById(@PathVariable Long id, Authentication authentication) {
         return userService.getByIdSecure(id, authentication);
     }
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
+        return userService.getByUsername(authentication.getName());
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> update(@PathVariable Long id,

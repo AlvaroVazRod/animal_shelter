@@ -17,4 +17,7 @@ public interface UserService {
     ResponseEntity<Void> deleteSecure(Long id, Authentication authentication);
     
     ResponseEntity<UserDto> updateUserImage(Long id, String filename, Authentication authentication);
+    
+    ResponseEntity<UserDto> getByUsername(String username);
+
 }

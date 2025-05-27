@@ -7,6 +7,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,32 +35,31 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ResponseEntity<String> uploadUserImage(MultipartFile file, String username) {
-        if (username == null || username.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("El nombre de usuario es obligatorio");
-        }
+    public ResponseEntity<String> uploadUserImage(MultipartFile file) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
 
-        Optional<User> optionalUser = userRepository.findByUsername(username.trim());
+        if (file.isEmpty()) return ResponseEntity.badRequest().body("El archivo está vacío");
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.badRequest().body("Usuario no encontrado");
         }
 
         User user = optionalUser.get();
-        String safeFileName = username.trim().replaceAll("[^a-zA-Z0-9_-]", "_") + getExtension(file.getOriginalFilename());
+        String safeFileName = username.replaceAll("[^a-zA-Z0-9_-]", "_") + getExtension(file.getOriginalFilename());
         Path targetLocation = userUploadDir.resolve(safeFileName);
 
         try {
-            if (file.isEmpty()) return ResponseEntity.badRequest().body("El archivo está vacío");
-
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             user.setImage(safeFileName);
             userRepository.save(user);
-
             return ResponseEntity.ok("Imagen guardada como: " + safeFileName);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Error al subir la imagen");
         }
     }
+
 
     @Override
     public ResponseEntity<String> uploadAnimalImage(MultipartFile file) {
