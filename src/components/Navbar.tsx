@@ -81,19 +81,33 @@ export const Navbar = () => {
                   {user.username}
                 </span>
                 <div className="relative">
-                  <button
-                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="focus:outline-none"
-                    aria-label="Menú de perfil"
-                    aria-expanded={isProfileMenuOpen}
-                  >
-                    <img
-                      src={`http://localhost:8080/images/user/${user.image}`}
-                      alt="Foto de perfil"
-                      className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
-                      style={{ borderColor: "#F2DCB3" }}
-                    />
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                      className="focus:outline-none"
+                      aria-label="Menú de perfil"
+                      aria-expanded={isProfileMenuOpen}
+                    >
+                      {user?.image ? (
+                        <img
+                          src={`http://localhost:8080/images/user/${user.image}`}
+                          alt="Avatar"
+                          className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110 border-[#f2dcb3]"
+                        />
+                      ) : (
+                        <div
+                          className="w-10 h-10 rounded-full text-[#f2dcb3] border-[#f2dcb3] text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
+                          style={{
+                            backgroundColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+                            margin: 'auto'
+                          }}
+                        >
+                          {user?.username?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </button>
+                  </div>
+
 
                   {isProfileMenuOpen && (
                     <div
@@ -111,8 +125,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor =
-                            "transparent")
+                        (e.currentTarget.style.backgroundColor =
+                          "transparent")
                         }
                       >
                         👤 Mi perfil
@@ -125,8 +139,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor =
-                            "transparent")
+                        (e.currentTarget.style.backgroundColor =
+                          "transparent")
                         }
                       >
                         ⚙️ Configuración
@@ -142,8 +156,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor =
-                            "transparent")
+                        (e.currentTarget.style.backgroundColor =
+                          "transparent")
                         }
                       >
                         🚪 Cerrar sesión
