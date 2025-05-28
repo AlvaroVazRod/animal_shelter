@@ -1,4 +1,6 @@
 import { useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import type { Animal } from "../types/Animals";
 
 interface AnimalDetailsProps {
@@ -38,27 +40,42 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           {animal.name}
         </h2>
 
-        <img
-          src={`http://localhost:8080/images/animal/${animal.image}`}
-          alt={animal.name}
-          className="w-full h-48 object-cover rounded mb-4"
-        />
+        {/* 🖼 Carrusel de imágenes */}
+        <div className="w-full h-48 overflow-hidden rounded mb-4">
+          <Swiper spaceBetween={10} slidesPerView={1} loop>
+            {animal.images && animal.images.length > 0 ? (
+              animal.images.map((img) => (
+                <SwiperSlide key={img.filename}>
+                  <img
+                    src={`http://localhost:8080/images/animal/${img.filename}`}
+                    alt={animal.name}
+                    className="w-full h-48 object-cover"
+                  />
+                </SwiperSlide>
+              ))
+            ) : (
+              <SwiperSlide>
+                <img
+                  src={`http://localhost:8080/images/animal/${animal.image}`}
+                  alt={animal.name}
+                  className="w-full h-48 object-cover"
+                />
+              </SwiperSlide>
+            )}
+          </Swiper>
+        </div>
 
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Edad:</span>{" "}
-          {animal.age} años
+          <span className="font-semibold text-[#40170E]">Edad:</span> {animal.age} años
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Tamaño:</span>{" "}
-          {animal.weight} kg
+          <span className="font-semibold text-[#40170E]">Tamaño:</span> {animal.weight} kg
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Sexo:</span>{" "}
-          {animal.gender}
+          <span className="font-semibold text-[#40170E]">Sexo:</span> {animal.gender}
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Raza:</span>{" "}
-          {animal.breed}
+          <span className="font-semibold text-[#40170E]">Raza:</span> {animal.breed}
         </p>
 
         {animal.description && (
@@ -80,8 +97,8 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
             </span>
           )}
           <div className="absolute -top-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
-  🆘 Adopción urgente
-</div>
+            🆘 Adopción urgente
+          </div>
           <span className="bg-green-200 text-green-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
             💉 Antirrábica
           </span>
@@ -93,7 +110,6 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           </span>
         </div>
 
-        {/* Estilos de animación añadidos en línea */}
         <style>
           {`
             @keyframes slideInRight {
