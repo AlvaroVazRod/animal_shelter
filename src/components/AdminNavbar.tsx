@@ -5,6 +5,19 @@ export const AdminNavbar = () => {
   const { user, logout } = useUser();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  //Obetener color y color complementario para el user en base a su nombre
+  const getComplementaryColorsFromUsername = (username: string) => {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const baseHue = Math.abs(hash % 360);
+
+    return {
+      base: `hsl(${baseHue}, 70%, 50%)`,
+      complementary: `hsl(${(baseHue + 180) % 360}, 70%, 50%)`, // color complementario
+    };
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -19,9 +32,15 @@ export const AdminNavbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  const { base, complementary } = getComplementaryColorsFromUsername(
+    user?.username || ""
+  );
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 shadow-md" style={{ backgroundColor: "#2D2A32" }}>
+    <nav
+      className="fixed top-0 left-0 w-full z-50 shadow-md"
+      style={{ backgroundColor: "#2D2A32" }}
+    >
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between h-16 px-4">
           <a
@@ -49,8 +68,14 @@ export const AdminNavbar = () => {
             </a>
 
             {user && (
-              <div className="relative flex items-center space-x-3" ref={profileMenuRef}>
-                <span className="text-sm font-medium" style={{ color: "#F5F5F5" }}>
+              <div
+                className="relative flex items-center space-x-3"
+                ref={profileMenuRef}
+              >
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "#F5F5F5" }}
+                >
                   {user.username}
                 </span>
                 <button
@@ -67,10 +92,12 @@ export const AdminNavbar = () => {
                     />
                   ) : (
                     <div
-                      className="w-10 h-10 rounded-full text-[#4ecca3] text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
+                      className="w-10 h-10 rounded-full text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
                       style={{
-                        backgroundColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
-                        margin: 'auto'
+                        backgroundColor: base,
+                        color: complementary,
+                        borderColor: complementary,
+                        margin: "auto",
                       }}
                     >
                       {user?.username?.charAt(0).toUpperCase()}
@@ -81,14 +108,21 @@ export const AdminNavbar = () => {
                 {isProfileMenuOpen && (
                   <div
                     className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1"
-                    style={{ backgroundColor: "#F5F5F5", border: "1px solid #4ECCA3" }}
+                    style={{
+                      backgroundColor: "#F5F5F5",
+                      border: "1px solid #4ECCA3",
+                    }}
                   >
                     <a
                       href="/profile"
                       className="block px-4 py-2 text-sm"
                       style={{ color: "#2D2A32" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0F7F1")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#E0F7F1")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "transparent")
+                      }
                     >
                       👤 Mi perfil
                     </a>
@@ -99,8 +133,12 @@ export const AdminNavbar = () => {
                       }}
                       className="block w-full text-left px-4 py-2 text-sm"
                       style={{ color: "#2D2A32" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#E0F7F1")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#E0F7F1")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "transparent")
+                      }
                     >
                       🚪 Cerrar sesión
                     </button>

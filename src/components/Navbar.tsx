@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "../services/users/useUser";
 
@@ -6,6 +5,19 @@ export const Navbar = () => {
   const { user, logout } = useUser();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  //Obetener color y color complementario para el user en base a su nombre
+  const getComplementaryColorsFromUsername = (username: string) => {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const baseHue = Math.abs(hash % 360);
+
+    return {
+      base: `hsl(${baseHue}, 70%, 50%)`,
+      complementary: `hsl(${(baseHue + 180) % 360}, 70%, 50%)`, // color complementario
+    };
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -20,7 +32,9 @@ export const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  const { base, complementary } = getComplementaryColorsFromUsername(
+    user?.username || ""
+  );
   return (
     <nav
       className="fixed top-0 left-0 w-full z-50 shadow-lg"
@@ -96,10 +110,12 @@ export const Navbar = () => {
                         />
                       ) : (
                         <div
-                          className="w-10 h-10 rounded-full text-[#f2dcb3] border-[#f2dcb3] text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
+                          className="w-10 h-10 rounded-full text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
                           style={{
-                            backgroundColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
-                            margin: 'auto'
+                            backgroundColor: base,
+                            color: complementary,
+                            borderColor: complementary,
+                            margin: "auto",
                           }}
                         >
                           {user?.username?.charAt(0).toUpperCase()}
@@ -107,7 +123,6 @@ export const Navbar = () => {
                       )}
                     </button>
                   </div>
-
 
                   {isProfileMenuOpen && (
                     <div
@@ -125,8 +140,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         👤 Mi perfil
@@ -139,8 +154,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         ⚙️ Configuración
@@ -156,8 +171,8 @@ export const Navbar = () => {
                           (e.currentTarget.style.backgroundColor = "#D9AB73")
                         }
                         onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          "transparent")
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
                         }
                       >
                         🚪 Cerrar sesión
