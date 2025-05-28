@@ -7,6 +7,8 @@ import Register from "../components/Register";
 import { PrivateGuard } from "./PrivateGuard";
 import { AdminGuard } from "./AdminGuard";
 import AdminDashboardUsers from "../pages/MainPage/AdminDashboardUsers";
+//import AdminDashboardAnimals from "../pages/MainPage/AdminDashboardAnimals";
+
 import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
 import Main from "../components/Main";
