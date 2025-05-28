@@ -8,6 +8,7 @@ import { PrivateGuard } from "./PrivateGuard";
 import { AdminGuard } from "./AdminGuard";
 import AdminDashboardUsers from "../pages/MainPage/AdminDashboardUsers";
 import AdminDashboardAnimals from "../pages/MainPage/AdminDashboardAnimals";
+import Donate from "../components/Donate";
 
 import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
@@ -17,28 +18,29 @@ import { AnimalDetails } from "../components/AnimalDetails";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
-    return (
-        <>
-            <NotFoundRouter>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/contacto" element={<Contact />} />
-                {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
-                {/* <Route path="/main" element={<Main />} /> */}
-                <Route path="/animales" element={<AnimalsPage />} />
+  return (
+    <>
+      <NotFoundRouter>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/contacto" element={<Contact />} />
+        {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
+        {/* <Route path="/main" element={<Main />} /> */}
+        <Route path="/animales" element={<AnimalsPage />} />
+        <Route element={<PrivateGuard />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/donate" element={<Donate />} />
 
-                <Route element={<PrivateGuard />}>
-                    <Route path="/profile" element={<Profile />} />
 
-                    {/* Rutas solo para admins */}
-                    <Route element={<AdminGuard />}>
-                        <Route path="/adminU" element={<AdminDashboardUsers />} />
-                         <Route path="/adminP" element={<AdminDashboardAnimals/>} />
-                    </Route>
-                </Route>
-            </NotFoundRouter>
-            {children}
-        </>
-    );
+          {/* Rutas solo para admins */}
+          <Route element={<AdminGuard />}>
+            <Route path="/adminU" element={<AdminDashboardUsers />} />
+            <Route path="/adminP" element={<AdminDashboardAnimals />} />
+          </Route>
+        </Route>
+      </NotFoundRouter>
+      {children}
+    </>
+  );
 };
