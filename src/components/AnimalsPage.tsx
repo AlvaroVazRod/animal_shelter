@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import type { Animal } from "../types/Animals";
 import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
-import { AnimalDetails } from "../components/AnimalDetails"; // Ajusta esta ruta si es necesario
+import { AnimalDetails } from "../components/AnimalDetails";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 export const AnimalsPage = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
@@ -12,7 +14,6 @@ export const AnimalsPage = () => {
   const [breed, setBreed] = useState<string>("");
   const [gender, setGender] = useState<string>("");
 
-  // Modal
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -80,7 +81,6 @@ export const AnimalsPage = () => {
             Nuestros Peludos en Busca de Hogar
           </h1>
 
-          {/* Filtros */}
           <div className="flex justify-center gap-6 mb-10">
             <select
               value={breed}
@@ -129,11 +129,27 @@ export const AnimalsPage = () => {
                         </span>
                       )}
 
-                      <img
-                        src={`http://localhost:8080/images/animal/${animal.image}`}
-                        alt={animal.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <Swiper slidesPerView={1}>
+                        {(animal.images && animal.images.length > 0
+                          ? animal.images.map((img) => (
+                              <SwiperSlide key={img.id}>
+                                <img
+                                  src={`http://localhost:8080/images/animal/${img.filename}`}
+                                  alt={animal.name}
+                                  className="w-full h-48 object-cover"
+                                />
+                              </SwiperSlide>
+                            ))
+                          : [
+                              <SwiperSlide key="default">
+                                <img
+                                  src={`http://localhost:8080/images/animal/${animal.image}`}
+                                  alt={animal.name}
+                                  className="w-full h-48 object-cover"
+                                />
+                              </SwiperSlide>,
+                            ])}
+                      </Swiper>
                     </div>
                     <div className="p-4 bg-[#F2DCB3] ">
                       <h2
@@ -163,7 +179,6 @@ export const AnimalsPage = () => {
                 ))}
               </div>
 
-              {/* Paginación */}
               <div className="flex justify-center mt-10 gap-4">
                 <button
                   onClick={() => handlePageChange(page - 1)}
