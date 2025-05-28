@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import type { Animal } from "../types/Animals";
 
 interface AnimalDetailsProps {
@@ -40,12 +42,11 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           {animal.name}
         </h2>
 
-        {/* 🖼 Carrusel de imágenes */}
         <div className="w-full h-48 overflow-hidden rounded mb-4">
           <Swiper spaceBetween={10} slidesPerView={1} loop>
-            {animal.images && animal.images.length > 0 ? (
-              animal.images.map((img) => (
-                <SwiperSlide key={img.filename}>
+            {(animal.images ?? []).length > 0 ? (
+              (animal.images ?? []).map((img, index) => (
+                <SwiperSlide key={`${animal.id}-${index}`}>
                   <img
                     src={`http://localhost:8080/images/animal/${img.filename}`}
                     alt={animal.name}
@@ -54,7 +55,7 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
                 </SwiperSlide>
               ))
             ) : (
-              <SwiperSlide>
+              <SwiperSlide key={`${animal.id}-default`}>
                 <img
                   src={`http://localhost:8080/images/animal/${animal.image}`}
                   alt={animal.name}
@@ -66,16 +67,20 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
         </div>
 
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Edad:</span> {animal.age} años
+          <span className="font-semibold text-[#40170E]">Edad:</span>{" "}
+          {animal.age} años
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Tamaño:</span> {animal.weight} kg
+          <span className="font-semibold text-[#40170E]">Tamaño:</span>{" "}
+          {animal.weight} kg
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Sexo:</span> {animal.gender}
+          <span className="font-semibold text-[#40170E]">Sexo:</span>{" "}
+          {animal.gender}
         </p>
         <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Raza:</span> {animal.breed}
+          <span className="font-semibold text-[#40170E]">Raza:</span>{" "}
+          {animal.breed}
         </p>
 
         {animal.description && (

@@ -3,7 +3,10 @@ import type { Animal } from "../types/Animals";
 import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
 import { AnimalDetails } from "../components/AnimalDetails";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export const AnimalsPage = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
@@ -123,35 +126,42 @@ export const AnimalsPage = () => {
                     className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
                   >
                     <div className="h-48 overflow-hidden relative">
-                      {animal.status === 'requires_funding' && (
+                      {animal.status === "requires_funding" && (
                         <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
                           PRIORIDAD
                         </span>
                       )}
 
-                      <Swiper slidesPerView={1}>
-                        {(animal.images && animal.images.length > 0
-                          ? animal.images.map((img) => (
-                              <SwiperSlide key={img.id}>
-                                <img
-                                  src={`http://localhost:8080/images/animal/${img.filename}`}
-                                  alt={animal.name}
-                                  className="w-full h-48 object-cover"
-                                />
-                              </SwiperSlide>
-                            ))
-                          : [
-                              <SwiperSlide key="default">
-                                <img
-                                  src={`http://localhost:8080/images/animal/${animal.image}`}
-                                  alt={animal.name}
-                                  className="w-full h-48 object-cover"
-                                />
-                              </SwiperSlide>,
-                            ])}
+                      <Swiper
+                        modules={[Autoplay, Pagination, Navigation]}
+                        slidesPerView={1}
+                        spaceBetween={10}
+                        loop
+                        autoplay={{ delay: 10000, disableOnInteraction: false }}
+                        pagination={{ clickable: true }}
+                      >
+                        {(animal.images ?? []).length > 0 ? (
+                          (animal.images ?? []).map((img, index) => (
+                            <SwiperSlide key={`${animal.id}-${index}`}>
+                              <img
+                                src={`http://localhost:8080/images/animal/${img.filename}`}
+                                alt={animal.name}
+                                className="w-full h-48 object-cover"
+                              />
+                            </SwiperSlide>
+                          ))
+                        ) : (
+                          <SwiperSlide key={`${animal.id}-default`}>
+                            <img
+                              src={`http://localhost:8080/images/animal/${animal.image}`}
+                              alt={animal.name}
+                              className="w-full h-48 object-cover"
+                            />
+                          </SwiperSlide>
+                        )}
                       </Swiper>
                     </div>
-                    <div className="p-4 bg-[#F2DCB3] ">
+                    <div className="p-4 bg-[#F2DCB3]">
                       <h2
                         className="text-xl font-bold mb-2"
                         style={{ color: "#40170E" }}
