@@ -1,74 +1,69 @@
-import { AdminPageTemplate } from "../templates/AdminTemplate";
 import { useEffect, useState, useRef } from "react";
+import { AdminPageTemplate } from "../templates/AdminTemplate";
+import { FiTrash2, FiEdit, FiAlertCircle, FiInfo } from "react-icons/fi";
+import type { Animal } from "../../types/Animals";
 import { useUser } from "../../services/users/useUser";
-import {
-  FiTrash2,
-  FiEdit,
-  FiUser,
-  FiMail,
-  FiPhone,
-} from "react-icons/fi";
 
-interface UserDTO {
-  id: number;
-  username: string;
-  email: string;
-  name: string;
-  surname: string;
-  phone?: string;
-  role: string;
-}
-
-export default function AdminDashboardUsers() {
+export default function AdminDashboardAnimals() {
   const { getToken } = useUser();
-  const [users, setUsers] = useState<UserDTO[]>([]);
+  const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Edición usuarios
-  const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
-  const [editForm, setEditForm] = useState<Partial<UserDTO>>({});
+  // Edición de animales
+  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Animal>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
-
-  const usernameInputRef = useRef<HTMLInputElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Abrir modal con animación y focus
-  const openEditModal = (user: UserDTO) => {
-    setEditingUser(user);
-    setEditForm(user);
+  const openEditModal = (animal: Animal) => {
+    setEditingAnimal(animal);
+    setEditForm(animal);
     setEditError(null);
     setIsModalOpen(true);
-    setTimeout(() => usernameInputRef.current?.focus(), 100);
+    setTimeout(() => nameInputRef.current?.focus(), 100);
   };
 
   // Cerrar modal con animación
   const closeEditModal = () => {
     setIsModalOpen(false);
     setTimeout(() => {
-      setEditingUser(null);
+      setEditingAnimal(null);
       setEditForm({});
       setEditError(null);
     }, 300);
   };
 
-  const handleChange = (field: keyof UserDTO, value: string) => {
+  const handleChange = (field: keyof Animal, value: string) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const fetchUsers = async () => {
+  const fetchAnimals = async (pageNumber: number) => {
+    setLoading(true);
     try {
       const token = getToken();
-      const res = await fetch("http://localhost:8080/api/usuarios", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+      const query = new URLSearchParams({
+        page: String(pageNumber),
+        size: "10",
       });
 
-      if (!res.ok) throw new Error("Error al cargar usuarios");
-
-      const data = await res.json();
-      setUsers(data);
+      const response = await fetch(
+        `http://localhost:8080/api/animales?${query.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      
+      if (!response.ok) throw new Error("Error al obtener los animales");
+      const data = await response.json();
+      setAnimals(data.content);
+      setTotalPages(data.totalPages);
+      setPage(data.number);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
@@ -76,34 +71,40 @@ export default function AdminDashboardUsers() {
     }
   };
 
-  const deleteUser = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar este usuario?")) return;
+  const deleteAnimal = async (id: number) => {
+    if (!window.confirm("¿Estás seguro de eliminar este animal?")) return;
 
     try {
       const token = getToken();
-      const response = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/animales/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) throw new Error("Error al eliminar usuario");
+      if (!response.ok) throw new Error("Error al eliminar animal");
 
-      setUsers((prev) => prev.filter((u) => u.id !== id));
+      setAnimals((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al eliminar usuario");
+      setError(err instanceof Error ? err.message : "Error al eliminar animal");
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchAnimals(0);
   }, []);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      fetchAnimals(newPage);
+    }
+  };
 
   if (loading) {
     return (
       <AdminPageTemplate>
         <div className="flex justify-center items-center h-64">
           <div className="text-2xl" style={{ color: "#4ECCA320" }}>
-            Cargando usuarios...
+            Cargando animales...
           </div>
         </div>
       </AdminPageTemplate>
@@ -132,14 +133,14 @@ export default function AdminDashboardUsers() {
               Panel de Administración
             </h1>
             <p className="text-lg" style={{ color: "#e8e8e8" }}>
-              Gestión de usuarios registrados
+              Gestión de animales registrados
             </p>
           </div>
 
-          {users.length === 0 ? (
+          {animals.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-xl" style={{ color: "#4ECCA320" }}>
-                No hay usuarios registrados
+                No hay animales registrados
               </p>
             </div>
           ) : (
@@ -152,7 +153,7 @@ export default function AdminDashboardUsers() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
-                        Usuario
+                        Animal
                       </th>
                       <th
                         scope="col"
@@ -164,7 +165,13 @@ export default function AdminDashboardUsers() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
                       >
-                        Rol
+                        Prioridad
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider"
+                      >
+                        Estado
                       </th>
                       <th
                         scope="col"
@@ -175,22 +182,22 @@ export default function AdminDashboardUsers() {
                     </tr>
                   </thead>
                   <tbody className="bg-[#4ECCA320]/80 divide-y divide-[#a4ebd4]/30">
-                    {users.map((user) => (
+                    {animals.map((animal) => (
                       <tr
-                        key={user.id}
+                        key={animal.id}
                         className="hover:bg-[#4ECCA320] transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#4ECCA3] flex items-center justify-center text-[#e8e8e8]">
-                              <FiUser className="h-5 w-5" />
+                              <FiInfo className="h-5 w-5" />
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-[#e8e8e8]">
-                                {user.username}
+                                {animal.name}
                               </div>
                               <div className="text-sm text-[#e8e8e8]/80">
-                                ID: {user.id}
+                                ID: {animal.id}
                               </div>
                             </div>
                           </div>
@@ -198,44 +205,45 @@ export default function AdminDashboardUsers() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-[#e8e8e8]">
                             <div className="flex items-center">
-                              <FiMail className="mr-2 text-[#a4ebd4]" />
-                              {user.email}
+                              <span className="mr-2 text-[#a4ebd4]">Especie:</span>
+                              {animal.species}
                             </div>
                             <div className="flex items-center mt-1">
-                              <FiUser className="mr-2 text-[#a4ebd4]" />
-                              {user.name} {user.surname}
+                              <span className="mr-2 text-[#a4ebd4]">Raza:</span>
+                              {animal.breed}
                             </div>
-                            {user.phone && (
-                              <div className="flex items-center mt-1">
-                                <FiPhone className="mr-2 text-[#a4ebd4]" />
-                                {user.phone}
-                              </div>
-                            )}
+                            <div className="flex items-center mt-1">
+                              <span className="mr-2 text-[#a4ebd4]">Edad:</span>
+                              {animal.age} años
+                            </div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              user.role === "ADMIN"
+                              animal.status === "disponible"
                                 ? "bg-[#a4ebd4] text-[#3d5950]"
                                 : "bg-[#a4ebad] text-[#3d5950]"
                             }`}
                           >
-                            {user.role}
+                            {animal.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={() => deleteUser(user.id)}
+                            onClick={() => deleteAnimal(animal.id)}
                             className="text-[#7ddb8f] hover:text-red-600 mr-4 transition-colors"
-                            title="Eliminar usuario"
+                            title="Eliminar animal"
                           >
                             <FiTrash2 className="h-5 w-5" />
                           </button>
                           <button
                             className="text-[#7ddb8f] hover:text-[#7ddbc8] transition-colors"
-                            title="Editar usuario"
-                            onClick={() => openEditModal(user)}
+                            title="Editar animal"
+                            onClick={() => openEditModal(animal)}
                           >
                             <FiEdit className="h-5 w-5" />
                           </button>
@@ -245,12 +253,43 @@ export default function AdminDashboardUsers() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Paginación */}
+              <div className="flex justify-between items-center px-6 py-4 bg-[#4ECCA3]/20 border-t border-[#4ECCA3]/50">
+                <div className="text-sm text-[#e8e8e8]">
+                  Mostrando página {page + 1} de {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 0}
+                    className={`px-4 py-2 rounded-md font-semibold ${
+                      page === 0
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-[#48e0af] text-[#294a3f] hover:bg-[#4ECCA3]"
+                    } transition-colors`}
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page + 1 >= totalPages}
+                    className={`px-4 py-2 rounded-md font-semibold ${
+                      page + 1 >= totalPages
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-[#48e0af] text-[#294a3f] hover:bg-[#4ECCA3]"
+                    } transition-colors`}
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         {/* Modal edición */}
-        {editingUser && (
+        {editingAnimal && (
           <div
             className={`fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50
               transition-opacity duration-600 ease-out
@@ -264,7 +303,7 @@ export default function AdminDashboardUsers() {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-2xl font-bold mb-4 text-[#e8e8e8]">
-                Editar Usuario
+                Editar Animal
               </h3>
 
               <form
@@ -275,7 +314,7 @@ export default function AdminDashboardUsers() {
                   try {
                     const token = getToken();
                     const response = await fetch(
-                      `http://localhost:8080/api/usuarios/${editingUser.id}`,
+                      `http://localhost:8080/api/animales/${editingAnimal.id}`,
                       {
                         method: "PUT",
                         headers: {
@@ -286,11 +325,11 @@ export default function AdminDashboardUsers() {
                       }
                     );
                     if (!response.ok)
-                      throw new Error("Error al actualizar usuario");
+                      throw new Error("Error al actualizar animal");
 
-                    const updatedUser = await response.json();
-                    setUsers((prev) =>
-                      prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+                    const updatedAnimal = await response.json();
+                    setAnimals((prev) =>
+                      prev.map((a) => (a.id === updatedAnimal.id ? updatedAnimal : a))
                     );
                     closeEditModal();
                   } catch (error) {
@@ -306,54 +345,36 @@ export default function AdminDashboardUsers() {
               >
                 <div className="mb-4">
                   <label
-                    htmlFor="username"
+                    htmlFor="name"
                     className="block text-[#e8e8e8] font-semibold mb-1"
                   >
-                    Usuario
+                    Nombre
                   </label>
                   <input
                     type="text"
-                    id="username"
-                    value={editForm.username || ""}
-                    onChange={(e) => handleChange("username", e.target.value)}
+                    id="name"
+                    value={editForm.name || ""}
+                    onChange={(e) => handleChange("name", e.target.value)}
                     className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
                       focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
-                    ref={usernameInputRef}
+                    ref={nameInputRef}
                     required
                   />
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-[#e8e8e8] font-semibold mb-1"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={editForm.email || ""}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4 grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <label
-                      htmlFor="name"
+                      htmlFor="species"
                       className="block text-[#e8e8e8] font-semibold mb-1"
                     >
-                      Nombre
+                      Especie
                     </label>
                     <input
                       type="text"
-                      id="name"
-                      value={editForm.name || ""}
-                      onChange={(e) => handleChange("name", e.target.value)}
+                      id="species"
+                      value={editForm.species || ""}
+                      onChange={(e) => handleChange("species", e.target.value)}
                       className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
                         focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                       required
@@ -362,16 +383,16 @@ export default function AdminDashboardUsers() {
 
                   <div>
                     <label
-                      htmlFor="surname"
+                      htmlFor="breed"
                       className="block text-[#e8e8e8] font-semibold mb-1"
                     >
-                      Apellido
+                      Raza
                     </label>
                     <input
                       type="text"
-                      id="surname"
-                      value={editForm.surname || ""}
-                      onChange={(e) => handleChange("surname", e.target.value)}
+                      id="breed"
+                      value={editForm.breed || ""}
+                      onChange={(e) => handleChange("breed", e.target.value)}
                       className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
                         focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
                       required
@@ -379,22 +400,69 @@ export default function AdminDashboardUsers() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label
+                      htmlFor="age"
+                      className="block text-[#e8e8e8] font-semibold mb-1"
+                    >
+                      Edad
+                    </label>
+                    <input
+                      type="number"
+                      id="age"
+                      value={editForm.age || ""}
+                      onChange={(e) => handleChange("age", e.target.value)}
+                      className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                        focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
+                      required
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="priority"
+                      className="block text-[#e8e8e8] font-semibold mb-1"
+                    >
+                      Prioridad
+                    </label>
+                    <select
+                      id="priority"
+                      value={editForm.priority || ""}
+                      onChange={(e) => handleChange("priority", e.target.value)}
+                      className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                        focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8] bg-[#2D2A32]"
+                      required
+                    >
+                      <option value="">Seleccionar...</option>
+                      <option value="alta">Alta</option>
+                      <option value="media">Media</option>
+                      <option value="baja">Baja</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="mb-4">
                   <label
-                    htmlFor="phone"
+                    htmlFor="status"
                     className="block text-[#e8e8e8] font-semibold mb-1"
                   >
-                    Teléfono
+                    Estado
                   </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={editForm.phone || ""}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                    className=" w-full border border-[#4ECCA3] rounded-md px-3 py-2
-                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8]"
-                    placeholder="Opcional"
-                  />
+                  <select
+                    id="status"
+                    value={editForm.status || ""}
+                    onChange={(e) => handleChange("status", e.target.value)}
+                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2
+                      focus:outline-none focus:ring-2 focus:ring-[#5ae8ba] text-[#e8e8e8] bg-[#2D2A32]"
+                    required
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="adoptado">Adoptado</option>
+                    <option value="en_proceso">En proceso</option>
+                  </select>
                 </div>
 
                 {editError && (
