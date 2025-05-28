@@ -4,12 +4,13 @@ import { UserProvider } from "./services/users/UserContext";
 
 function App() {
   return (
+    <BrowserRouter>
       <UserProvider>
         <AppRouter>
           <></>
         </AppRouter>
       </UserProvider>
-
+    </BrowserRouter>
   );
 }
 
