@@ -28,16 +28,11 @@ export const Contact = () => {
 
   return (
     <DefaultPageTemplate>
-      <section className="relative bg-[#40170E] min-h-screen py-12 px-4 pt-8"
-        style={{
-          backgroundImage: "url('./mainBgBlur.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}>
+      <section className="relative bg-[#40170E] min-h-screen py-12 px-4 pt-8">
         {/* Contenedor principal */}
         <div className="max-w-6xl mx-auto pt-15">
           {/* Título */}
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 text-[#40170E]">
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 text-[#F2DCB3]">
             Contacta con nosotros
           </h1>
 
