@@ -21,10 +21,19 @@ export interface Animal {
   surgery?: boolean;
   specialNeeds?: boolean;
   images?: AnimalImage[];
+  tags?: AnimalTag[];
 }
 export interface AnimalImage {
   id: number;
   filename: string;
   fechaSubida?: string;
   animalId?: number;
+}
+
+interface AnimalTag{
+  id: number;
+  name: string;
+  description: string;
+  color: string;
+  url: string;
 }

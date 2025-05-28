@@ -30,6 +30,22 @@ export const AnimalsPage = () => {
     setIsModalOpen(false);
   };
 
+    const getAnimalsTags = async (animals: Animal[]) => {
+    const animalsWithTags = await Promise.all(
+      animals.map(async (animal) => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/tags/animal/${animal.id}`);
+          const tags = await response.json();
+          return { ...animal, tags }; // añade tags al animal
+        } catch (error) {
+          console.error(`Error al obtener tags para animal ${animal.id}`, error);
+          return { ...animal, tags: [] }; // fallback si hay error
+        }
+      })
+    );
+    return animalsWithTags;
+  };
+
   const fetchAnimals = async (
     pageNumber: number,
     species?: string,
@@ -50,7 +66,9 @@ export const AnimalsPage = () => {
       if (!response.ok) throw new Error("Error al obtener los animales");
       const data = await response.json();
 
-      setAnimals(data.content);
+      const formatedData = await getAnimalsTags(data.content);
+      console.log(formatedData)
+      setAnimals(formatedData);
       setTotalPages(data.totalPages);
       setPage(data.number);
     } catch (err) {
