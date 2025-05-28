@@ -59,12 +59,23 @@ export const AdminNavbar = () => {
                   aria-label="Menú de perfil"
                   aria-expanded={isProfileMenuOpen}
                 >
-                  <img
-                    src={`http://localhost:8080/images/user/${user.image}`}
-                    alt="Foto de perfil"
-                    className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110"
-                    style={{ borderColor: "#4ECCA3" }}
-                  />
+                  {user?.image ? (
+                    <img
+                      src={`http://localhost:8080/images/user/${user.image}`}
+                      alt="Avatar"
+                      className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110 border-[#4ecca3]"
+                    />
+                  ) : (
+                    <div
+                      className="w-10 h-10 rounded-full text-[#4ecca3] text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
+                      style={{
+                        backgroundColor: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+                        margin: 'auto'
+                      }}
+                    >
+                      {user?.username?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </button>
 
                 {isProfileMenuOpen && (

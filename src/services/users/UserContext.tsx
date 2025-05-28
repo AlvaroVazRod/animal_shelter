@@ -16,9 +16,15 @@ export interface UserContextType {
     surname: string,
     phone: string | null,
     newsletter: boolean
-  ) => Promise<boolean>;
+  ) => Promise<RegisterResult>;
   getToken: () => string | null;
 }
+
+type RegisterResult = {
+  success: boolean;
+  data?: any;      // Puedes poner aquí un tipo más específico si sabes qué devuelve tu backend
+  error?: string;
+};
 
 export const UserContext = createContext<UserContextType | undefined>(
   undefined
@@ -119,7 +125,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     surname: string,
     phone: string | null,
     newsletter: boolean,
-  ): Promise<boolean> => {
+  ): Promise<RegisterResult> => {
     try {
       const token = getToken();
 
@@ -140,13 +146,24 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       });
 
-      if (!res.ok)
-        throw new Error((await res.json()).message || "Registro fallido");
+      const responseBody = await res.json();
 
-      return true;
-    } catch (err) {
-      console.error("Error al registrar:", err);
-      return false;
+      if (!res.ok) {
+        return {
+          success: false,
+          error: responseBody.error || 'Error inesperado al registrar',
+        };
+      }
+
+      return {
+        success: true,
+        data: responseBody, // por si quieres usar lo que devuelve el servidor
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.message || 'Error inesperado al registrar',
+      };
     }
   };
 
