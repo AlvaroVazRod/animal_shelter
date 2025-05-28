@@ -1,15 +1,19 @@
 export const Main = () => {
   return (
     <div
-      className="relative z-0 min-h-screen bg-cover bg-center px-4"
-      style={{
-        backgroundImage: "url('./mainBg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/20"></div>
+      className="relative z-0 min-h-screen bg-black px-4 overflow-hidden">
+      <video
+        className="absolute inset-0 w-full h-full object-cover z-[-1]"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/main_video_bg.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
+
+      <div className="absolute inset-0 bg-black/50"></div>
 
       <div className="relative z-15 flex flex-col md:flex-row items-center justify-center min-h-screen gap-10 p-15">
         {/* Título animado línea por línea */}

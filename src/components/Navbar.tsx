@@ -65,12 +65,13 @@ export const Navbar = () => {
             >
               Contacto
             </a>
-            <button
+            <a
+            href="/donate"
               className="px-3 py-1 rounded transition duration-300 hover:scale-107 hover:rotate-2"
               style={{ color: "#F2DCB3", backgroundColor: "#e37739" }}
             >
               🐾 Donar
-            </button>
+            </a>
           </div>
 
           <div className="flex items-center">
