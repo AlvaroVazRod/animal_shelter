@@ -19,13 +19,19 @@ export const Donate = () => {
     }
 
     const stripe = await stripePromise;
-    const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: finalAmount }),
-    });
+const res = await fetch("http://localhost:8080/api/donaciones/checkout", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    amount: finalAmount,
+    success_url: window.location.origin + "/success",
+    cancel_url: window.location.origin + "/cancel",
+    // id_user: idUsuario, // opcional si tienes el ID del usuario logueado
+    // id_animal: idAnimal  // opcional si se está donando a un animal
+  }),
+});
 
     const session = await res.json();
 
