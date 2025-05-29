@@ -37,38 +37,37 @@ export const Navbar = () => {
   );
   return (
     <nav
-      className="fixed top-0 left-0 w-full z-50 shadow-lg"
-      style={{ backgroundColor: "#A65638" }}
-    >
+      className="fixed top-0 left-0 w-full z-50 shadow-lg bg-[#f5f5f5]">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between h-16 whitespace-nowrap">
           <a
             href="/"
-            className="text-xl font-bold px-3 py-1 rounded-lg shadow-md transition duration-300 hover:scale-115"
-            style={{ color: "#F2DCB3", backgroundColor: "#D97236" }}
-          >
+            className="text-xl font-bold px-3 py-1 transition duration-300 hover:scale-115 hover:text-[#AD03CB]">
             🐶 Protectora
           </a>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-9">
             <a
               href="/animales"
-              className="px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2"
-              style={{ color: "#F2DCB3", backgroundColor: "#D97236" }}
+              className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
             >
               Mascotas
             </a>
+
+            <div className="w-px h-5 bg-[#AD03CB]/40" />
+
             <a
               href="/contacto"
-              className="px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2"
-              style={{ color: "#F2DCB3", backgroundColor: "#D97236" }}
+              className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
             >
               Contacto
             </a>
+
+            <div className="w-px h-5 bg-[#AD03CB]/40" />
+
             <a
-            href="/donate"
-              className="px-3 py-1 rounded transition duration-300 hover:scale-107 hover:rotate-2"
-              style={{ color: "#F2DCB3", backgroundColor: "#e37739" }}
+              href="/donate"
+              className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
             >
               🐾 Donar
             </a>
@@ -79,7 +78,7 @@ export const Navbar = () => {
               <a
                 href="/adminU"
                 className="hidden md:inline-block px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2 mr-4"
-                style={{ color: "#F2DCB3", backgroundColor: "#96442E" }}
+                style={{ color: "#f5f5f5", backgroundColor: "#AD03CB" }}
               >
                 🛠️ Panel Admin
               </a>
@@ -91,7 +90,7 @@ export const Navbar = () => {
               >
                 <span
                   className="text-sm font-medium"
-                  style={{ color: "#F2DCB3" }}
+                  style={{ color: "#AD03CB" }}
                 >
                   {user.username}
                 </span>
@@ -107,7 +106,7 @@ export const Navbar = () => {
                         <img
                           src={`http://localhost:8080/images/user/${user.image}`}
                           alt="Avatar"
-                          className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110 border-[#f2dcb3]"
+                          className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110 border-[#AD03CB]"
                         />
                       ) : (
                         <div
@@ -130,7 +129,7 @@ export const Navbar = () => {
                       className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1"
                       style={{
                         backgroundColor: "#F2DCB3",
-                        border: "1px solid #D97236",
+                        border: "1px solidrgb(208, 0, 187)",
                       }}
                     >
                       <a
@@ -186,20 +185,20 @@ export const Navbar = () => {
               <>
                 <a href="/login">
                   <button
-                    className="group relative px-4 py-1 rounded-full text-sm font-bold shadow-md transition duration-300 hover:scale-105 overflow-hidden mr-2"
-                    style={{ color: "#40170E", backgroundColor: "#F2DCB3" }}
+                    className="group relative px-4 py-1  text-sm font-bold transition duration-300 hover:scale-105 overflow-hidden mr-2"
+                    style={{ color: "#AD03CB"}}
                   >
                     <span className="relative z-10">Iniciar sesión</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#F2DCB3] via-[#F8E8C9] to-[#FFF4E0] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </button>
                 </a>
                 <a href="/register">
                   <button
-                    className="group relative px-4 py-1 rounded-full text-sm font-bold shadow-md transition duration-300 hover:scale-105 overflow-hidden"
-                    style={{ color: "#40170E", backgroundColor: "#F2DCB3" }}
+                    className="group relative px-4 py-1 text-sm font-bold transition duration-300 hover:scale-105 overflow-hidden"
+                    style={{ color: "#AD03CB"}}
                   >
                     <span className="relative z-10">Registrarse</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#F2DCB3] via-[#F8E8C9] to-[#FFF4E0] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </button>
                 </a>
               </>
