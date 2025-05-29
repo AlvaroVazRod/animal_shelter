@@ -124,9 +124,9 @@ export const AnimalsPage = () => {
                     onClick={() => handleAnimalClick(animal)}
                     className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                   >
-                    <div className="h-48 overflow-hidden relative">
+                    <div className="h-48 overflow-hidden relative ">
                       {animal.status === "requires_funding" && (
-                        <span className="absolute top-2 left-2 bg-red-700 text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wide shadow-md">
+                        <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded z-10">
                           PRIORIDAD
                         </span>
                       )}

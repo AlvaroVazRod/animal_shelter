@@ -18,33 +18,40 @@ export const Profile = () => {
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+const handleUpload = async () => {
+  if (!selectedFile) return;
 
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    try {
-      const res = await fetch("http://localhost:8080/images/upload/user", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
+  setIsLoading(true);
+  setUploadStatus(null);
 
-      if (!res.ok) throw new Error("Error al subir la imagen");
+  const formData = new FormData();
+  formData.append("file", selectedFile);
 
-      setUploadStatus("✅ Imagen subida correctamente");
-      // Recargar para mostrar la nueva imagen
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (err) {
-      setUploadStatus("❌ Error al subir la imagen");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    const res = await fetch("http://localhost:8080/images/upload/user", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+      body: formData,
+    });
+
+    const text = await res.text();
+
+    if (!res.ok) throw new Error(text);
+
+    setUploadStatus(`✅ ${text}`);
+    // Recargar para mostrar la nueva imagen
+    setTimeout(() => window.location.reload(), 1500);
+  } catch (err: any) {
+    const errorMsg = err?.message || "Error al subir la imagen";
+    setUploadStatus(`❌ ${errorMsg}`);
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleLogout = () => {
     logout();

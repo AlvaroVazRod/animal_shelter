@@ -66,54 +66,57 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           </Swiper>
         </div>
 
-        <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Edad:</span>{" "}
-          {animal.age} años
-        </p>
-        <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Tamaño:</span>{" "}
-          {animal.weight} kg
-        </p>
-        <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Sexo:</span>{" "}
-          {animal.gender}
-        </p>
-        <p className="text-sm text-gray-700 mb-2">
-          <span className="font-semibold text-[#40170E]">Raza:</span>{" "}
-          {animal.breed}
-        </p>
+        
+        <div className="flex flex-col gap-4">
+  {/* Subcontenedor de Datos y Chips */}
+  <div className="flex flex-row gap-4">
+    {/* Datos del Animal */}
+    <div className="flex-1">
+      <p className="text-sm text-gray-700 mb-2">
+        <span className="font-semibold text-[#40170E]">Edad:</span> {animal.age} años
+      </p>
+      <p className="text-sm text-gray-700 mb-2">
+        <span className="font-semibold text-[#40170E]">Tamaño:</span> {animal.weight} kg
+      </p>
+      <p className="text-sm text-gray-700 mb-2">
+        <span className="font-semibold text-[#40170E]">Sexo:</span> {animal.gender}
+      </p>
+      <p className="text-sm text-gray-700 mb-2">
+        <span className="font-semibold text-[#40170E]">Raza:</span> {animal.breed}
+      </p>
+    </div>
 
-        {animal.description && (
-          <p className="text-sm text-gray-700">
-            <span className="font-semibold text-[#40170E]">Descripción:</span>{" "}
-            {animal.description}
-          </p>
-        )}
+    {/* Chips */}
+    <div className="flex flex-wrap gap-2 items-start">
+      {animal.species.toLowerCase().includes("dog") && (
+        <span className="bg-orange-200 text-orange-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
+          🐶 Perro
+        </span>
+      )}
+      {animal.species.toLowerCase().includes("cat") && (
+        <span className="bg-yellow-200 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
+          🐱 Gato
+        </span>
+      )}
+      <span className="bg-green-200 text-green-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
+        💉 Antirrábica
+      </span>
+      <span className="bg-blue-200 text-blue-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
+        🏥 Cirugía realizada
+      </span>
+      <span className="bg-purple-200 text-purple-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
+        🌟 Cuidados especiales
+      </span>
+    </div>
+  </div>
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          {animal.breed.toLowerCase().includes("perro") && (
-            <span className="bg-orange-200 text-orange-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
-              🐶 Perro
-            </span>
-          )}
-          {animal.breed.toLowerCase().includes("gato") && (
-            <span className="bg-yellow-200 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
-              🐱 Gato
-            </span>
-          )}
-          <div className="absolute -top-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
-            🆘 Adopción urgente
-          </div>
-          <span className="bg-green-200 text-green-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
-            💉 Antirrábica
-          </span>
-          <span className="bg-blue-200 text-blue-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
-            🏥 Cirugía realizada
-          </span>
-          <span className="bg-purple-200 text-purple-800 text-xs font-medium px-3 py-1 rounded-full animate-slide-in">
-            🌟 Cuidados especiales
-          </span>
-        </div>
+  {/* Botones */}
+  <div className="flex justify-center gap-4 mt-4">
+    <button className="bg-[#D97236] text-white px-4 py-2 rounded">Apadrinar</button>
+    <button className="bg-[#D97236] text-white px-4 py-2 rounded">Adóptame</button>
+    <button className="bg-[#D97236] text-white px-4 py-2 rounded">Dóname</button>
+  </div>
+</div>
 
         <style>
           {`
