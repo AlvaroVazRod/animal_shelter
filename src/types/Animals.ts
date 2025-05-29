@@ -30,10 +30,10 @@ export interface AnimalImage {
   animalId?: number;
 }
 
-interface AnimalTag{
+export interface AnimalTag{
   id: number;
   name: string;
   description: string;
   color: string;
-  url: string;
+  icon: string;
 }

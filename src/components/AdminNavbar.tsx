@@ -66,6 +66,13 @@ export const AdminNavbar = () => {
             >
               Panel Mascotas
             </a>
+                        <a
+              href="/adminT"
+              className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
+              style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+            >
+              Panel Etiquetas
+            </a>
 
             {user && (
               <div

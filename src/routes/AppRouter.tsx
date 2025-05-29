@@ -15,6 +15,7 @@ import Contact from "../components/Contact";
 import Main from "../components/Main";
 import AnimalsPage from "../components/AnimalsPage";
 import { AnimalDetails } from "../components/AnimalDetails";
+import AdminDashboardTags from "../pages/MainPage/AdminDashboardTags";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -37,6 +38,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
           <Route element={<AdminGuard />}>
             <Route path="/adminU" element={<AdminDashboardUsers />} />
             <Route path="/adminP" element={<AdminDashboardAnimals />} />
+            <Route path="/adminT" element={<AdminDashboardTags />} />
           </Route>
         </Route>
       </NotFoundRouter>
