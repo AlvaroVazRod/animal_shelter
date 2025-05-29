@@ -27,7 +27,12 @@ public class TagController {
     public ResponseEntity<TagDto> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.getTagById(id));
     }
-
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<TagDto> updateTag(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        return ResponseEntity.ok(tagService.updateTag(id, tagDto));
+    }
+    
     @PostMapping
     public ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) {
         return ResponseEntity.ok(tagService.createTag(tagDto));

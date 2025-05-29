@@ -37,6 +37,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/images/animal/**").permitAll().requestMatchers("/images/user/**")
 								.permitAll().requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
+								.requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
 								.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.PUT, "/api/animales/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.DELETE, "/api/animales/**").hasRole("ADMIN")

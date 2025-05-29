@@ -12,4 +12,5 @@ public interface TagService {
     List<TagDto> getTagsByAnimalId(Long animalId);
     void addTagToAnimal(Long animalId, Long tagId);
     void removeTagFromAnimal(Long animalId, Long tagId);
+    TagDto updateTag(Long id, TagDto tagDto);
 }

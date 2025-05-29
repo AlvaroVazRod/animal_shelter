@@ -65,4 +65,15 @@ public class TagServiceImpl implements TagService {
     public void removeTagFromAnimal(Long animalId, Long tagId) {
         tagRepository.deleteAnimalTagRelation(animalId, tagId);
     }
+    @Override
+    public TagDto updateTag(Long id, TagDto tagDto) {
+        Tag existingTag = tagRepository.findById(id).orElseThrow(() -> new RuntimeException("Tag no encontrada"));
+
+        existingTag.setName(tagDto.getName());
+        existingTag.setDescription(tagDto.getDescription());
+        existingTag.setColor(tagDto.getColor());
+        existingTag.setIcon(tagDto.getIcon());
+
+        return TagMapper.toDto(tagRepository.save(existingTag));
+    }
 }
