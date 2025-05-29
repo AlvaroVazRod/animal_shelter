@@ -40,6 +40,9 @@ public class SecurityConfig {
 								.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.PUT, "/api/animales/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.DELETE, "/api/animales/**").hasRole("ADMIN")
+								.requestMatchers(HttpMethod.POST, "/api/tags/**").hasRole("ADMIN")
+								.requestMatchers(HttpMethod.PUT, "/api/tags/**").hasRole("ADMIN")
+								.requestMatchers(HttpMethod.DELETE, "/api/tags/**").hasRole("ADMIN")
 								.requestMatchers("/api/usuarios").hasRole("ADMIN")
 								.requestMatchers("/auth/**", "/api/stripe/**", "/v3/api-docs/**", "/swagger-ui/**",
 										"/swagger-ui.html")

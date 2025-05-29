@@ -4,6 +4,7 @@ import com.login.dto.AnimalDto;
 import com.login.dto.AnimalImageDto;
 import com.login.exception.ResourceNotFoundException;
 import com.login.model.Animal;
+import com.login.model.AnimalImage;
 import com.login.repository.AnimalRepository;
 import com.login.service.AnimalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,12 +84,19 @@ public class AnimalServiceImpl implements AnimalService {
     public ResponseEntity<AnimalDto> getDtoById(Long id) {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+
+        if (animal.getImages() != null) {
+            animal.getImages().size();
+        }
+
         return ResponseEntity.ok(mapToDto(animal));
     }
 
     @Override
     public ResponseEntity<AnimalDto> createDto(AnimalDto dto) {
-        Animal saved = animalRepository.save(mapToEntity(dto));
+        Animal animal = mapToEntity(dto);
+        setAnimalImages(animal, dto.getImages()); 
+        Animal saved = animalRepository.save(animal);
         return ResponseEntity.ok(mapToDto(saved));
     }
 
@@ -108,6 +116,11 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setSpecies(dto.getSpecies());
         animal.setBreed(dto.getBreed());
         animal.setCollected(dto.getCollected());
+        animal.setAdoptionPrice(dto.getAdoptionPrice());
+        animal.setSponsorPrice(dto.getSponsorPrice());
+        animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+
+        setAnimalImages(animal, dto.getImages());
 
         return ResponseEntity.ok(mapToDto(animalRepository.save(animal)));
     }
@@ -141,6 +154,8 @@ public class AnimalServiceImpl implements AnimalService {
         else {
             animals = animalRepository.findAll(pageable);
         }
+        animals.forEach(animal -> animal.getImages().size());
+
 
         return animals.map(this::mapToDto);
     }
@@ -159,5 +174,17 @@ public class AnimalServiceImpl implements AnimalService {
         if ("masculino".equalsIgnoreCase(genderText)) return true;
         if ("femenino".equalsIgnoreCase(genderText)) return false;
         throw new IllegalArgumentException("Género inválido: debe ser 'masculino' o 'femenino'");
+    }
+    private void setAnimalImages(Animal animal, List<AnimalImageDto> imageDtos) {
+        if (imageDtos != null) {
+            animal.getImages().clear();
+            imageDtos.forEach(dto -> {
+                AnimalImage image = new AnimalImage();
+                image.setFilename(dto.getFilename());
+                image.setFechaSubida(dto.getFechaSubida());
+                image.setAnimal(animal); 
+                animal.getImages().add(image);
+            });
+        }
     }
 }
