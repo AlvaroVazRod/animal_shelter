@@ -5,7 +5,9 @@ import com.login.dto.TagDto;
 import com.login.service.TagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,13 +31,20 @@ public class TagController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<TagDto> updateTag(@PathVariable Long id, @RequestBody TagDto tagDto) {
-        return ResponseEntity.ok(tagService.updateTag(id, tagDto));
+    public ResponseEntity<TagDto> updateTag(
+        @PathVariable Long id,
+        @RequestPart("tag") TagDto tagDto,
+        @RequestPart(value = "icon", required = false) MultipartFile iconFile
+    ) throws IOException {
+        return ResponseEntity.ok(tagService.updateTag(id, tagDto, iconFile));
     }
     
-    @PostMapping
-    public ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) {
-        return ResponseEntity.ok(tagService.createTag(tagDto));
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<TagDto> createTag(
+            @RequestPart("tag") TagDto tagDto,
+            @RequestPart(value = "icon", required = false) MultipartFile iconFile
+    ) throws IOException {
+        return ResponseEntity.ok(tagService.createTag(tagDto, iconFile));
     }
 
     @DeleteMapping("/{id}")

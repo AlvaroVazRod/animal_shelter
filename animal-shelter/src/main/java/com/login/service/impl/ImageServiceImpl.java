@@ -41,12 +41,27 @@ public class ImageServiceImpl implements ImageService {
 
         if (file.isEmpty()) return ResponseEntity.badRequest().body("El archivo está vacío");
 
+        if (!isImageValid(file)) {
+            return ResponseEntity.badRequest().body("Solo se permiten imágenes JPG y PNG");
+        }
+
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.badRequest().body("Usuario no encontrado");
         }
 
         User user = optionalUser.get();
+
+        // Eliminar imagen anterior si existe
+        if (user.getImage() != null) {
+            try {
+                Files.deleteIfExists(userUploadDir.resolve(user.getImage()));
+            } catch (IOException e) {
+                return ResponseEntity.internalServerError().body("No se pudo eliminar la imagen anterior");
+            }
+        }
+
+        // Crear nombre seguro y guardar
         String safeFileName = username.replaceAll("[^a-zA-Z0-9_-]", "_") + getExtension(file.getOriginalFilename());
         Path targetLocation = userUploadDir.resolve(safeFileName);
 
@@ -59,7 +74,6 @@ public class ImageServiceImpl implements ImageService {
             return ResponseEntity.internalServerError().body("Error al subir la imagen");
         }
     }
-
 
     @Override
     public ResponseEntity<String> uploadAnimalImage(MultipartFile file) {
@@ -79,6 +93,7 @@ public class ImageServiceImpl implements ImageService {
     private ResponseEntity<String> handleUpload(MultipartFile file, Path targetDir) {
         try {
             if (file.isEmpty()) return ResponseEntity.badRequest().body("El archivo está vacío");
+            if (!isImageValid(file)) return ResponseEntity.badRequest().body("Solo se permiten imágenes JPG y PNG");
 
             String fileName = Path.of(file.getOriginalFilename()).getFileName().toString();
             Path targetLocation = targetDir.resolve(fileName);
@@ -118,4 +133,11 @@ public class ImageServiceImpl implements ImageService {
         int dotIndex = originalFilename.lastIndexOf('.');
         return (dotIndex >= 0) ? originalFilename.substring(dotIndex) : "";
     }
+
+    private boolean isImageValid(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null &&
+                (contentType.equals("image/jpeg") || contentType.equals("image/png"));
+    }
 }
+

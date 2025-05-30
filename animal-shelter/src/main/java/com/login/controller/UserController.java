@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,9 +46,10 @@ public class UserController {
         return userService.deleteSecure(id, authentication);
     }
     @PutMapping("/{id}/image")
-    public ResponseEntity<UserDto> updateUserImage(@PathVariable Long id,
-                                                   @RequestParam String image,
-                                                   Authentication authentication) {
-        return userService.updateUserImage(id, image, authentication);
+    public ResponseEntity<UserDto> updateImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file,
+            Authentication auth) {
+        return userService.updateUserImage(id, file, auth);
     }
 }
