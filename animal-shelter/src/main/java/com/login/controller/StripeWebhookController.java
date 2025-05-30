@@ -53,6 +53,10 @@ public class StripeWebhookController {
             JsonNode object = json.at("/data/object");
             String stripePaymentIntentId = object.get("id").asText();
             String amountStr = object.has("amount") ? object.get("amount").asText() : "0";
+            if (donationRepository.findByStripePaymentIntentId(stripePaymentIntentId).isPresent()) {
+                System.out.println("🔁 Webhook duplicado: " + stripePaymentIntentId);
+                return ResponseEntity.ok("Evento duplicado ignorado: " + stripePaymentIntentId);
+            }
 
             Donation donation = new Donation();
             donation.setStripePaymentIntentId(stripePaymentIntentId);

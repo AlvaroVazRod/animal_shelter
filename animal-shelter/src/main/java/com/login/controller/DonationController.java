@@ -28,8 +28,8 @@ public class DonationController {
         @RequestBody Map<String, Object> data
     ) throws StripeException {
         Long amount = Long.valueOf(data.get("amount").toString());
-        String successUrl = data.getOrDefault("success_url", "http://localhost:3000/success").toString();
-        String cancelUrl = data.getOrDefault("cancel_url", "http://localhost:3000/cancel").toString();
+        String successUrl = data.getOrDefault("success_url", "http://localhost:5173/success").toString();
+        String cancelUrl = data.getOrDefault("cancel_url", "http://localhost:5173/cancel").toString();
 
         Map<String, String> metadata = new HashMap<>();
         if (data.containsKey("id_user")) {
@@ -65,10 +65,10 @@ public class DonationController {
         Session session = Session.create(params);
 
         Map<String, String> response = new HashMap<>();
-        response.put("url", session.getUrl());
-        response.put("sessionId", session.getId());
+        response.put("id", session.getId()); 
         return response;
     }
+
 
     @GetMapping
     public List<Donation> getFiltered(
