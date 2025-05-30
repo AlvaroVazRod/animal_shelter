@@ -28,7 +28,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
         <Route path="/contacto" element={<Contact />} />
         {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
         {/* <Route path="/main" element={<Main />} /> */}
-        <Route path="/animales" element={<AnimalsPage />} />
+        <Route path="/animales" element={<AnimalsPage/>}/>
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/donate" element={<Donate />} />
