@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useUser } from "../services/users/useUser";
 import { useNavigate, Link } from "react-router-dom";
+import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
+
 
 interface LoginCredentials {
   email: string;
@@ -78,26 +80,20 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center relative px-4"
-      style={{
-        backgroundImage: "url('./mainBg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
-      <div className="relative z-10 max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638]">
+    <DefaultPageTemplate>
+    <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center mt-5">
+      <div className="absolute inset-0 z-0" />
+      <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-[#40170E]">Iniciar Sesión</h2>
-          <p className="mt-2 text-[#A65638]">
+          <h2 className="text-3xl font-bold text-[#AD03CB]">Iniciar Sesión</h2>
+          <p className="mt-2 text-gray-600">
             Accede a tu cuenta de la protectora
           </p>
         </div>
 
         {errors.form && (
-          <div className="rounded-md bg-[#40170E]/90 p-4 mb-4">
-            <p className="text-sm text-[#F2DCB3]">{errors.form}</p>
+          <div className="rounded-md bg-[#AD03CB]/90 p-4 mb-4">
+            <p className="text-sm text-white">{errors.form}</p>
           </div>
         )}
 
@@ -106,7 +102,7 @@ export default function Login() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-[#40170E]"
+                className="block text-sm font-medium text-[#AD03CB]"
               >
                 Email
               </label>
@@ -117,8 +113,9 @@ export default function Login() {
                 autoComplete="username"
                 value={credentials.email}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.email ? "border-red-500" : "border-[#AD03CB]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -128,7 +125,7 @@ export default function Login() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-[#40170E]"
+                className="block text-sm font-medium text-[#AD03CB]"
               >
                 Contraseña
               </label>
@@ -139,8 +136,9 @@ export default function Login() {
                 autoComplete="current-password"
                 value={credentials.password}
                 onChange={handleChange}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-[#A65638]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#40170E] bg-[#F2DCB3] bg-opacity-70 text-[#40170E]`}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.password ? "border-red-500" : "border-[#AD03CB]"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
               />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -154,11 +152,11 @@ export default function Login() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-[#A65638] focus:ring-[#40170E] border-[#A65638] rounded"
+                className="h-4 w-4 text-[#AD03CB] focus:ring-[#AD03CB] border-[#AD03CB] rounded"
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-[#40170E]"
+                className="ml-2 block text-sm text-[#AD03CB]"
               >
                 Recordarme
               </label>
@@ -166,7 +164,7 @@ export default function Login() {
             <div className="text-sm">
               <a
                 href="#"
-                className="font-medium text-[#A65638] hover:text-[#40170E]"
+                className="font-medium text-[#AD03CB] hover:text-[#7a0299]"
               >
                 ¿Olvidaste tu contraseña?
               </a>
@@ -177,8 +175,11 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${isLoading ? "bg-[#A65638]" : "bg-[#D97236] hover:bg-[#A65638]"
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                isLoading
+                  ? "bg-[#AD03CB]/80"
+                  : "bg-[#AD03CB] hover:bg-[#7a0299]"
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD03CB] transition-colors`}
             >
               {isLoading ? (
                 <>
@@ -211,16 +212,14 @@ export default function Login() {
           </div>
         </form>
 
-        <div className="text-center text-sm text-[#40170E] mt-4">
+        <div className="text-center text-sm text-[#AD03CB] mt-4">
           ¿No tienes una cuenta?{" "}
-          <Link
-            to="/register"
-            className="font-medium text-[#A65638] hover:text-[#40170E]"
-          >
+          <Link to="/register" className="font-medium hover:text-[#7a0299]">
             Regístrate
           </Link>
         </div>
       </div>
     </div>
+    </DefaultPageTemplate>
   );
 }
