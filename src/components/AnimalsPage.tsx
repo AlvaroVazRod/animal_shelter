@@ -198,7 +198,7 @@ export const AnimalsPage = () => {
 
         {/* Modal */}
         {isModalOpen && selectedAnimal && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300 animate-fadeIn">
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center transition-opacity duration-300 animate-fadeIn">
             <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full relative">
               <button
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
