@@ -45,6 +45,28 @@ export default function AdminDashboardTags() {
         setEditForm((prev) => ({ ...prev, [field]: value }));
     };
 
+    const handleNewIconChange = (file: File) => {
+        const isValid = ["image/jpeg", "image/png"].includes(file.type) && file.size <= 1024 * 1024;
+        if (!isValid) {
+            setCreateError("Solo se permiten imágenes PNG o JPG de máximo 1MB.");
+            setNewIcon(null);
+            return;
+        }
+        setCreateError(null);
+        setNewIcon(file);
+    };
+
+    const handleEditIconChange = (file: File) => {
+        const isValid = ["image/jpeg", "image/png"].includes(file.type) && file.size <= 1024 * 1024;
+        if (!isValid) {
+            setEditError("Solo se permiten imágenes PNG o JPG de máximo 1MB.");
+            setSelectedFile(null);
+            return;
+        }
+        setEditError(null);
+        setSelectedFile(file);
+    };
+
     const fetchAnimals = async () => {
         setLoading(true);
         try {
@@ -91,9 +113,7 @@ export default function AdminDashboardTags() {
             const token = getToken();
             const formData = new FormData();
             formData.append("tag", new Blob([JSON.stringify(editForm)], { type: "application/json" }));
-            if (selectedFile) {
-                formData.append("icon", selectedFile);
-            }
+            if (selectedFile) formData.append("icon", selectedFile);
 
             const response = await fetch(`http://localhost:8080/api/tags/${editingTag.id}`, {
                 method: "PUT",
@@ -214,7 +234,7 @@ export default function AdminDashboardTags() {
                                     <td className="px-4 py-2 text-[#e8e8e8]">{tag.description}</td>
                                     <td className="px-4 py-2 text-center">
                                         {tag.icon ? (
-                                            <img src={`/${tag.icon}`} alt="icon" className="h-6 w-6 mx-auto" />
+                                            <img src={`http://localhost:8080/images/tags/${tag.icon}`} alt="icon" className="h-6 w-6 mx-auto" />
                                         ) : (
                                             <FiInfo className="text-[#4ECCA3] mx-auto" />
                                         )}
