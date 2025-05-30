@@ -18,32 +18,40 @@ export const Profile = () => {
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile || !user?.username) return;
+const handleUpload = async () => {
+  if (!selectedFile) return;
 
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("username", user.username);
+  setIsLoading(true);
+  setUploadStatus(null);
 
-    try {
-      const res = await fetch("http://localhost:8080/images/upload/user", {
-        method: "POST",
-        body: formData,
-      });
+  const formData = new FormData();
+  formData.append("file", selectedFile);
 
-      if (!res.ok) throw new Error("Error al subir la imagen");
+  try {
+    const res = await fetch("http://localhost:8080/images/upload/user", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+      body: formData,
+    });
 
-      setUploadStatus("✅ Imagen subida correctamente");
-      // Recargar para mostrar la nueva imagen
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (err) {
-      setUploadStatus("❌ Error al subir la imagen");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const text = await res.text();
+
+    if (!res.ok) throw new Error(text);
+
+    setUploadStatus(`✅ ${text}`);
+    // Recargar para mostrar la nueva imagen
+    setTimeout(() => window.location.reload(), 1500);
+  } catch (err: any) {
+    const errorMsg = err?.message || "Error al subir la imagen";
+    setUploadStatus(`❌ ${errorMsg}`);
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleLogout = () => {
     logout();
@@ -106,11 +114,10 @@ export const Profile = () => {
                 <button
                   onClick={handleUpload}
                   disabled={isLoading}
-                  className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                    isLoading
+                  className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${isLoading
                       ? "bg-[#A65638]"
                       : "bg-[#D97236] hover:bg-[#A65638]"
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
+                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
                 >
                   {isLoading ? (
                     <>
@@ -144,11 +151,10 @@ export const Profile = () => {
 
               {uploadStatus && (
                 <div
-                  className={`rounded-md p-3 text-center text-sm ${
-                    uploadStatus.includes("✅")
+                  className={`rounded-md p-3 text-center text-sm ${uploadStatus.includes("✅")
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
-                  }`}
+                    }`}
                 >
                   {uploadStatus}
                 </div>

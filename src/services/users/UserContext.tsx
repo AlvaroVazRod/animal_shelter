@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../types/User";
@@ -9,13 +10,21 @@ export interface UserContextType {
   logout: () => void;
   register: (
     email: string,
+    username: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
-  ) => Promise<boolean>;
+    phone: string | null,
+    newsletter: boolean
+  ) => Promise<RegisterResult>;
   getToken: () => string | null;
 }
+
+type RegisterResult = {
+  success: boolean;
+  data?: any;      // Puedes poner aquí un tipo más específico si sabes qué devuelve tu backend
+  error?: string;
+};
 
 export const UserContext = createContext<UserContextType | undefined>(
   undefined
@@ -25,21 +34,46 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
   const getToken = () => {
     return localStorage.getItem("token");
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const username = localStorage.getItem("username");
-    const role = localStorage.getItem("role");
-    const image = localStorage.getItem("img");
+  const fetchCurrentUser = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
 
-    if (token && username && role) {
-      setUser({ username, role, image: "users.jpg" });
+      const res = await fetch("http://localhost:8080/api/usuarios/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("No se pudo obtener el usuario actual");
+
+      const data = await res.json();
+      setUser({
+        username: data.username,
+        role: data.role,
+        image: data.image,
+      });
+      localStorage.setItem("img", data.image || "");
+    } catch (err) {
+      console.error("Error al cargar el usuario:", err);
+      logout();
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false); // ✅ Terminó la comprobación
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      fetchCurrentUser();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (
@@ -61,9 +95,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
-      localStorage.setItem("img", "users.jpg");
 
-      setUser({ username, role, image: "users.jpg" });
+      await fetchCurrentUser();
 
       if (role === "ROLE_ADMIN") {
         navigate("/admin");
@@ -85,14 +118,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (
+    username: string,
     email: string,
     password: string,
     name: string,
     surname: string,
-    phone: string | null
-  ): Promise<boolean> => {
+    phone: string | null,
+    newsletter: boolean,
+  ): Promise<RegisterResult> => {
     try {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const res = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
@@ -101,22 +136,34 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          username: email,
+          username,
           email,
           password,
           name,
           surname,
           phone,
+          newsletter
         }),
       });
 
-      if (!res.ok)
-        throw new Error((await res.json()).message || "Registro fallido");
+      const responseBody = await res.json();
 
-      return true;
-    } catch (err) {
-      console.error("Error al registrar:", err);
-      return false;
+      if (!res.ok) {
+        return {
+          success: false,
+          error: responseBody.error || 'Error inesperado al registrar',
+        };
+      }
+
+      return {
+        success: true,
+        data: responseBody, // por si quieres usar lo que devuelve el servidor
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        error: err.message || 'Error inesperado al registrar',
+      };
     }
   };
 
@@ -128,7 +175,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         register,
-        getToken, // <-- Exponemos la función aquí
+        getToken,
       }}
     >
       {children}

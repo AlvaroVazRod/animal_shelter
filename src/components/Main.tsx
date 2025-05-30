@@ -1,50 +1,56 @@
 export const Main = () => {
   return (
     <div
-      className="relative z-0 min-h-screen bg-cover bg-center px-4"
-      style={{
-        backgroundImage: "url('./mainBg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/20"></div>
+      className="relative z-0 min-h-screen bg-black px-4 overflow-hidden"
+      >
+      <video
+        className="absolute inset-0 w-full h-full filter grayscale object-cover z-[-1]"
+        style={{filter: "sepia(1)"}}
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/main_video_bg.mp4" type="video/mp4" />
+        Tu navegador no soporta el video.
+      </video>
 
-      <div className="relative z-15 flex flex-col md:flex-row items-center justify-center min-h-screen gap-10 p-15">
+      <div className="absolute inset-0 bg-black/50"></div>
+
+      <div className="relative z-15 flex flex-col md:flex-row items-center justify-center min-h-screen gap-10 p-18">
         {/* Título animado línea por línea */}
         <div className="flex-1 flex items-center justify-start">
           <div className="space-y-5">
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-1">
-              <span style={{ color: "#40170E" }}>A</span>
-              <span style={{ color: "#F2DCB3" }}>yuda</span>
+              <span style={{ color: "#AD03CB" }}>A</span>
+              <span style={{ color: "#f5f5f5" }}>yuda</span>
             </h1>
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-2">
-              <span style={{ color: "#40170E" }}>D</span>
-              <span style={{ color: "#F2DCB3" }}>ando</span>
+              <span style={{ color: "#AD03CB" }}>D</span>
+              <span style={{ color: "#f5f5f5" }}>ando</span>
             </h1>
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-3">
-              <span style={{ color: "#40170E" }}>O</span>
-              <span style={{ color: "#F2DCB3" }}>portunidad a</span>
+              <span style={{ color: "#AD03CB" }}>O</span>
+              <span style={{ color: "#f5f5f5" }}>portunidad a</span>
             </h1>
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-4">
-              <span style={{ color: "#40170E" }}>P</span>
-              <span style={{ color: "#F2DCB3" }}>eludos que</span>
+              <span style={{ color: "#AD03CB" }}>P</span>
+              <span style={{ color: "#f5f5f5" }}>eludos que</span>
             </h1>
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-5">
-              <span style={{ color: "#40170E" }}>T</span>
-              <span style={{ color: "#F2DCB3" }}>ransforman</span>
+              <span style={{ color: "#AD03CB" }}>T</span>
+              <span style={{ color: "#f5f5f5" }}>ransforman</span>
             </h1>
             <h1 className="text-6xl font-bold text-left animate-line fade-delay-6">
-              <span style={{ color: "#40170E" }}>A</span>
-              <span style={{ color: "#F2DCB3" }}>lmas</span>
+              <span style={{ color: "#AD03CB" }}>A</span>
+              <span style={{ color: "#f5f5f5" }}>lmas</span>
             </h1>
           </div>
         </div>
 
         {/* Contenido a la derecha */}
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-20 mt-50 animate-fade-in-up">
-          <p className="text-xl md:text-4xl mt-10 text-[#F2DCB3] animate-fade-in-up">
+          <p className="text-xl md:text-4xl mt-10 text-[#f5f5f5] animate-fade-in-up">
             Rescata y dale amor a los peludos que más lo necesitan.
           </p>
 
@@ -53,8 +59,8 @@ export const Main = () => {
               className="px-8 py-3 rounded-full text-lg font-bold shadow-lg 
               transition-all duration-300 hover:scale-105 hover:-rotate-3"
               style={{
-                backgroundColor: "#D97236",
-                color: "#40170E",
+                backgroundColor: "#AD03CB",
+                color: "#f5f5f5",
               }}
             >
               🐶 Adoptar Mascota
@@ -63,8 +69,8 @@ export const Main = () => {
               className="px-8 py-3 rounded-full text-lg font-bold shadow-lg 
               transition-all duration-300 hover:scale-105 hover:rotate-3"
               style={{
-                backgroundColor: "#F2DCB3",
-                color: "#40170E",
+                backgroundColor: "#AD03CB",
+                color: "#f5f5f5",
               }}
             >
               🏡 Sobre el Shelter

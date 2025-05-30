@@ -58,10 +58,10 @@ export default function Login() {
         localStorage.setItem("isLoggedIn", "true");
 
         const role = localStorage.getItem("role");
-        if (role === "ADMIN") navigate("/admin");
+        if (role === "ADMIN") navigate("/adminU");
         else {
           navigate("/");
-          window.location.reload(); // Forzar actualización para reflejar cambios
+          // Forzar actualización para reflejar cambios
         }
         return;
       }
@@ -114,6 +114,7 @@ export default function Login() {
                 id="email"
                 name="email"
                 type="text"
+                autoComplete="username"
                 value={credentials.email}
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-[#A65638]"
@@ -135,6 +136,7 @@ export default function Login() {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="current-password"
                 value={credentials.password}
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-[#A65638]"

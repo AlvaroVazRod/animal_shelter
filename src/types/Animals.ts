@@ -1,23 +1,39 @@
 export interface Animal {
-  id: 0;
+  id: number;
   name: string;
-  imageUrl: string; //por implementar en la api
+  imageUrl?: string; // por implementar
   description: string;
-  weight: 0;
-  height: 0;
-  length: 0;
+  weight: number;
+  height: number;
+  length: number;
   age: number;
   color: string;
-  image: string;
+  image: string; 
   species: string;
   breed: string;
-  gender: string; //por implementar en la api
-  maxDonations: 0;
-  collected: 0;
+  gender: string;
+  maxDonations: number;
+  collected: number;
   status: string;
   priority: 'low' | 'medium' | 'high';
-  type?: string; // Ej: "Perro", "Gato"
-  vaccines?: string[]; // Ej: ["Antirrábica", "Parvovirus"]
-  surgery?: boolean; // Si tuvo cirugía
-  specialNeeds?: boolean; // Si requiere cuidados especiales
+  type?: string;
+  vaccines?: string[];
+  surgery?: boolean;
+  specialNeeds?: boolean;
+  images?: AnimalImage[];
+  tags?: AnimalTag[];
+}
+export interface AnimalImage {
+  id: number;
+  filename: string;
+  fechaSubida?: string;
+  animalId?: number;
+}
+
+export interface AnimalTag{
+  id: number;
+  name: string;
+  description: string;
+  color: string;
+  icon: string;
 }

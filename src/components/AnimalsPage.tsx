@@ -2,21 +2,23 @@ import { useState, useEffect } from "react";
 import type { Animal } from "../types/Animals";
 import { DefaultPageTemplate } from "../pages/templates/DefaultTemplate";
 import { AnimalDetails } from "../components/AnimalDetails";
-
-const PAGE_SIZE = 10;
-const API_URL = "http://localhost:8080/api/animales";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export const AnimalsPage = () => {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [breed, setBreed] = useState("");
-  const [gender, setGender] = useState("");
+  const [breed, setBreed] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
 
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleAnimalClick = (animal: Animal) => {
     setSelectedAnimal(animal);
@@ -28,11 +30,23 @@ export const AnimalsPage = () => {
     setIsModalOpen(false);
   };
 
-  const fetchAnimals = async (
-    pageNumber: number,
-    species?: string,
-    gender?: string
-  ) => {
+  const getAnimalsTags = async (animals: Animal[]) => {
+    const animalsWithTags = await Promise.all(
+      animals.map(async (animal) => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/tags/animal/${animal.id}`);
+          const tags = await response.json();
+          return { ...animal, tags };
+        } catch (error) {
+          console.error(`Error al obtener tags para animal ${animal.id}`, error);
+          return { ...animal, tags: [] };
+        }
+      })
+    );
+    return animalsWithTags;
+  };
+
+  const fetchAnimals = async (pageNumber: number, species?: string, gender?: string) => {
     setLoading(true);
     try {
       const query = new URLSearchParams({
@@ -42,11 +56,12 @@ export const AnimalsPage = () => {
         ...(gender ? { gender } : {}),
       });
 
-      const res = await fetch(`${API_URL}?${params}`);
-      if (!res.ok) throw new Error("Error al obtener los animales");
+      const response = await fetch(`http://localhost:8080/api/animales?${query}`);
+      if (!response.ok) throw new Error("Error al obtener los animales");
+      const data = await response.json();
 
-      const data = await res.json();
-      setAnimals(data.content);
+      const formattedData = await getAnimalsTags(data.content);
+      setAnimals(formattedData);
       setTotalPages(data.totalPages);
       setPage(data.number);
     } catch (err) {
@@ -66,52 +81,29 @@ export const AnimalsPage = () => {
     }
   };
 
-  const renderAnimalCard = (animal: Animal) => (
-    <div
-      key={animal.id}
-      onClick={() => handleAnimalClick(animal)}
-      className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
-    >
-      <div className="h-48 overflow-hidden">
-        <img
-          src={`http://localhost:8080/images/animal/${animal.image}`}
-          alt={animal.name}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="p-4 bg-[#F2DCB3]">
-        <h2 className="text-xl font-bold mb-2 text-[#40170E]">{animal.name}</h2>
-        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Edad: </strong>{animal.age} {animal.age === 1 ? "año" : "años"}</p>
-        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Peso: </strong>{animal.weight} Kg</p>
-        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Sexo: </strong>{animal.gender ? "Masculino" : "Femenino"}</p>
-        <p className="mb-2 text-[#40170E]"><strong className="text-[#D97236]">Raza: </strong>{animal.breed}</p>
-      </div>
-    </div>
-  );
-
   return (
     <DefaultPageTemplate>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-[#40170E]">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-20 bg-[#f5f5f5]">
         <div className="max-w-7xl mx-auto mt-6">
-          <h1 className="text-4xl font-bold mb-8 text-center text-[#F2DCB3]">
-            Nuestros Peludos en Busca de Hogar
+          <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-[#A444C5] tracking-tight">
+            Nuestros peludos en busca de hogar
           </h1>
 
           <div className="flex justify-center gap-6 mb-10">
             <select
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
-              className="px-4 py-2 rounded font-bold text-[#40170E] bg-[#F2DCB3]"
+              className="px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
             >
               <option value="">Todas las espécies</option>
-              <option value="dog">Perro</option>
-              <option value="cat">Gato</option>
+              <option value="dog">🐶Perros</option>
+              <option value="cat">🐱Gatos</option>
             </select>
 
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="px-4 py-2 rounded font-bold text-[#40170E] bg-[#F2DCB3]"
+              className="px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
             >
               <option value="">Ambos géneros</option>
               <option value="masculino">Masculino</option>
@@ -120,9 +112,9 @@ export const AnimalsPage = () => {
           </div>
 
           {loading ? (
-            <p className="text-2xl text-center text-[#F2DCB3]">Cargando...</p>
+            <div className="text-2xl text-center text-[#AD03CB]">Cargando...</div>
           ) : error ? (
-            <p className="text-2xl text-center text-red-500">Error: {error}</p>
+            <div className="text-2xl text-center text-red-500">Error: {error}</div>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -130,44 +122,64 @@ export const AnimalsPage = () => {
                   <div
                     key={animal.id}
                     onClick={() => handleAnimalClick(animal)}
-                    className="cursor-pointer bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
+                    className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
                   >
-                    <div className="h-48 overflow-hidden relative">
-                      {animal.status === 'requires_funding' && (
-                        <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                    <div className="h-48 overflow-hidden relative ">
+                      {animal.status === "requires_funding" && (
+                        <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded z-10">
                           PRIORIDAD
                         </span>
                       )}
 
-                      <img
-                        src={`http://localhost:8080/images/animal/${animal.image}`}
-                        alt={animal.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-4 bg-[#F2DCB3] ">
-                      <h2
-                        className="text-xl font-bold mb-2"
-                        style={{ color: "#40170E" }}
+                      <Swiper
+                        modules={[Autoplay, Pagination, Navigation]}
+                        slidesPerView={1}
+                        spaceBetween={10}
+                        loop
+                        autoplay={{ delay: 10000, disableOnInteraction: false }}
+                        pagination={{ clickable: true }}
                       >
+                        {(animal.images ?? []).length > 0 ? (
+                          animal.images?.map((img, index) => (
+                            <SwiperSlide key={`${animal.id}-${index}`}>
+                              <img
+                                src={`http://localhost:8080/images/animal/${img.filename}`}
+                                alt={animal.name}
+                                className="w-full h-48 object-cover rounded-t-2xl"
+                              />
+                            </SwiperSlide>
+                          ))
+                        ) : (
+                          <SwiperSlide key={`${animal.id}-default`}>
+                            <img
+                              src={`http://localhost:8080/images/animal/${animal.image}`}
+                              alt={animal.name}
+                              className="w-full h-48 object-cover rounded-t-2xl"
+                            />
+                          </SwiperSlide>
+                        )}
+                      </Swiper>
+                    </div>
+                    <div className="p-4 bg-[#fdf3ff]">
+                      <h2 className="text-lg font-bold text-[#AD03CB] mb-1">
                         {animal.name}
                       </h2>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Edad: </strong>
+                      <p className="text-sm text-gray-600">
+                        <strong className="text-[#AD03CB]">Edad: </strong>
                         {animal.age} {animal.age === 1 ? "año" : "años"}
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Peso: </strong>
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong className="text-[#AD03CB]">Peso: </strong>
                         {animal.weight} Kg
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Sexo: </strong>
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong className="text-[#AD03CB]">Sexo: </strong>
                         {animal.gender}
-                      </div>
-                      <div className="mb-2 text-[#40170E]">
-                        <strong className="text-[#D97236]">Raza: </strong>
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong className="text-[#AD03CB]">Raza: </strong>
                         {animal.breed}
-                      </div>
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -177,19 +189,19 @@ export const AnimalsPage = () => {
                 <button
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 0}
-                  className="bg-[#D97236] text-[#40170E] px-4 py-2 rounded disabled:opacity-50"
+                  className="flex items-center gap-2 bg-[#AD03CB] text-white px-4 py-2 rounded-full hover:bg-[#bd5f28] disabled:opacity-50 transition-colors"
                 >
-                  Anterior
+                  ←
                 </button>
-                <span className="text-[#F2DCB3] self-center">
+                <span className="text-[#AD03CB] self-center font-semibold">
                   Página {page + 1} de {totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page + 1 >= totalPages}
-                  className="bg-[#D97236] text-[#40170E] px-4 py-2 rounded disabled:opacity-50"
+                  className="flex items-center gap-2 bg-[#AD03CB] text-white px-4 py-2 rounded-full hover:bg-[#bd5f28] disabled:opacity-50 transition-colors"
                 >
-                  Siguiente
+                  →
                 </button>
               </div>
             </>
