@@ -30,7 +30,7 @@ export const Contact = () => {
     <DefaultPageTemplate>
       <section className="relative bg-[#f5f5f5] min-h-screen py-12 px-4 pt-8">
         <div className="max-w-6xl mx-auto pt-15">
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-12 text-[#AD03CB]">
+          <h1 className="text-4xl md:text-4xl font-bold text-center mb-12 text-[#AD03CB]">
             Contacta con nosotros
           </h1>
 
