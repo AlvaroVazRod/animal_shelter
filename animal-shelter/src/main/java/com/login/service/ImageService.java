@@ -9,4 +9,6 @@ public interface ImageService {
     ResponseEntity<String> uploadAnimalImage(MultipartFile file);
     ResponseEntity<Resource> getUserImage(String filename);
     ResponseEntity<Resource> getAnimalImage(String filename);
+    ResponseEntity<String> uploadTagIcon(Long tagId, MultipartFile file);
+
 }

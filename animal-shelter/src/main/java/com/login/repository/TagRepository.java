@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 	
-	@Modifying
     @Query(value = "SELECT t.* FROM tags t " +
                    "JOIN animals_tags at ON t.id = at.id_tag " +
                    "WHERE at.id_animal = :animalId", nativeQuery = true)

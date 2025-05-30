@@ -36,4 +36,11 @@ public class ImageController {
 	public ResponseEntity<Resource> getAnimalImage(@PathVariable String filename) {
 		return imageService.getAnimalImage(filename);
 	}
+	@PostMapping("/upload/tag/{tagId}")
+	public ResponseEntity<String> uploadTagIcon(
+	        @PathVariable Long tagId,
+	        @RequestParam("file") MultipartFile file) {
+	    return imageService.uploadTagIcon(tagId, file);
+	}
+
 }
