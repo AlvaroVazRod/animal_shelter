@@ -1,21 +1,17 @@
-
 package com.login.service.impl;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.IOException;
-import java.util.UUID;
-import com.login.dto.TagDto;	
-import com.login.model.Tag;
+import com.login.dto.TagDto;
 import com.login.mapper.TagMapper;
+import com.login.model.Tag;
 import com.login.repository.AnimalRepository;
 import com.login.repository.TagRepository;
+import com.login.service.ImageService;
 import com.login.service.TagService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +21,12 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final AnimalRepository animalRepository;
+    private final ImageService imageService;
 
-    public TagServiceImpl(TagRepository tagRepository, AnimalRepository animalRepository) {
+    public TagServiceImpl(TagRepository tagRepository, AnimalRepository animalRepository, ImageService imageService) {
         this.tagRepository = tagRepository;
         this.animalRepository = animalRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -47,13 +45,14 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDto createTag(TagDto tagDto, MultipartFile iconFile) throws IOException {
         Tag tag = TagMapper.toEntity(tagDto);
+        tag = tagRepository.save(tag);
 
         if (iconFile != null && !iconFile.isEmpty()) {
-            String filename = saveIconFile(iconFile);
-            tag.setIcon(filename);
+            imageService.uploadTagIcon(tag.getId(), iconFile);
+            tag = tagRepository.findById(tag.getId()).orElseThrow();
         }
 
-        return TagMapper.toDto(tagRepository.save(tag));
+        return TagMapper.toDto(tag);
     }
 
     @Override
@@ -77,7 +76,7 @@ public class TagServiceImpl implements TagService {
     public void removeTagFromAnimal(Long animalId, Long tagId) {
         tagRepository.deleteAnimalTagRelation(animalId, tagId);
     }
-    
+
     @Override
     public TagDto updateTag(Long id, TagDto tagDto, MultipartFile iconFile) {
         Tag tag = tagRepository.findById(id)
@@ -86,39 +85,14 @@ public class TagServiceImpl implements TagService {
         tag.setName(tagDto.getName());
         tag.setDescription(tagDto.getDescription());
         tag.setColor(tagDto.getColor());
+        tag = tagRepository.save(tag);
 
         if (iconFile != null && !iconFile.isEmpty()) {
-            if (tag.getIcon() != null) {
-                Path oldPath = Paths.get("uploads/tags").resolve(tag.getIcon());
-                try {
-                    Files.deleteIfExists(oldPath);
-                } catch (IOException e) {
-                    throw new RuntimeException("Error al eliminar el icono anterior", e);
-                }
-            }
-
-            String filename = saveIconFile(iconFile);
-            tag.setIcon(filename);
+            imageService.uploadTagIcon(tag.getId(), iconFile);
+            tag = tagRepository.findById(tag.getId()).orElseThrow();
         }
 
-        Tag updated = tagRepository.save(tag);
-        return TagMapper.toDto(updated);
+        return TagMapper.toDto(tag);
     }
-
-    private String saveIconFile(MultipartFile file) {
-        try {
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path directory = Paths.get("uploads/tags");
-            if (!Files.exists(directory)) {
-                Files.createDirectories(directory);
-            }
-            Path filePath = directory.resolve(filename);
-            Files.copy(file.getInputStream(), filePath);
-            return filename;
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar el icono", e);
-        }
-    }
-
-
 }
+

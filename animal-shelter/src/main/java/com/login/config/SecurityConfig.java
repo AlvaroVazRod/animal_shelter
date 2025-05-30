@@ -1,4 +1,4 @@
-package com.login.config;
+	package com.login.config;
 
 import java.util.List;
 
@@ -37,6 +37,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/images/animal/**").permitAll().requestMatchers("/images/user/**")
 								.permitAll().requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
+								.requestMatchers("/tags/**").permitAll() 
+								.requestMatchers(HttpMethod.POST, "/api/donaciones/checkout").authenticated()
 								.requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
 								.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.PUT, "/api/animales/**").hasRole("ADMIN")
