@@ -234,7 +234,7 @@ export default function AdminDashboardTags() {
                                     <td className="px-4 py-2 text-[#e8e8e8]">{tag.description}</td>
                                     <td className="px-4 py-2 text-center">
                                         {tag.icon ? (
-                                            <img src={`/${tag.icon}`} alt="icon" className="h-6 w-6 mx-auto" />
+                                            <img src={`http://localhost:8080/tags/${tag.icon}`} alt="icon" className="h-6 w-6 mx-auto" />
                                         ) : (
                                             <FiInfo className="text-[#4ECCA3] mx-auto" />
                                         )}

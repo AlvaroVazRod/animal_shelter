@@ -14,7 +14,7 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-3xl shadow-lg flex w-96 h-48 overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
+      className="bg-white rounded-3xl shadow-lg flex flex-col sm:flex-row h-50 w-full overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
     >
       {/* Imagen */}
       <div className="relative w-1/2 h-full">
@@ -40,13 +40,16 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
           {animal.age} {animal.age === 1 ? "año" : "años"}
         </p>
         <p className="text-sm">
-          <span className="font-semibold text-fuchsia-700">Sexo:</span> {animal.gender}
+          <span className="font-semibold text-fuchsia-700">Sexo:</span>{" "}
+          {animal.gender}
         </p>
         <p className="text-sm">
-          <span className="font-semibold text-fuchsia-700">Peso:</span> {animal.weight} Kg
+          <span className="font-semibold text-fuchsia-700">Peso:</span>{" "}
+          {animal.weight} Kg
         </p>
         <p className="text-sm truncate">
-          <span className="font-semibold text-fuchsia-700">Raza:</span> {animal.breed}
+          <span className="font-semibold text-fuchsia-700">Raza:</span>{" "}
+          {animal.breed}
         </p>
       </div>
     </div>
