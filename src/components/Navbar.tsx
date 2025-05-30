@@ -128,7 +128,7 @@ export const Navbar = () => {
                     <div
                       className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1"
                       style={{
-                        backgroundColor: "#F2DCB3",
+                        backgroundColor: "#FFE2FE",
                         border: "1px solidrgb(208, 0, 187)",
                       }}
                     >
@@ -137,7 +137,7 @@ export const Navbar = () => {
                         className="block px-4 py-2 text-sm transition-colors duration-200"
                         style={{ color: "#40170E" }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#D9AB73")
+                          (e.currentTarget.style.backgroundColor = "#FFBDFD")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.backgroundColor =
@@ -151,7 +151,7 @@ export const Navbar = () => {
                         className="block px-4 py-2 text-sm transition-colors duration-200"
                         style={{ color: "#40170E" }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#D9AB73")
+                          (e.currentTarget.style.backgroundColor = "#FFBDFD")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.backgroundColor =
@@ -168,7 +168,7 @@ export const Navbar = () => {
                         className="block w-full text-left px-4 py-2 text-sm transition-colors duration-200"
                         style={{ color: "#40170E" }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#D9AB73")
+                          (e.currentTarget.style.backgroundColor = "#FFBDFD")
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.backgroundColor =
