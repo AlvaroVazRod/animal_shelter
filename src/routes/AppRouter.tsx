@@ -8,6 +8,7 @@ import { PrivateGuard } from "./PrivateGuard";
 import { AdminGuard } from "./AdminGuard";
 import AdminDashboardUsers from "../pages/MainPage/AdminDashboardUsers";
 import AdminDashboardAnimals from "../pages/MainPage/AdminDashboardAnimals";
+import WebhookLogsPage from "../pages/MainPage/AdminDashboardWebhookLogs"
 import Donate from "../components/Donate";
 
 import { Profile } from "../components/Profile";
@@ -39,6 +40,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
             <Route path="/adminU" element={<AdminDashboardUsers />} />
             <Route path="/adminP" element={<AdminDashboardAnimals />} />
             <Route path="/adminT" element={<AdminDashboardTags />} />
+            <Route path="/adminW" element={<WebhookLogsPage />} />
           </Route>
         </Route>
       </NotFoundRouter>

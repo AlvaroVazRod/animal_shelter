@@ -53,6 +53,13 @@ export const AdminNavbar = () => {
 
           <div className="flex items-center space-x-4">
             <a
+              href="/adminW"
+              className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
+              style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+            >
+              Panel Transacciones
+            </a>
+            <a
               href="/adminU"
               className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
               style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
@@ -66,7 +73,7 @@ export const AdminNavbar = () => {
             >
               Panel Mascotas
             </a>
-                        <a
+            <a
               href="/adminT"
               className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
               style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
