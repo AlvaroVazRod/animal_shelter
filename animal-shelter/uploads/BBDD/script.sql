@@ -109,6 +109,12 @@ CREATE TABLE adoptions (
   FOREIGN KEY (id_animal) REFERENCES animals(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (id_form) REFERENCES forms(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
+CREATE TABLE webhook_log (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  event_type VARCHAR(255),
+  raw_payload LONGTEXT,
+  received_at DATETIME
+);
 
 -- Insertar usuarios
 INSERT INTO users (username, email, password, name, surname, phone, role, image) VALUES

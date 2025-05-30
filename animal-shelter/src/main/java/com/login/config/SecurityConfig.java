@@ -38,6 +38,7 @@ public class SecurityConfig {
 						auth -> auth.requestMatchers("/images/animal/**").permitAll().requestMatchers("/images/user/**")
 								.permitAll().requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
 								.requestMatchers("/tags/**").permitAll() 
+								.requestMatchers(HttpMethod.GET, "/api/webhook-logs/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.POST, "/api/donaciones/checkout").authenticated()
 								.requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
 								.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")

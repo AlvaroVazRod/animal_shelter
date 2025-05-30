@@ -3,18 +3,18 @@ package com.login.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.login.model.Donation;
+import com.login.model.WebhookLog;
 import com.login.repository.AnimalRepository;
 import com.login.repository.DonationRepository;
 import com.login.repository.UserRepository;
+import com.login.repository.WebhookLogRepository;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -26,16 +26,21 @@ public class StripeWebhookController {
     @Value("${stripe.webhookSecret}")
     private String endpointSecret;
 
-    @Autowired
-    private DonationRepository donationRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AnimalRepository animalRepository;
-
+    private final DonationRepository donationRepository;
+    private final UserRepository userRepository;
+    private final AnimalRepository animalRepository;
+    private final WebhookLogRepository webhookLogRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public StripeWebhookController(DonationRepository donationRepository,
+                                   UserRepository userRepository,
+                                   AnimalRepository animalRepository,
+                                   WebhookLogRepository webhookLogRepository) {
+        this.donationRepository = donationRepository;
+        this.userRepository = userRepository;
+        this.animalRepository = animalRepository;
+        this.webhookLogRepository = webhookLogRepository;
+    }
 
     @PostMapping
     public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload,
@@ -48,13 +53,20 @@ public class StripeWebhookController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
 
+        // Guardar el webhook sin procesar para trazabilidad
+        WebhookLog log = new WebhookLog();
+        log.setReceivedAt(LocalDateTime.now());
+        log.setEventType(event.getType());
+        log.setRawPayload(payload);
+        webhookLogRepository.save(log);
+
         try {
             JsonNode json = objectMapper.readTree(payload);
             JsonNode object = json.at("/data/object");
             String stripePaymentIntentId = object.get("id").asText();
             String amountStr = object.has("amount") ? object.get("amount").asText() : "0";
+
             if (donationRepository.findByStripePaymentIntentId(stripePaymentIntentId).isPresent()) {
-                System.out.println("🔁 Webhook duplicado: " + stripePaymentIntentId);
                 return ResponseEntity.ok("Evento duplicado ignorado: " + stripePaymentIntentId);
             }
 
@@ -62,10 +74,9 @@ public class StripeWebhookController {
             donation.setStripePaymentIntentId(stripePaymentIntentId);
             donation.setPaymentMethod("stripe");
             donation.setDate(LocalDateTime.now());
-            donation.setQuantity(Double.parseDouble(amountStr) / 100); // safe default
+            donation.setQuantity(Double.parseDouble(amountStr) / 100);
 
             Donation.Status status;
-
             switch (event.getType()) {
                 case "payment_intent.succeeded":
                     status = Donation.Status.completed;
@@ -85,7 +96,6 @@ public class StripeWebhookController {
 
             donation.setStatus(status);
 
-            // Leer metadata opcional
             JsonNode metadata = object.get("metadata");
             if (metadata != null) {
                 if (metadata.has("id_user")) {
