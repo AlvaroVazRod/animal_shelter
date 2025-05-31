@@ -1,4 +1,4 @@
-	package com.login.config;
+package com.login.config;
 
 import java.util.List;
 
@@ -39,6 +39,7 @@ public class SecurityConfig {
 								.permitAll().requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
 								.requestMatchers("/tags/**").permitAll() 
 								.requestMatchers(HttpMethod.GET, "/api/webhook-logs/**").hasRole("ADMIN")
+								.requestMatchers(HttpMethod.POST, "/api/forms/send").authenticated()
 								.requestMatchers(HttpMethod.POST, "/api/donaciones/checkout").authenticated()
 								.requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
 								.requestMatchers(HttpMethod.POST, "/api/animales/**").hasRole("ADMIN")
