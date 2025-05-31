@@ -4,6 +4,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import type { Animal } from "../types/Animals";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../services/users/useUser";
 
 interface AnimalDetailsProps {
   animal: Animal;
@@ -12,6 +14,8 @@ interface AnimalDetailsProps {
 
 export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { getToken } = useUser();
 
   const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (
@@ -19,6 +23,24 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
       !modalContentRef.current.contains(event.target as Node)
     ) {
       onClose();
+    }
+  };
+
+  const handleAdopt = () => {
+    const token = getToken();
+    if (token) {
+      navigate(`/adopt/${animal.id}`);
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const handleSponsor = () => {
+    const token = getToken();
+    if (token) {
+      navigate(`/sponsor/${animal.id}`);
+    } else {
+      navigate("/login");
     }
   };
 
@@ -97,22 +119,41 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
                 🐱 Gato
               </span>
             )}
-            <span className="bg-pink-100 text-[#AD03CB] text-xs font-semibold px-3 py-1 rounded-full animate-slide-in">
-              💉 Antirrábica
-            </span>
-            <span className="bg-pink-100 text-[#AD03CB] text-xs font-semibold px-3 py-1 rounded-full animate-slide-in">
-              🏥 Cirugía realizada
-            </span>
-            <span className="bg-pink-100 text-[#AD03CB] text-xs font-semibold px-3 py-1 rounded-full animate-slide-in">
-              🌟 Cuidados especiales
-            </span>
+            {animal.tags?.map((tag) => (
+              <span
+                key={tag.id}
+                className="text-xs font-semibold px-3 py-1 rounded-full animate-slide-in"
+                style={{
+                  backgroundColor: tag.color ?? "#F3E8FF",
+                  color: "#AD03CB",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                }}
+              >
+                {tag.icon && (
+                  <img
+                    src={`http://localhost:8080/tags/${tag.icon}`}
+                    alt="icono"
+                    className="w-4 h-4"
+                  />
+                )}
+                {tag.name}
+              </span>
+            ))}
           </div>
 
           <div className="flex justify-center gap-3 mt-6">
-            <button className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors">
+            <button
+              onClick={handleSponsor}
+              className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors"
+            >
               Apadrinar
             </button>
-            <button className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors">
+            <button
+              onClick={handleAdopt}
+              className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors"
+            >
               Adóptame
             </button>
             <button className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors">
@@ -123,20 +164,14 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
 
         <style>
           {`
-    @keyframes fadeInScale {
-      0% {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    .animate-fadeInScale {
-      animation: fadeInScale 0.3s ease-out;
-    }
-  `}
+            @keyframes fadeInScale {
+              0% { opacity: 0; transform: scale(0.95); }
+              100% { opacity: 1; transform: scale(1); }
+            }
+            .animate-fadeInScale {
+              animation: fadeInScale 0.3s ease-out;
+            }
+          `}
         </style>
       </div>
     </div>

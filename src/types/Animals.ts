@@ -35,5 +35,5 @@ export interface AnimalTag{
   name: string;
   description: string;
   color: string;
-  icon: string;
+  icon: string | null;
 }

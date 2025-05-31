@@ -17,6 +17,7 @@ import Main from "../components/Main";
 import AnimalsPage from "../components/AnimalsPage";
 import { AnimalDetails } from "../components/AnimalDetails";
 import AdminDashboardTags from "../pages/MainPage/AdminDashboardTags";
+import AdoptionFormPage from "../pages/MainPage/AdoptionFromPage";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -30,6 +31,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
         {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
         {/* <Route path="/main" element={<Main />} /> */}
         <Route path="/animales" element={<AnimalsPage/>}/>
+        <Route path="/adopt/:id" element={<AdoptionFormPage />} />
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/donate" element={<Donate />} />
