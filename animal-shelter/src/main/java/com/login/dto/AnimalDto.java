@@ -49,6 +49,8 @@ public class AnimalDto {
 	private String status;
 
 	private List<AnimalImageDto> images;
+	
+	private List<TagDto> tags;
 
 
 	public Long getId() {
@@ -184,5 +186,12 @@ public class AnimalDto {
 
 	public void setImages(List<AnimalImageDto> images) {
 		this.images = images;
+	}
+	public List<TagDto> getTags() {
+	    return tags;
+	}
+
+	public void setTags(List<TagDto> tags) {
+	    this.tags = tags;
 	}
 }

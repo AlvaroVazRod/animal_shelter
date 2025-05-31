@@ -24,5 +24,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     @Query(value = "DELETE FROM animals_tags WHERE id_animal = :animalId AND id_tag = :tagId", nativeQuery = true)
     void deleteAnimalTagRelation(@Param("animalId") Long animalId, @Param("tagId") Long tagId);
     
+	List<Tag> findByIdIn(List<Long> ids);
+
     
 }

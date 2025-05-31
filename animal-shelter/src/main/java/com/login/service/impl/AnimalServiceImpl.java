@@ -1,17 +1,20 @@
 package com.login.service.impl;
 
-import com.login.dto.AnimalDto;
+import com.login.dto.AnimalDto;	
 import com.login.dto.AnimalImageDto;
 import com.login.exception.ResourceNotFoundException;
+import com.login.mapper.AnimalMapper;
 import com.login.model.Animal;
 import com.login.model.AnimalImage;
 import com.login.repository.AnimalRepository;
+import com.login.repository.TagRepository;
 import com.login.service.AnimalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,67 +24,14 @@ public class AnimalServiceImpl implements AnimalService {
     @Autowired
     private AnimalRepository animalRepository;
 
-    private AnimalDto mapToDto(Animal animal) {
-        AnimalDto dto = new AnimalDto();
-        dto.setId(animal.getId());
-        dto.setName(animal.getName());
-        dto.setDescription(animal.getDescription());
-        dto.setWeight(animal.getWeight());
-        dto.setHeight(animal.getHeight());
-        dto.setLength(animal.getLength());
-        dto.setAge(animal.getAge());
-        dto.setGender(animal.getGender() != null ? (animal.getGender() ? "masculino" : "femenino") : "");
-        dto.setColor(animal.getColor());
-        dto.setImage(animal.getImage());
-        dto.setSpecies(animal.getSpecies());
-        dto.setBreed(animal.getBreed());
-        dto.setAdoptionPrice(animal.getAdoptionPrice());
-        dto.setSponsorPrice(animal.getSponsorPrice());
-        dto.setCollected(animal.getCollected());
-        dto.setStatus(animal.getStatus().name());
-        if (animal.getImages() != null) {
-            List<AnimalImageDto> imageDtos = animal.getImages()
-                .stream()
-                .map(image -> {
-                    AnimalImageDto imageDto = new AnimalImageDto();
-                    imageDto.setId(image.getId());
-                    imageDto.setFilename(image.getFilename());
-                    imageDto.setFechaSubida(image.getFechaSubida());
-                    imageDto.setAnimalId(animal.getId());
-                    return imageDto;
-                })
-                .collect(Collectors.toList());
-            dto.setImages(imageDtos);
-        }
-        return dto;
-    }
-
-    private Animal mapToEntity(AnimalDto dto) {
-        Animal animal = new Animal();
-        animal.setName(dto.getName());
-        animal.setDescription(dto.getDescription());
-        animal.setWeight(dto.getWeight());
-        animal.setHeight(dto.getHeight());
-        animal.setLength(dto.getLength());
-        animal.setAge(dto.getAge());
-        animal.setColor(dto.getColor());
-        animal.setImage(dto.getImage());
-        animal.setSpecies(dto.getSpecies());
-        animal.setBreed(dto.getBreed());
-        animal.setCollected(dto.getCollected());
-        animal.setAdoptionPrice(dto.getAdoptionPrice());
-        animal.setSponsorPrice(dto.getSponsorPrice());
-        if (dto.getStatus() != null) {
-            animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
-        }
-        return animal;
-    }
-
+    @Autowired
+    private TagRepository tagRepository;
+    
     @Override
     public List<AnimalDto> getAllDto() {
         return animalRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(AnimalMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -94,15 +44,21 @@ public class AnimalServiceImpl implements AnimalService {
             animal.getImages().size();
         }
 
-        return ResponseEntity.ok(mapToDto(animal));
+        return ResponseEntity.ok(AnimalMapper.toDto(animal));
     }
 
     @Override
     public ResponseEntity<AnimalDto> createDto(AnimalDto dto) {
-        Animal animal = mapToEntity(dto);
-        setAnimalImages(animal, dto.getImages()); 
+        Animal animal = AnimalMapper.toEntity(dto);
+        setAnimalImages(animal, dto.getImages());
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+            List<Long> tagIds = dto.getTags().stream()
+                .map(tagDto -> tagDto.getId())
+                .collect(Collectors.toList());
+            animal.setTags(tagRepository.findByIdIn(tagIds));
+        }
         Animal saved = animalRepository.save(animal);
-        return ResponseEntity.ok(mapToDto(saved));
+        return ResponseEntity.ok(AnimalMapper.toDto(saved));
     }
 
     @Override
@@ -124,10 +80,17 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
         animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
-
         setAnimalImages(animal, dto.getImages());
+        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+            List<Long> tagIds = dto.getTags().stream()
+                .map(tagDto -> tagDto.getId())
+                .collect(Collectors.toList());
 
-        return ResponseEntity.ok(mapToDto(animalRepository.save(animal)));
+            animal.setTags(tagRepository.findByIdIn(tagIds));
+        }
+
+
+        return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
 
     @Override
@@ -137,49 +100,42 @@ public class AnimalServiceImpl implements AnimalService {
         animalRepository.delete(animal);
         return ResponseEntity.noContent().build();
     }
+
     @Override
     public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
         Page<Animal> animals;
 
-        // Si hay filtro de raza y sexo
         if (species != null && genderText != null) {
             boolean gender = convertGender(genderText);
             animals = animalRepository.findBySpeciesAndGender(species, gender, pageable);
-        } 
-        // Solo filtro por raza
-        else if (species != null) {
+        } else if (species != null) {
             animals = animalRepository.findBySpecies(species, pageable);
-        }
-        // Solo filtro por sexo
-        else if (genderText != null) {
+        } else if (genderText != null) {
             boolean gender = convertGender(genderText);
             animals = animalRepository.findByGender(gender, pageable);
-        } 
-        // Sin filtros
-        else {
+        } else {
             animals = animalRepository.findAll(pageable);
         }
+
         animals.forEach(animal -> animal.getImages().size());
 
-
-        return animals.map(this::mapToDto);
+        return animals.map(AnimalMapper::toDto);
     }
 
-    
     @Override
     public ResponseEntity<AnimalDto> updateImage(Long id, String filename) {
         Animal animal = animalRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
         animal.setImage(filename);
-        return ResponseEntity.ok(mapToDto(animalRepository.save(animal)));
+        return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
-
 
     private boolean convertGender(String genderText) {
         if ("masculino".equalsIgnoreCase(genderText)) return true;
         if ("femenino".equalsIgnoreCase(genderText)) return false;
         throw new IllegalArgumentException("Género inválido: debe ser 'masculino' o 'femenino'");
     }
+
     private void setAnimalImages(Animal animal, List<AnimalImageDto> imageDtos) {
         if (imageDtos != null) {
             animal.getImages().clear();
@@ -187,7 +143,7 @@ public class AnimalServiceImpl implements AnimalService {
                 AnimalImage image = new AnimalImage();
                 image.setFilename(dto.getFilename());
                 image.setFechaSubida(dto.getFechaSubida());
-                image.setAnimal(animal); 
+                image.setAnimal(animal);
                 animal.getImages().add(image);
             });
         }

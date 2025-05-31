@@ -1,6 +1,6 @@
 package com.login.mapper;
 
-import com.login.dto.AnimalDto;
+import com.login.dto.AnimalDto;	
 import com.login.dto.AnimalImageDto;
 import com.login.model.Animal;
 
@@ -26,7 +26,9 @@ public class AnimalMapper {
         dto.setCollected(animal.getCollected());
         dto.setAdoptionPrice(animal.getAdoptionPrice());
         dto.setSponsorPrice(animal.getSponsorPrice());
-        dto.setStatus(animal.getStatus().name());
+        if (animal.getStatus() != null) {
+            dto.setStatus(animal.getStatus().name());
+        }
         if (animal.getImages() != null) {
             List<AnimalImageDto> imageDtos = animal.getImages()
                 .stream()
@@ -40,6 +42,9 @@ public class AnimalMapper {
                 })
                 .collect(Collectors.toList());
             dto.setImages(imageDtos);
+        }
+        if (animal.getTags() != null) {
+        	dto.setTags(animal.getTags().stream().map(TagMapper::toDto).collect(Collectors.toList()));
         }
         return dto;
     }
@@ -61,9 +66,13 @@ public class AnimalMapper {
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
-        // Convertir el string a Enum
         if (dto.getStatus() != null) {
             animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+        }
+        if (dto.getTags() != null) {
+            animal.setTags(dto.getTags().stream()
+                .map(TagMapper::toEntity)
+                .collect(Collectors.toList()));
         }
 
         return animal;

@@ -2,7 +2,6 @@ package com.login.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,4 +46,13 @@ public class Animal {
 
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnimalImage> images = new ArrayList<>();
+    
+    @ManyToMany
+    @JoinTable(
+        name = "animals_tags",
+        joinColumns = @JoinColumn(name = "id_animal"),
+        inverseJoinColumns = @JoinColumn(name = "id_tag")
+    )
+    private List<Tag> tags = new ArrayList<>();
+
 }
