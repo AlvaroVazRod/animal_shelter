@@ -21,6 +21,7 @@ public class UserDto {
 	private String surname;
 	private String phone;
 	private String image;
+	private String status;
 
 	// Getters y setters
 
@@ -86,5 +87,13 @@ public class UserDto {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

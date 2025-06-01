@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
         dto.setPhone(user.getPhone());
         dto.setRole(user.getRole().name());
         dto.setImage(user.getImage());
+        dto.setStatus(user.getStatus().name());
         return dto;
     }
 
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(dto.getPhone());
         user.setRole(User.Role.valueOf(dto.getRole()));
         user.setImage(dto.getImage());
+        user.setStatus(User.UserStatus.valueOf(dto.getStatus()));
         return user;
     }
 
@@ -78,6 +80,7 @@ public class UserServiceImpl implements UserService {
             user.setName(dto.getName());
             user.setSurname(dto.getSurname());
             user.setPhone(dto.getPhone());
+            user.setStatus(User.UserStatus.valueOf(dto.getStatus()));
             return ResponseEntity.ok(mapToDto(userRepository.save(user)));
         }
         return ResponseEntity.status(403).build();
