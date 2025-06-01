@@ -1,12 +1,12 @@
 package com.login.controller;
 
-import com.login.dto.AnimalDto;
+import com.login.dto.AnimalDto;	
 import com.login.model.Animal;
+import com.login.repository.AnimalRepository;
 import com.login.service.AnimalService;
+import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
-
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,8 +19,16 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class AnimalController {
 
-    @Autowired
-    private AnimalService animalService;
+    
+    private final AnimalService animalService;
+    
+    private final  AnimalRepository animalRepository;
+    
+    public AnimalController(AnimalRepository animalRepository, AnimalService animalService) {
+    	this.animalRepository = animalRepository;
+    	this.animalService = animalService;
+    }
+
     
 
     @GetMapping
@@ -41,6 +49,16 @@ public class AnimalController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AnimalDto> getById(@PathVariable Long id) {
+    	// Obtener el animal
+        Animal animal = animalRepository.findById(id).orElseThrow();
+
+        // Si no tiene sponsor_price, lo calculamos automáticamente y lo guardamos
+        if (animal.getSponsorPrice() == null) {
+            double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+            animal.setSponsorPrice(precio);
+            animalRepository.save(animal);
+        }
+
         return animalService.getDtoById(id);
     }
 
@@ -69,7 +87,15 @@ public class AnimalController {
     
     @GetMapping("/{id}/sponsor-price")
     public ResponseEntity<Double> getSponsorPrice(@PathVariable Long id) {
-        return animalService.getSponsorPrice(id);
+        Animal animal = animalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Animal no encontrado"));
+        if (animal.getSponsorPrice() == null) {
+            double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+            animal.setSponsorPrice(precio);
+            animalRepository.save(animal);
+        }
+
+        return ResponseEntity.ok(animal.getSponsorPrice());
     }
 
 
