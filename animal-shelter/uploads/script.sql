@@ -6,7 +6,7 @@ USE db_animal_shelter;
 CREATE TABLE users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(32) NOT NULL UNIQUE, -- En un inicio, sera el email, obligaremos a definirlo cuando entre al perfil
-  email VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
   password CHAR(64) NOT NULL, -- Encriptada con BCrypt
   name VARCHAR(100) NOT NULL,
   surname VARCHAR(100),
@@ -112,12 +112,14 @@ CREATE TABLE adoptions (
   FOREIGN KEY (id_animal) REFERENCES animals(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (id_form) REFERENCES forms(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
-CREATE TABLE webhook_logs (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  event_type VARCHAR(100) NOT NULL,
-  raw_payload TEXT NOT NULL,
-  received_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+CREATE TABLE webhook_log (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  event_type VARCHAR(255),
+  raw_payload LONGTEXT,
+  received_at DATETIME
 );
+
 -- Insertar usuarios
 INSERT INTO users (username, email, password, name, surname, phone, role, image) VALUES
 ('jdoe', 'jdoe@example.com', SHA2('password123', 256), 'John', 'Doe', '+123456789', 'USER', NULL),
