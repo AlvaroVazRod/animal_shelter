@@ -1,7 +1,10 @@
 package com.login.controller;
 
-import com.login.dto.AnimalDto;	
+import com.login.dto.AnimalDto;
+import com.login.model.Animal;
 import com.login.service.AnimalService;
+import com.stripe.exception.StripeException;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ public class AnimalController {
 
     @Autowired
     private AnimalService animalService;
+    
 
     @GetMapping
     public ResponseEntity<Page<AnimalDto>> getAll(
@@ -41,7 +45,7 @@ public class AnimalController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimalDto> create(@Valid @RequestBody AnimalDto animalDto) {
+    public ResponseEntity<AnimalDto> create(@Valid @RequestBody AnimalDto animalDto) throws StripeException {
         return animalService.createDto(animalDto);
     }
 
@@ -62,5 +66,11 @@ public class AnimalController {
             @RequestParam String filename) {
         return animalService.updateImage(id, filename);
     }
+    
+    @GetMapping("/{id}/sponsor-price")
+    public ResponseEntity<Double> getSponsorPrice(@PathVariable Long id) {
+        return animalService.getSponsorPrice(id);
+    }
+
 
 }

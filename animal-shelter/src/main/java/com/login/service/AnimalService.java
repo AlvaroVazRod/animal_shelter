@@ -1,6 +1,8 @@
 package com.login.service;
 
-import com.login.dto.AnimalDto;	
+import com.login.dto.AnimalDto;
+import com.stripe.exception.StripeException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,7 @@ public interface AnimalService {
 
     ResponseEntity<AnimalDto> getDtoById(Long id);
 
-    ResponseEntity<AnimalDto> createDto(AnimalDto animalDto);
+    ResponseEntity<AnimalDto> createDto(AnimalDto animalDto) throws StripeException;
 
     ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto animalDto);
 
@@ -22,6 +24,7 @@ public interface AnimalService {
 
     ResponseEntity<AnimalDto> updateImage(Long id, String filename);
     
+    ResponseEntity<Double> getSponsorPrice(Long id);
 
 }
 

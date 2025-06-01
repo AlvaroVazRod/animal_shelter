@@ -26,17 +26,20 @@ CREATE TABLE animals (
   height DECIMAL(6,2),
   length DECIMAL(6,2),
   age INT,
-  gender BOOLEAN, -- Maculino true, femenino false
-  color VARCHAR(50), -- Prescindible
-  image VARCHAR(255), -- Nombre autogenerado para evitar problemas
+  gender BOOLEAN,
+  color VARCHAR(50),
+  image VARCHAR(255),
   species VARCHAR(50),
   breed VARCHAR(50),
   adoption_price DECIMAL(10,2) NOT NULL,
   sponsor_price DECIMAL(10,2) NOT NULL,
-  collected DECIMAL(10,2) DEFAULT 0.00, -- Se recalculara en funcion de la tabla donaciones
-  status ENUM('draft', 'active', 'adopted', 'requires_funding') DEFAULT 'draft', -- Nos da control sobre los animales que mostrar y donde/como mostrarlos
-  arrival_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  collected DECIMAL(10,2) DEFAULT 0.00,
+  status ENUM('draft', 'active', 'adopted', 'requires_funding') DEFAULT 'draft',
+  arrival_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  stripe_product_id VARCHAR(100),
+  stripe_price_id VARCHAR(100)
 );
+
 
 -- Tabla de imágenes de animales
 CREATE TABLE animals_image (

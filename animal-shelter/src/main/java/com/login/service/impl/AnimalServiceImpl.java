@@ -9,6 +9,10 @@ import com.login.model.AnimalImage;
 import com.login.repository.AnimalRepository;
 import com.login.repository.TagRepository;
 import com.login.service.AnimalService;
+import com.login.service.StripeService;
+import com.login.utils.AnimalPricingUtils;
+import com.stripe.exception.StripeException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +31,17 @@ public class AnimalServiceImpl implements AnimalService {
     @Autowired
     private TagRepository tagRepository;
     
+    @Autowired
+    private StripeService stripeService;
+
+    public AnimalServiceImpl(AnimalRepository animalRepository, 
+                             TagRepository tagRepository,
+                             StripeService stripeService) {
+        this.animalRepository = animalRepository;
+        this.tagRepository = tagRepository;
+        this.stripeService = stripeService;
+    }
+
     @Override
     public List<AnimalDto> getAllDto() {
         return animalRepository.findAll()
@@ -49,22 +64,54 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public ResponseEntity<AnimalDto> createDto(AnimalDto dto) {
-        Animal animal = AnimalMapper.toEntity(dto);
-        setAnimalImages(animal, dto.getImages());
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            List<Long> tagIds = dto.getTags().stream()
-                .map(tagDto -> tagDto.getId())
-                .collect(Collectors.toList());
-            animal.setTags(tagRepository.findByIdIn(tagIds));
+        try {
+            Animal animal = AnimalMapper.toEntity(dto);
+            setAnimalImages(animal, dto.getImages());
+
+            if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+                List<Long> tagIds = dto.getTags().stream()
+                    .map(tagDto -> tagDto.getId())
+                    .collect(Collectors.toList());
+                animal.setTags(tagRepository.findByIdIn(tagIds));
+            }
+
+            double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+            animal.setSponsorPrice(precio);
+
+            String productId = stripeService.createProduct(animal.getName(), animal.getDescription());
+            String priceId = stripeService.createRecurringPrice(productId, precio);
+
+            animal.setStripeProductId(productId);
+            animal.setStripePriceId(priceId);
+
+            Animal saved = animalRepository.save(animal);
+            return ResponseEntity.ok(AnimalMapper.toDto(saved));
+        } catch (StripeException e) {
+            throw new RuntimeException("Error al crear producto en Stripe: " + e.getMessage(), e);
         }
-        Animal saved = animalRepository.save(animal);
-        return ResponseEntity.ok(AnimalMapper.toDto(saved));
     }
+
+
+
 
     @Override
     public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+
+        try {
+            if (dto.getName() != null && !dto.getName().equals(animal.getName()) ||
+                dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
+                stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
+            }
+
+            if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
+                String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), dto.getSponsorPrice());
+                animal.setStripePriceId(newPriceId);
+            }
+        } catch (StripeException e) {
+            throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
+        }
 
         animal.setName(dto.getName());
         animal.setDescription(dto.getDescription());
@@ -81,25 +128,35 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setSponsorPrice(dto.getSponsorPrice());
         animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
         setAnimalImages(animal, dto.getImages());
+
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             List<Long> tagIds = dto.getTags().stream()
-                .map(tagDto -> tagDto.getId())
-                .collect(Collectors.toList());
-
+                    .map(tagDto -> tagDto.getId())
+                    .collect(Collectors.toList());
             animal.setTags(tagRepository.findByIdIn(tagIds));
         }
 
-
         return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
+
 
     @Override
     public ResponseEntity<Void> delete(Long id) {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+
+        if (animal.getStripeProductId() != null) {
+            try {
+                stripeService.archiveProduct(animal.getStripeProductId());
+            } catch (StripeException e) {
+                throw new RuntimeException("Error al archivar producto en Stripe: " + e.getMessage(), e);
+            }
+        }
+
         animalRepository.delete(animal);
         return ResponseEntity.noContent().build();
     }
+
 
     @Override
     public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
@@ -129,6 +186,14 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setImage(filename);
         return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
+    
+    @Override
+    public ResponseEntity<Double> getSponsorPrice(Long id) {
+        Animal animal = animalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+        return ResponseEntity.ok(animal.getSponsorPrice());
+    }
+
 
     private boolean convertGender(String genderText) {
         if ("masculino".equalsIgnoreCase(genderText)) return true;

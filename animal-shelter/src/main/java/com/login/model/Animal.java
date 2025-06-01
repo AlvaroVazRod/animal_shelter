@@ -29,6 +29,8 @@ public class Animal {
     private Double adoptionPrice;
     private Double sponsorPrice;
     private LocalDateTime arrivalDate;
+    private String stripeProductId;
+    private String stripePriceId;
 
     @Enumerated(EnumType.STRING)
     private AnimalStatus status;
