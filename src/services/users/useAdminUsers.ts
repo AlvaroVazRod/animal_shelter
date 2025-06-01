@@ -18,7 +18,6 @@ export function useAdminUsers() {
             });
             if (!res.ok) throw new Error("Error al cargar usuarios");
             const data = await res.json();
-            console.log(data)
             setUsers(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Error desconocido");
@@ -40,7 +39,6 @@ export function useAdminUsers() {
             if (user.status !== "inactive") {
                 // Hacer update cambiando status a inactive
                 const updatedUserData = { ...user, status: "inactive" };
-                console.log(updatedUserData)
                 const res = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
                     method: "PUT",
                     headers: {

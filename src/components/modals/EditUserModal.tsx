@@ -3,7 +3,6 @@ import type { UserDTO } from "../../types/UserDTO";
 
 interface EditUserModalProps {
     isOpen: boolean;
-    user: UserDTO;
     form: Partial<UserDTO>;
     isSaving: boolean;
     error: string | null;
@@ -15,7 +14,6 @@ interface EditUserModalProps {
 
 export const EditUserModal: React.FC<EditUserModalProps> = ({
     isOpen,
-    user,
     form,
     isSaving,
     error,
@@ -41,7 +39,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
         >
             <div
                 className={`bg-[#2D2A32] rounded-lg shadow-lg max-w-lg w-full p-6
-          transform transition-transform duration-600 ${isOpen ? "ease-in scale-100" : "scale-90"
+                    transform transition-transform duration-600 ${isOpen ? "ease-in scale-100" : "scale-90"
                     }`}
                 onClick={(e) => e.stopPropagation()}
             >

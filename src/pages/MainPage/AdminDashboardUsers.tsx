@@ -4,11 +4,11 @@ import { UsersTable } from "../../components/tables/UsersTable";
 import { useAdminUsers } from "../../services/users/useAdminUsers";
 import { useState } from "react";
 import type { UserDTO } from "../../types/UserDTO";
-import { useUser } from "../../services/users/useUser";
+// import { useUser } from "../../services/users/useUser";
 
 export default function AdminDashboardUsers() {
   const { users, loading, error, deleteUser, updateUser } = useAdminUsers();
-  const { register } = useUser();
+  // const { register } = useUser();
 
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
   const [editForm, setEditForm] = useState<Partial<UserDTO>>({});
@@ -27,13 +27,13 @@ export default function AdminDashboardUsers() {
   };
 
   // Abrir modal para crear usuario nuevo
-  const openCreateModal = () => {
-    setEditingUser(null);
-    setEditForm({});
-    setEditError(null);
-    setModalMode('create');
-    setIsModalOpen(true);
-  };
+  // const openCreateModal = () => {
+  //   setEditingUser(null);
+  //   setEditForm({});
+  //   setEditError(null);
+  //   setModalMode('create');
+  //   setIsModalOpen(true);
+  // };
 
   // Cerrar modal
   const closeEditModal = () => {
@@ -124,7 +124,6 @@ export default function AdminDashboardUsers() {
 
           <EditUserModal
             isOpen={isModalOpen}
-            user={editingUser || ({} as UserDTO)}
             form={editForm}
             isSaving={isSaving}
             error={editError}

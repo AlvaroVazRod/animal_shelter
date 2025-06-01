@@ -23,6 +23,31 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const { createSponsorSession } = useSponsorCheckout();
   const [sponsorPrice, setSponsorPrice] = useState<number | null>(null);
 
+  const darkenHexColor = (hex: string, amount = 30) => {
+    const cleanHex = hex.replace('#', '');
+    const num = parseInt(cleanHex, 16);
+    let r = (num >> 16) - amount;
+    let g = ((num >> 8) & 0x00FF) - amount;
+    let b = (num & 0x0000FF) - amount;
+
+
+
+    r = Math.max(0, r);
+    g = Math.max(0, g);
+    b = Math.max(0, b);
+
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  const hexToRgba = (hex: string, alpha = 0.3) => {
+    const cleanHex = hex.replace('#', '');
+    const bigint = parseInt(cleanHex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (
       modalContentRef.current &&
@@ -155,25 +180,21 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
             {animal.tags?.map((tag) => (
               <span
                 key={tag.id}
-                className="text-xs font-semibold px-3 py-1 rounded-full animate-slide-in"
-                style={{
-                  backgroundColor: tag.color ?? "#F3E8FF",
-                  color: "#AD03CB",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.25rem",
-                }}
+                title={tag.description}  // <-- Aquí agregamos el tooltip
+                className="flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full animate-slide-in"
+                style={{ backgroundColor: hexToRgba(tag.color, 0.4), color: darkenHexColor(tag.color, 90) }}
               >
                 {tag.icon && (
                   <img
                     src={`http://localhost:8080/tags/${tag.icon}`}
-                    alt="icono"
-                    className="w-4 h-4"
+                    alt={tag.name + " icono"}
+                    className="w-3 h-3"
                   />
                 )}
                 {tag.name}
               </span>
             ))}
+
           </div>
 
           <div className="text-center text-sm text-gray-600 mt-2">
