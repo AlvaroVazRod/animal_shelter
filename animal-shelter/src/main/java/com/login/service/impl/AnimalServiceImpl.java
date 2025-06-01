@@ -100,14 +100,16 @@ public class AnimalServiceImpl implements AnimalService {
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
         try {
-            if (dto.getName() != null && !dto.getName().equals(animal.getName()) ||
-                dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
-                stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
-            }
+            if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
+                if (dto.getName() != null && !dto.getName().equals(animal.getName()) ||
+                    dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
+                    stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
+                }
 
-            if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
-                String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), dto.getSponsorPrice());
-                animal.setStripePriceId(newPriceId);
+                if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
+                    String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), dto.getSponsorPrice());
+                    animal.setStripePriceId(newPriceId);
+                }
             }
         } catch (StripeException e) {
             throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
@@ -126,7 +128,11 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
-        animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+
+        if (dto.getStatus() != null) {
+            animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+        }
+
         setAnimalImages(animal, dto.getImages());
 
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
@@ -138,6 +144,7 @@ public class AnimalServiceImpl implements AnimalService {
 
         return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
+
 
 
     @Override

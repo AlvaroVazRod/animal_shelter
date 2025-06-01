@@ -1,6 +1,6 @@
 package com.login.mapper;
 
-import com.login.dto.AnimalDto;	
+import com.login.dto.AnimalDto;
 import com.login.dto.AnimalImageDto;
 import com.login.model.Animal;
 
@@ -26,9 +26,11 @@ public class AnimalMapper {
         dto.setCollected(animal.getCollected());
         dto.setAdoptionPrice(animal.getAdoptionPrice());
         dto.setSponsorPrice(animal.getSponsorPrice());
+
         if (animal.getStatus() != null) {
             dto.setStatus(animal.getStatus().name());
         }
+
         if (animal.getImages() != null) {
             List<AnimalImageDto> imageDtos = animal.getImages()
                 .stream()
@@ -43,9 +45,13 @@ public class AnimalMapper {
                 .collect(Collectors.toList());
             dto.setImages(imageDtos);
         }
+
         if (animal.getTags() != null) {
-        	dto.setTags(animal.getTags().stream().map(TagMapper::toDto).collect(Collectors.toList()));
+            dto.setTags(animal.getTags().stream()
+                .map(TagMapper::toDto)
+                .collect(Collectors.toList()));
         }
+
         return dto;
     }
 
@@ -58,7 +64,7 @@ public class AnimalMapper {
         animal.setHeight(dto.getHeight());
         animal.setLength(dto.getLength());
         animal.setAge(dto.getAge());
-        animal.setGender(dto.getGender() != null ? (dto.getGender() == "masculino" ? true : false ) : null);
+        animal.setGender(dto.getGender() != null ? "masculino".equals(dto.getGender()) : null);
         animal.setColor(dto.getColor());
         animal.setImage(dto.getImage());
         animal.setSpecies(dto.getSpecies());
@@ -66,9 +72,11 @@ public class AnimalMapper {
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
+
         if (dto.getStatus() != null) {
             animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
         }
+
         if (dto.getTags() != null) {
             animal.setTags(dto.getTags().stream()
                 .map(TagMapper::toEntity)
