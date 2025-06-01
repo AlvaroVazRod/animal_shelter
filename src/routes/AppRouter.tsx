@@ -10,6 +10,8 @@ import AdminDashboardUsers from "../pages/MainPage/AdminDashboardUsers";
 import AdminDashboardAnimals from "../pages/MainPage/AdminDashboardAnimals";
 import WebhookLogsPage from "../pages/MainPage/AdminDashboardWebhookLogs"
 import Donate from "../components/Donate";
+import SuccessPage from "../pages/SuccessPage";
+import CancelPage from "../pages/CancelPage";
 
 import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
@@ -32,6 +34,8 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
         {/* <Route path="/main" element={<Main />} /> */}
         <Route path="/animales" element={<AnimalsPage/>}/>
         <Route path="/adopt/:id" element={<AdoptionFormPage />} />
+         <Route path="/success" element={<SuccessPage />} />
+      <Route path="/cancel" element={<CancelPage />} />
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/donate" element={<Donate />} />

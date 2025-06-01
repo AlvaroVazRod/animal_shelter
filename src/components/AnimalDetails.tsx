@@ -91,7 +91,12 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   useEffect(() => {
     const fetchSponsorPrice = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/sponsor/price/${animal.id}`);
+        const token = localStorage.getItem("token") || "";
+        const response = await fetch(`http://localhost:8080/api/animales/${animal.id}/sponsor-price`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Error al obtener el precio");
         const price = await response.json();
         setSponsorPrice(price);
