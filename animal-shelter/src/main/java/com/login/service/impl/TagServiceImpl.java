@@ -85,6 +85,7 @@ public class TagServiceImpl implements TagService {
         tag.setName(tagDto.getName());
         tag.setDescription(tagDto.getDescription());
         tag.setColor(tagDto.getColor());
+        tag.setIcon(tagDto.getIcon());
         tag = tagRepository.save(tag);
 
         if (iconFile != null && !iconFile.isEmpty()) {
