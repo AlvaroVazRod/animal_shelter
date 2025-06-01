@@ -12,14 +12,11 @@ export interface Animal {
   species: string;
   breed: string;
   gender: string;
-  maxDonations: number;
   collected: number;
   status: string;
-  priority: 'low' | 'medium' | 'high';
   type?: string;
-  vaccines?: string[];
-  surgery?: boolean;
-  specialNeeds?: boolean;
+  sponsorPrice: number;
+  adoptionPrice: number;
   images?: AnimalImage[];
   tags?: AnimalTag[];
 }

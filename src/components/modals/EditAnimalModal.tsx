@@ -1,0 +1,279 @@
+import { useRef, useEffect } from "react";
+import type { Animal } from "../../types/Animals";
+
+interface EditAnimalModalProps {
+    isOpen: boolean;
+    animal?: Animal;
+    mode: "edit" | "create";
+    editForm: Partial<Animal>;
+    onClose: () => void;
+    onChange: (field: keyof Animal, value: string | number) => void;
+    onSubmit: (form: Partial<Animal>) => Promise<void>;
+    isSaving: boolean;
+    editError: string | null;
+}
+
+export const EditAnimalModal = ({
+    isOpen,
+    mode,
+    editForm,
+    onClose,
+    onChange,
+    onSubmit,
+    isSaving,
+    editError,
+}: EditAnimalModalProps) => {
+    const nameInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => nameInputRef.current?.focus(), 100);
+        }
+    }, [isOpen]);
+
+    return (
+        <div
+            className={`fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50
+            transition-opacity duration-600 ease-out
+            ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            onClick={onClose}
+        >
+            <div
+                className={`bg-[#2D2A32] rounded-lg shadow-lg max-w-3xl w-full p-6
+                transform transition-transform duration-600
+                ${isOpen ? "ease-in scale-100" : "scale-90"}`}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h3 className="text-2xl font-bold mb-4 text-[#e8e8e8]">
+                    {mode === "edit" ? "Editar Animal" : "Crear Animal"}
+                </h3>
+
+                <form
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        await onSubmit(editForm);
+                    }}
+                >
+                    {/* Nombre + Precios */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="name" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Nombre
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                value={editForm.name ?? ""}
+                                onChange={(e) => onChange("name", e.target.value)}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 text-[#e8e8e8] bg-[#2D2A32]"
+                                ref={nameInputRef}
+                                required
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="adoptionPrice" className="block text-[#e8e8e8] font-semibold mb-1">
+                                    Adopción ($)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="adoptionPrice"
+                                    value={editForm.adoptionPrice !== undefined ? editForm.adoptionPrice : ""}
+                                    onChange={(e) => onChange("adoptionPrice", parseFloat(e.target.value))}
+                                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 text-[#e8e8e8] bg-[#2D2A32]"
+                                    min="0"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="sponsorPrice" className="block text-[#e8e8e8] font-semibold mb-1">
+                                    Patrocinio ($)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="sponsorPrice"
+                                    value={editForm.sponsorPrice !== undefined ? editForm.sponsorPrice : ""}
+                                    onChange={(e) => onChange("sponsorPrice", parseFloat(e.target.value))}
+                                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 text-[#e8e8e8] bg-[#2D2A32]"
+                                    min="0"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Especie, Raza, Edad */}
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="species" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Especie
+                            </label>
+                            <input
+                                type="text"
+                                id="species"
+                                value={editForm.species || ""}
+                                onChange={(e) => onChange("species", e.target.value)}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="breed" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Raza
+                            </label>
+                            <input
+                                type="text"
+                                id="breed"
+                                value={editForm.breed || ""}
+                                onChange={(e) => onChange("breed", e.target.value)}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="age" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Edad
+                            </label>
+                            <input
+                                type="number"
+                                id="age"
+                                value={editForm.age || ""}
+                                onChange={(e) => onChange("age", parseInt(e.target.value))}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                min="0"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Género, Estado, Peso */}
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="gender" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Género
+                            </label>
+                            <select
+                                id="gender"
+                                value={editForm.gender || ""}
+                                onChange={(e) => onChange("gender", e.target.value)}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                required
+                            >
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="status" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Estado
+                            </label>
+                            <select
+                                id="status"
+                                value={editForm.status || ""}
+                                onChange={(e) => onChange("status", e.target.value)}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                required
+                            >
+                                <option value="">Seleccionar...</option>
+                                <option value="active">Disponible</option>
+                                <option value="requires_funding">Adoptado</option>
+                                <option value="draft">En proceso</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="weight" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Peso (kg)
+                            </label>
+                            <input
+                                type="number"
+                                id="weight"
+                                value={editForm.weight || ""}
+                                onChange={(e) => onChange("weight", parseFloat(e.target.value))}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                min="0"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Altura y Largo */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="height" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Altura (cm)
+                            </label>
+                            <input
+                                type="number"
+                                id="height"
+                                value={editForm.height || ""}
+                                onChange={(e) => onChange("height", parseFloat(e.target.value))}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                min="0"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="length" className="block text-[#e8e8e8] font-semibold mb-1">
+                                Largo (cm)
+                            </label>
+                            <input
+                                type="number"
+                                id="length"
+                                value={editForm.length || ""}
+                                onChange={(e) => onChange("length", parseFloat(e.target.value))}
+                                className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8]"
+                                min="0"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Descripción */}
+                    <div className="mb-4">
+                        <label htmlFor="description" className="block text-[#e8e8e8] font-semibold mb-1">
+                            Descripción
+                        </label>
+                        <textarea
+                            id="description"
+                            value={editForm.description || ""}
+                            onChange={(e) => onChange("description", e.target.value)}
+                            className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 bg-[#2D2A32] text-[#e8e8e8] resize-none"
+                            rows={3}
+                            required
+                        />
+                    </div>
+
+                    {/* Error */}
+                    {editError && (
+                        <div className="mb-4 text-red-600 font-semibold">{editError}</div>
+                    )}
+
+                    {/* Botones */}
+                    <div className="flex justify-end items-center space-x-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 bg-[#48e0af] text-[#294a3f] font-semibold rounded-md hover:bg-[#4ECCA3] transition-colors"
+                            disabled={isSaving}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-[#48e0af] text-[#294a3f] font-semibold rounded-md hover:bg-[#4ECCA3] flex items-center justify-center space-x-2"
+                            disabled={isSaving}
+                        >
+                            {isSaving && (
+                                <svg className="animate-spin h-5 w-5 text-[#e8e8e8]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                </svg>
+                            )}
+                            <span>{mode === "edit" ? "Guardar" : "Crear"}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
