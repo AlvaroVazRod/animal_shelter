@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -6,16 +6,22 @@ import "swiper/css/pagination";
 import type { Animal } from "../types/Animals";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../services/users/useUser";
+import { loadStripe } from "@stripe/stripe-js";
+import { useSponsorCheckout } from "../services/stripe/useSponsorCheckout";
 
 interface AnimalDetailsProps {
   animal: Animal;
   onClose: () => void;
 }
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
+
 export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { getToken } = useUser();
+  const { createSponsorSession } = useSponsorCheckout();
+  const [sponsorPrice, setSponsorPrice] = useState<number | null>(null);
 
   const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (
@@ -35,14 +41,41 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
     }
   };
 
-  const handleSponsor = () => {
+  const handleSponsor = async () => {
     const token = getToken();
-    if (token) {
-      navigate(`/sponsor/${animal.id}`);
-    } else {
+    if (!token) {
       navigate("/login");
+      return;
     }
+
+    const stripe = await stripePromise;
+    if (!stripe) {
+      console.error("Stripe no se cargó");
+      return;
+    }
+
+    const sessionId = await createSponsorSession(animal.id);
+    if (!sessionId) {
+      alert("No se pudo iniciar el proceso de apadrinamiento.");
+      return;
+    }
+
+    await stripe.redirectToCheckout({ sessionId });
   };
+
+  useEffect(() => {
+    const fetchSponsorPrice = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/sponsor/price/${animal.id}`);
+        if (!response.ok) throw new Error("Error al obtener el precio");
+        const price = await response.json();
+        setSponsorPrice(price);
+      } catch (error) {
+        console.error("Error al cargar el precio de apadrinamiento:", error);
+      }
+    };
+    if (animal?.id) fetchSponsorPrice();
+  }, [animal]);
 
   return (
     <div
@@ -141,6 +174,14 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
                 {tag.name}
               </span>
             ))}
+          </div>
+
+          <div className="text-center text-sm text-gray-600 mt-2">
+            {sponsorPrice !== null && (
+              <p>
+                Apadrina a este animal por <span className="font-semibold text-[#AD03CB]">{sponsorPrice.toFixed(2)} €/mes</span>
+              </p>
+            )}
           </div>
 
           <div className="flex justify-center gap-3 mt-6">
