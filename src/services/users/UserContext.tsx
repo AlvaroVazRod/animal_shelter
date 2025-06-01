@@ -1,4 +1,3 @@
-
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../types/User";
@@ -53,10 +52,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (!res.ok) throw new Error("No se pudo obtener el usuario actual");
 
       const data = await res.json();
+      if(data.status === 'inactive') logout();
       setUser({
+        id: data.id,
         username: data.username,
         role: data.role,
         image: data.image,
+        status: data.status
       });
       localStorage.setItem("img", data.image || "");
     } catch (err) {
@@ -142,7 +144,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           name,
           surname,
           phone,
-          newsletter
+          newsletter,
+          status: "active"
         }),
       });
 
