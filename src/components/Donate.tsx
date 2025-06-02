@@ -41,7 +41,6 @@ export const Donate = () => {
 
     const session = await res.json();
 
-
     if (stripe && session.id) {
       await stripe.redirectToCheckout({ sessionId: session.id });
     } else {
@@ -51,18 +50,12 @@ export const Donate = () => {
 
   return (
     <DefaultPageTemplate>
-      <div
-        className="relative z-0 min-h-screen bg-cover bg-center px-4"
-        style={{
-          backgroundImage: "url('./mainBgBlur.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="min-h-screen flex flex-col items-center justify-center p-8 text-[#40170E]">
-          <div className="relative z-10 max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638]">
-            <h2 className="text-4xl font-bold mb-8 text-center">Haz una Donación</h2>
+      <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center">
+        <div className="min-h-screen flex flex-col items-center justify-center p-8 text-[#AD03CB]">
+          <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
+            <h2 className="text-4xl font-bold mb-8 text-center">
+              Haz una Donación
+            </h2>
 
             <div className="flex flex-wrap gap-4 justify-center mb-6">
               {predefinedAmounts.map((value) => (
@@ -72,10 +65,11 @@ export const Donate = () => {
                     setAmount(value);
                     setCustomAmount("");
                   }}
-                  className={`px-6 py-2 rounded-full font-semibold border ${amount === value
-                    ? "bg-[#D97236] text-white"
-                    : "bg-[#F2DCB3]"
-                    } transition-all hover:scale-105`}
+                  className={`px-6 py-2 rounded-full font-semibold border ${
+                    amount === value
+                      ? "bg-[#AD03CB] text-white"
+                      : "bg-[#F6F0FA]"
+                  } transition-all hover:scale-105`}
                 >
                   {value}€
                 </button>
@@ -99,7 +93,7 @@ export const Donate = () => {
             <div className="flex justify-center">
               <button
                 onClick={handleDonate}
-                className="bg-[#40170E] text-white px-6 py-3 rounded-full font-bold hover:bg-[#D97236] transition-all"
+                className="bg-[#AD03CB] text-white px-6 py-3 rounded-full font-bold hover:bg-[#eed4ff] transition-all"
               >
                 Donar Ahora
               </button>

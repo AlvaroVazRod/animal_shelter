@@ -60,21 +60,13 @@ const handleUpload = async () => {
 
   return (
     <DefaultPageTemplate>
-      <div
-        className="min-h-screen bg-cover bg-center flex items-center justify-center relative px-4 pt-15"
-        style={{
-          backgroundImage: "url('./mainBg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
-        <div className="relative z-10 max-w-md w-full bg-[#F2DCB3]/90 p-8 rounded-lg shadow-lg border-2 border-[#A65638]">
+      <div className="min-h-screen bg-white bg-cover bg-center flex items-center justify-center relative px-4 mt-10">
+        <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-[#40170E]">
+            <h2 className="text-3xl font-bold text-[#AD03CB]">
               Perfil de Usuario
             </h2>
-            <p className="mt-2 text-[#A65638]">
+            <p className="mt-2">
               Gestiona tu información personal
             </p>
           </div>
@@ -85,29 +77,29 @@ const handleUpload = async () => {
                 <img
                   src={`http://localhost:8080/images/user/${user.image}`}
                   alt="Avatar"
-                  className="w-32 h-32 object-cover rounded-full border-4 border-[#A65638] mb-4"
+                  className="w-32 h-32 object-cover rounded-full border-4 border-[#AD03CB] mb-4"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-[#A65638] flex items-center justify-center text-white text-4xl mb-4">
+                <div className="w-32 h-32 rounded-full border-2 border-[#AD03CB] bg-[#d68ae3] flex items-center justify-center text-white text-4xl mb-4">
                   {user?.username?.charAt(0).toUpperCase()}
                 </div>
               )}
 
-              <h3 className="text-xl font-bold text-[#40170E]">
+              <h3 className="text-xl font-bold text-[#AD03CB]">
                 {user?.username}
               </h3>
             </div>
 
             <div className="space-y-4">
               <div className="text-center ">
-                <label className="block text-sm font-medium text-[#40170E] mb-1">
+                <label className="block text-sm font-medium text-[#AD03CB] mb-1">
                   Cambiar imagen de perfil
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="block w-full text-sm text-[#40170E] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#D97236] file:text-white hover:file:bg-[#A65638] transition-colors border rounded-2xl"
+                  className="block w-full text-sm text-[#AD03CB] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#b454c4] file:text-white hover:file:bg-[#AD03CB] transition-colors  border rounded-2xl"
                 />
               </div>
               {selectedFile && (
@@ -115,9 +107,9 @@ const handleUpload = async () => {
                   onClick={handleUpload}
                   disabled={isLoading}
                   className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${isLoading
-                      ? "bg-[#A65638]"
-                      : "bg-[#D97236] hover:bg-[#A65638]"
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#40170E] transition-colors`}
+                      ? "bg-[#AD03CB]"
+                      : "bg-[#b454c4] hover:bg-[#AD03CB]"
+                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD03CB] transition-colors`}
                 >
                   {isLoading ? (
                     <>
@@ -161,10 +153,10 @@ const handleUpload = async () => {
               )}
             </div>
 
-            <div className="pt-4 border-t border-[#A65638]/50">
+            <div className="pt-4 border-t border-[#AD03CB]/50">
               <button
                 onClick={handleLogout}
-                className="w-full py-2 px-4 bg-transparent border border-[#A65638] text-[#40170E] font-medium rounded-md hover:bg-[#A65638]/20 transition-colors"
+                className="w-full py-2 px-4 bg-transparent border border-[#AD03CB] text-[#AD03CB] font-medium rounded-md hover:bg-[#AD03CB] hover:text-white transition-colors"
               >
                 Cerrar sesión
               </button>
