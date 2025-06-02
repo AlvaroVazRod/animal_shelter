@@ -9,6 +9,7 @@ import com.login.repository.AnimalImageRepository;
 import com.login.repository.AnimalRepository;
 import com.login.service.AnimalImageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,15 +25,18 @@ public class AnimalImageServiceImpl implements AnimalImageService {
 
     private final AnimalImageRepository imageRepository;
     private final AnimalRepository animalRepository;
+    private final AnimalImageRepository animalImageRepository;
+
 
     @Value("${animal.image.upload-dir:uploads/animals}")
     private String uploadDir;
 
     private Path uploadPath;
 
-    public AnimalImageServiceImpl(AnimalImageRepository imageRepository, AnimalRepository animalRepository) {
+    public AnimalImageServiceImpl(AnimalImageRepository imageRepository, AnimalRepository animalRepository, AnimalImageRepository animalImageRepository) {
         this.imageRepository = imageRepository;
         this.animalRepository = animalRepository;
+        this.animalImageRepository =animalImageRepository;
     }
 
     @PostConstruct
@@ -74,6 +78,25 @@ public class AnimalImageServiceImpl implements AnimalImageService {
 
         return AnimalImageMapper.toDto(imageRepository.save(image));
     }
+    
+    @Override
+    public ResponseEntity<Void> deleteAnimalImage(Long imageId) {
+        AnimalImage image = animalImageRepository.findById(imageId)
+            .orElseThrow(() -> new ResourceNotFoundException("Imagen no encontrada"));
+
+        if (image.getFilename() != null) {
+            Path imagePath = uploadPath.resolve(image.getFilename());
+            try {
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al eliminar el archivo de imagen", e);
+            }
+        }
+
+        animalImageRepository.delete(image);
+        return ResponseEntity.noContent().build();
+    }
+
 
     private String getFileExtension(String filename) {
         int dotIndex = filename.lastIndexOf(".");

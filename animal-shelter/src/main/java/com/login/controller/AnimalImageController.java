@@ -27,9 +27,22 @@ public class AnimalImageController {
 
     @Operation(summary = "Get images by animal ID", description = "Retrieves all images associated with a specific animal")
     @ApiResponse(responseCode = "200", description = "Images retrieved successfully")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{animalId}")
     public ResponseEntity<List<AnimalImageDto>> getImagesByAnimal(@PathVariable Long animalId) {
         return ResponseEntity.ok(animalImageService.getImagesByAnimalId(animalId));
+    }
+    
+    @Operation(summary = "Delete image by ID", description = "Deletes a specific image by its ID (admin only)")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Image deleted successfully"),
+        @ApiResponse(responseCode = "403", description = "Only admins can delete images"),
+        @ApiResponse(responseCode = "404", description = "Image not found")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{imageId}")
+    public ResponseEntity<Void> deleteAnimalImage(@PathVariable Long imageId) {
+        return animalImageService.deleteAnimalImage(imageId);
     }
 
     @Operation(summary = "Upload image for animal", description = "Uploads an image for a specific animal (admin only)")
