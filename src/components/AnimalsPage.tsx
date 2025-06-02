@@ -90,7 +90,7 @@ export const AnimalsPage = () => {
 
   return (
     <DefaultPageTemplate>
-      <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 bg-[#f5f5f5]">
+      <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 bg-[#f5f5f5] pt-20">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl sm:text-4xl font-extrabold text-center mb-8 text-[#A444C5] tracking-tight">
             Nuestros peludos en busca de hogar
