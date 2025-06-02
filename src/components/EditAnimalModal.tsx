@@ -196,14 +196,6 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
               onChange={(e) => handleInputChange("adoptionPrice", Number.parseFloat(e.target.value))}
               required
             />
-            <Input
-              label="Patrocinio ($) *"
-              type="number"
-              step="0.01"
-              value={formData.sponsorPrice || ""}
-              onChange={(e) => handleInputChange("sponsorPrice", Number.parseFloat(e.target.value))}
-              required
-            />
           </div>
         </div>
 

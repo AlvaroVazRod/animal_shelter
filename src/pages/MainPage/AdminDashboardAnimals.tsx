@@ -124,35 +124,43 @@ export const AdminAnimalsPage: React.FC = () => {
     try {
       const token = getToken();
 
+      const { sponsorPrice, ...formDataWithoutSponsor } = formData;
+
+      // Formatear la fecha de llegada si está presente
+      if (formData.arrivalDate && !formData.arrivalDate.includes("T")) {
+        formData.arrivalDate = formData.arrivalDate + "T00:00:00";
+      }
+
       if (editingAnimal) {
-        // Implementa aquí la lógica para actualizar, si lo deseas
-        setAnimals((prev) =>
-          prev.map((a) => (a.id === editingAnimal.id ? { ...a, ...formData } : a))
-        );
+        // ACTUALIZAR
+        const response = await fetch(`http://localhost:8080/api/animales/${editingAnimal.id}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) throw new Error("Error al actualizar el animal");
+
+        await fetchAnimals(page);
       } else {
+        // CREAR
         const form = new FormData();
+        form.append("animal", new Blob([JSON.stringify(formData)], { type: "application/json" }));
 
-        // Append each field to FormData
-        if (formData) form.append("animal", new Blob([JSON.stringify(formData)], { type: "application/json" }));
-
-        // Soportar archivo de imagen (solo si es File)
         if (uploadedFile) {
-          form.append("file", uploadedFile); // "file" debe coincidir con tu backend
+          form.append("file", uploadedFile);
         }
-
-        console.log(JSON.stringify(form))
 
         const response = await fetch(`http://localhost:8080/api/animales`, {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // NO pongas Content-Type aquí
-          },
+          headers: { Authorization: `Bearer ${token}` },
           body: form,
         });
 
-        if (!response.ok) {
-          throw new Error("Error al crear el animal");
-        }
+        if (!response.ok) throw new Error("Error al crear el animal");
 
         await fetchAnimals(page);
       }
