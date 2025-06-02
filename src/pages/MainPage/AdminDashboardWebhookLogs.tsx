@@ -1,7 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { AdminPageTemplate } from "../templates/AdminTemplate";
 import type { WebhookLog } from "../../types/WebhookLog";
+import ReactJsonPretty from "react-json-pretty";
+import "react-json-pretty/themes/monikai.css";
 
 export default function WebhookLogsPage() {
   const [logs, setLogs] = useState<WebhookLog[]>([]);
@@ -87,16 +88,17 @@ export default function WebhookLogsPage() {
                       <tr key={log.id} className="hover:bg-[#4ECCA320] transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm">{new Date(log.receivedAt).toLocaleString()}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">{log.eventType}</td>
-                        <td className="px-6 py-4 text-sm break-all max-w-xs overflow-auto">
-                          <pre className="whitespace-pre-wrap text-xs max-h-60 overflow-auto text-gray-200">
+                        <td className="px-6 py-4 text-sm max-w-lg overflow-auto">
+                          <div className="bg-[#1F1D24] p-2 rounded text-xs max-h-60 overflow-auto">
                             {(() => {
                               try {
-                                return JSON.stringify(JSON.parse(log.rawPayload), null, 2);
+                                const parsed = JSON.parse(log.rawPayload);
+                                return <ReactJsonPretty data={parsed} />;
                               } catch {
-                                return log.rawPayload;
+                                return <pre>{log.rawPayload}</pre>;
                               }
                             })()}
-                          </pre>
+                          </div>
                         </td>
                       </tr>
                     ))}
