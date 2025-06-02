@@ -50,7 +50,7 @@ export const Donate = () => {
 
   return (
     <DefaultPageTemplate>
-      <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center">
+      <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center pt-[10px] sm:pt-0">
         <div className="min-h-screen flex flex-col items-center justify-center p-8 text-[#AD03CB]">
           <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
             <h2 className="text-4xl font-bold mb-8 text-center">

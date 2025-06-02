@@ -24,13 +24,11 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const [sponsorPrice, setSponsorPrice] = useState<number | null>(null);
 
   const darkenHexColor = (hex: string, amount = 30) => {
-    const cleanHex = hex.replace('#', '');
+    const cleanHex = hex.replace("#", "");
     const num = parseInt(cleanHex, 16);
     let r = (num >> 16) - amount;
-    let g = ((num >> 8) & 0x00FF) - amount;
-    let b = (num & 0x0000FF) - amount;
-
-
+    let g = ((num >> 8) & 0x00ff) - amount;
+    let b = (num & 0x0000ff) - amount;
 
     r = Math.max(0, r);
     g = Math.max(0, g);
@@ -40,7 +38,7 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   };
 
   const hexToRgba = (hex: string, alpha = 0.3) => {
-    const cleanHex = hex.replace('#', '');
+    const cleanHex = hex.replace("#", "");
     const bigint = parseInt(cleanHex, 16);
     const r = (bigint >> 16) & 255;
     const g = (bigint >> 8) & 255;
@@ -92,11 +90,14 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
     const fetchSponsorPrice = async () => {
       try {
         const token = localStorage.getItem("token") || "";
-        const response = await fetch(`http://localhost:8080/api/animales/${animal.id}/sponsor-price`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:8080/api/animales/${animal.id}/sponsor-price`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (!response.ok) throw new Error("Error al obtener el precio");
         const price = await response.json();
         setSponsorPrice(price);
@@ -127,30 +128,51 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           {animal.name}
         </h2>
 
-        <div className="w-full h-48 overflow-hidden rounded-xl mb-4">
-          <Swiper spaceBetween={10} slidesPerView={1} loop>
-            {(animal.images ?? []).length > 0 ? (
-              animal.images?.map((img, index) => (
-                <SwiperSlide key={`${animal.id}-${index}`}>
+        <div className="w-full h-48 rounded-xl mb-4 relative overflow-hidden bg-gray-200">
+          {/* --- Fondo con blur --- */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src={`http://localhost:8080/images/animal/${
+                animal.images?.[0]?.filename || animal.image
+              }`}
+              alt={`Fondo de ${animal.name}`}
+              className="w-full h-full object-cover filter blur-md" // ¡Blur aplicado aquí!
+            />
+          </div>
+
+          {/* --- Carrusel (imagen principal centrada) --- */}
+          <div className="relative z-10 w-full h-full flex items-center justify-center">
+            <Swiper
+              spaceBetween={10}
+              slidesPerView={1}
+              loop
+              className="w-full h-full"
+            >
+              {(animal.images ?? []).length > 0 ? (
+                animal.images?.map((img, index) => (
+                  <SwiperSlide
+                    key={`${animal.id}-${index}`}
+                    className="flex items-center justify-center h-full"
+                  >
+                    <img
+                      src={`http://localhost:8080/images/animal/${img.filename}`}
+                      alt={animal.name}
+                      className="max-h-full max-w-full object-contain mx-auto shadow-lg"
+                    />
+                  </SwiperSlide>
+                ))
+              ) : (
+                <SwiperSlide className="flex items-center justify-center h-full">
                   <img
-                    src={`http://localhost:8080/images/animal/${img.filename}`}
+                    src={`http://localhost:8080/images/animal/${animal.image}`}
                     alt={animal.name}
-                    className="w-full h-48 object-cover rounded-xl"
+                    className="max-h-full max-w-full object-contain mx-auto shadow-lg"
                   />
                 </SwiperSlide>
-              ))
-            ) : (
-              <SwiperSlide key={`${animal.id}-default`}>
-                <img
-                  src={`http://localhost:8080/images/animal/${animal.image}`}
-                  alt={animal.name}
-                  className="w-full h-48 object-cover rounded-xl"
-                />
-              </SwiperSlide>
-            )}
-          </Swiper>
+              )}
+            </Swiper>
+          </div>
         </div>
-
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-y-2 text-sm text-gray-700">
             <div className="w-1/2">
@@ -185,9 +207,12 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
             {animal.tags?.map((tag) => (
               <span
                 key={tag.id}
-                title={tag.description}  // <-- Aquí agregamos el tooltip
+                title={tag.description} // <-- Aquí agregamos el tooltip
                 className="flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full animate-slide-in"
-                style={{ backgroundColor: hexToRgba(tag.color, 0.4), color: darkenHexColor(tag.color, 90) }}
+                style={{
+                  backgroundColor: hexToRgba(tag.color, 0.4),
+                  color: darkenHexColor(tag.color, 90),
+                }}
               >
                 {tag.icon && (
                   <img
@@ -199,13 +224,15 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
                 {tag.name}
               </span>
             ))}
-
           </div>
 
           <div className="text-center text-sm text-gray-600 mt-2">
             {sponsorPrice !== null && (
               <p>
-                Apadrina a este animal por <span className="font-semibold text-[#AD03CB]">{sponsorPrice.toFixed(2)} €/mes</span>
+                Apadrina a este animal por{" "}
+                <span className="font-semibold text-[#AD03CB]">
+                  {sponsorPrice.toFixed(2)} €/mes
+                </span>
               </p>
             )}
           </div>
