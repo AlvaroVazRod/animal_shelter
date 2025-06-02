@@ -59,7 +59,6 @@ export function useTags({ getToken }: UseTagsProps) {
                 const formData = new FormData();
                 formData.append("tag", new Blob([JSON.stringify(form)], { type: "application/json" }));
                 if (selectedFile) formData.append("icon", selectedFile);
-                console.log(JSON.stringify(form))
                 const response = await fetch(`http://localhost:8080/api/tags/${tagId}`, {
                     method: "PUT",
                     headers: {
@@ -71,7 +70,6 @@ export function useTags({ getToken }: UseTagsProps) {
                 if (!response.ok) throw new Error("Error al actualizar la etiqueta");
 
                 const updated = await response.json();
-                // console.log(updated)
                 setTags((prev) => prev.map((tag) => (tag.id === updated.id ? updated : tag)));
                 return updated;
             } catch (err) {

@@ -84,7 +84,7 @@ export default function AnimalTable({
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">{animal.priority}</td>
+                                <td className="px-6 py-4 whitespace-nowrap"></td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span
                                         className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${animal.status === "disponible"
