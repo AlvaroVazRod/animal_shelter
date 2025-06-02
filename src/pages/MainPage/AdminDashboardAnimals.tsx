@@ -5,8 +5,10 @@ import { useEffect, useState } from "react"
 import { Button } from "../../components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card"
 import { Badge } from "../../components/ui/Badge"
+import { Image as ImageIcon } from "lucide-react"
 import { Loader2, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "../../components/icons/Icons"
 import { EditAnimalModal } from "../../components/EditAnimalModal"
+import { AnimalImagesModal } from "../../components/modals/AnimalImagesModel"
 import { useUser } from "../../services/users/useUser"
 
 interface Animal {
@@ -42,7 +44,9 @@ export const AdminAnimalsPage: React.FC = () => {
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
+  const [selectedAnimalForImages, setSelectedAnimalForImages] = useState<Animal | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isImagesModalOpen, setIsImagesModalOpen] = useState(false)
   const { getToken } = useUser()
   const [uploadedFile, setUploadedFile] = useState<File | null>()
 
@@ -51,27 +55,18 @@ export const AdminAnimalsPage: React.FC = () => {
     setError(null)
     try {
       const token = getToken()
-      const query = new URLSearchParams({
-        page: String(pageNumber),
-        size: "10",
-      })
+      const query = new URLSearchParams({ page: String(pageNumber), size: "10" })
 
-      const response = await fetch(
-        `http://localhost:8080/api/animales?${query.toString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
+      const response = await fetch(`http://localhost:8080/api/animales?${query.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
 
       if (!response.ok) throw new Error("Error al obtener los animales")
       const data = await response.json()
 
       const animalsWithFormattedDate = data.content.map((animal: any) => {
         if (animal.arrivalDate) {
-          return {
-            ...animal,
-            arrivalDate: animal.arrivalDate.substring(0, 10),
-          }
+          return { ...animal, arrivalDate: animal.arrivalDate.substring(0, 10) }
         }
         return animal
       })
@@ -100,6 +95,11 @@ export const AdminAnimalsPage: React.FC = () => {
     setIsModalOpen(true)
   }
 
+  const handleOpenImagesModal = (animal: Animal) => {
+    setSelectedAnimalForImages(animal)
+    setIsImagesModalOpen(true)
+  }
+
   const handleDeleteAnimal = async (id: number) => {
     if (!window.confirm("¿Estás seguro de eliminar este animal?")) return
 
@@ -112,67 +112,56 @@ export const AdminAnimalsPage: React.FC = () => {
 
       if (!response.ok) throw new Error("Error al eliminar animal")
 
-      // Refrescar la lista tras eliminar
       await fetchAnimals(page)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al eliminar animal")
     }
   }
 
-
   const handleSubmitAnimal = async (formData: Partial<Animal>) => {
     try {
-      const token = getToken();
+      const token = getToken()
+      const { sponsorPrice, ...formDataWithoutSponsor } = formData
 
-      const { sponsorPrice, ...formDataWithoutSponsor } = formData;
-
-      // Formatear la fecha de llegada si está presente
       if (formData.arrivalDate && !formData.arrivalDate.includes("T")) {
-        formData.arrivalDate = formData.arrivalDate + "T00:00:00";
+        formData.arrivalDate = formData.arrivalDate + "T00:00:00"
       }
 
       if (editingAnimal) {
-        // ACTUALIZAR
         const response = await fetch(`http://localhost:8080/api/animales/${editingAnimal.id}`, {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
           body: JSON.stringify(formData),
-        });
+        })
 
-        if (!response.ok) throw new Error("Error al actualizar el animal");
+        if (!response.ok) throw new Error("Error al actualizar el animal")
 
-        await fetchAnimals(page);
+        await fetchAnimals(page)
       } else {
-        // CREAR
-        const form = new FormData();
-        form.append("animal", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+        const form = new FormData()
+        form.append("animal", new Blob([JSON.stringify(formData)], { type: "application/json" }))
 
         if (uploadedFile) {
-          form.append("file", uploadedFile);
+          form.append("file", uploadedFile)
         }
 
         const response = await fetch(`http://localhost:8080/api/animales`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: form,
-        });
+        })
 
-        if (!response.ok) throw new Error("Error al crear el animal");
+        if (!response.ok) throw new Error("Error al crear el animal")
 
-        await fetchAnimals(page);
+        await fetchAnimals(page)
       }
 
-      setIsModalOpen(false);
+      setIsModalOpen(false)
     } catch (err) {
-      console.error(err);
-      throw new Error("Error al guardar el animal");
+      console.error(err)
+      throw new Error("Error al guardar el animal")
     }
-  };
-
-
+  }
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -235,20 +224,13 @@ export const AdminAnimalsPage: React.FC = () => {
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-slate-100">{animal.name}</CardTitle>
                       <div className="flex space-x-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleEditAnimal(animal)}
-                          className="text-emerald-400 hover:text-emerald-300 hover:bg-slate-700"
-                        >
+                        <Button size="sm" variant="ghost" onClick={() => handleEditAnimal(animal)} className="text-emerald-400 hover:text-emerald-300 hover:bg-slate-700">
                           <Edit size={16} />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteAnimal(animal.id)}
-                          className="text-red-400 hover:text-red-300 hover:bg-slate-700"
-                        >
+                        <Button size="sm" variant="ghost" onClick={() => handleOpenImagesModal(animal)} className="text-blue-400 hover:text-blue-300 hover:bg-slate-700">
+                          <ImageIcon size={16} />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDeleteAnimal(animal.id)} className="text-red-400 hover:text-red-300 hover:bg-slate-700">
                           <Trash2 size={16} />
                         </Button>
                       </div>
@@ -304,23 +286,13 @@ export const AdminAnimalsPage: React.FC = () => {
 
             {totalPages > 1 && (
               <div className="flex justify-center items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  disabled={page === 0}
-                >
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>
                   <ChevronLeft size={16} />
                 </Button>
                 <span className="text-slate-300">
                   Página {page + 1} de {totalPages}
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                  disabled={page === totalPages - 1}
-                >
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}>
                   <ChevronRight size={16} />
                 </Button>
               </div>
@@ -334,6 +306,13 @@ export const AdminAnimalsPage: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleSubmitAnimal}
           onImageUploaded={setUploadedFile}
+        />
+
+        <AnimalImagesModal
+          isOpen={isImagesModalOpen}
+          animal={selectedAnimalForImages}
+          onClose={() => setIsImagesModalOpen(false)}
+          refreshAnimals={() => fetchAnimals(page)}
         />
       </div>
     </div>

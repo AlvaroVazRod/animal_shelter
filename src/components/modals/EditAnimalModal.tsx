@@ -193,7 +193,30 @@ export const EditAnimalModal = ({
                                     required
                                 />
                             </div>
-
+                            <div>
+                                <label
+                                    htmlFor="sponsorPrice"
+                                    className="block text-[#e8e8e8] font-semibold mb-1"
+                                >
+                                    Patrocinio ($)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    id="sponsorPrice"
+                                    value={
+                                        editForm.sponsorPrice !== undefined
+                                            ? editForm.sponsorPrice
+                                            : ""
+                                    }
+                                    onChange={(e) =>
+                                        onChange("sponsorPrice", parseFloat(e.target.value))
+                                    }
+                                    className="w-full border border-[#4ECCA3] rounded-md px-3 py-2 text-[#e8e8e8] bg-[#2D2A32]"
+                                    min="0"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
 
