@@ -6,19 +6,26 @@ import com.login.exception.ResourceNotFoundException;
 import com.login.mapper.AnimalMapper;
 import com.login.model.Animal;
 import com.login.model.AnimalImage;
+import com.login.model.User;
 import com.login.repository.AnimalRepository;
 import com.login.repository.TagRepository;
+import com.login.repository.UserRepository;
 import com.login.service.AnimalService;
 import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,229 +40,281 @@ import java.util.stream.Collectors;
 @Service
 public class AnimalServiceImpl implements AnimalService {
 
-    @Autowired
-    private AnimalRepository animalRepository;
+	@Autowired
+	private AnimalRepository animalRepository;
 
-    @Autowired
-    private TagRepository tagRepository;
+	@Autowired
+	private TagRepository tagRepository;
 
-    @Autowired
-    private StripeService stripeService;
+	@Autowired
+	private StripeService stripeService;
 
-    @Value("${upload.path.animals:uploads/animals}")
-    private String uploadPath;
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private JavaMailSender mailSender;
 
-    private Path resolvedUploadPath;
+	@Value("${upload.path.animals:uploads/animals}")
+	private String uploadPath;
+	
+    @Value("${mail.destination}")
+    private String senderEmail;
 
-    @PostConstruct
-    public void init() {
-        this.resolvedUploadPath = Paths.get(uploadPath);
-        try {
-            Files.createDirectories(resolvedUploadPath);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo crear el directorio de uploads", e);
-        }
-    }
 
-    @Override
-    @Transactional
-    public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename != null && originalFilename.contains(".")
-                ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                : "";
-        String uniqueFilename = UUID.randomUUID().toString() + extension;
+	private Path resolvedUploadPath;
 
-        Path fullPath = resolvedUploadPath.resolve(uniqueFilename);
-        try {
-            Files.copy(file.getInputStream(), fullPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save image file", e);
-        }
+	@PostConstruct
+	public void init() {
+		this.resolvedUploadPath = Paths.get(uploadPath);
+		try {
+			Files.createDirectories(resolvedUploadPath);
+		} catch (IOException e) {
+			throw new RuntimeException("No se pudo crear el directorio de uploads", e);
+		}
+	}
 
-        dto.setImage(uniqueFilename);
+	@Override
+	@Transactional
+	public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
+	    String originalFilename = file.getOriginalFilename();
+	    String extension = originalFilename != null && originalFilename.contains(".")
+	            ? originalFilename.substring(originalFilename.lastIndexOf("."))
+	            : "";
+	    String uniqueFilename = UUID.randomUUID().toString() + extension;
 
-        AnimalImageDto imageDto = new AnimalImageDto();
-        imageDto.setFilename(uniqueFilename);
-        dto.setImages(Collections.singletonList(imageDto));
+	    Path fullPath = resolvedUploadPath.resolve(uniqueFilename);
+	    try {
+	        Files.copy(file.getInputStream(), fullPath, StandardCopyOption.REPLACE_EXISTING);
+	    } catch (IOException e) {
+	        throw new RuntimeException("Failed to save image file", e);
+	    }
 
-        return createDto(dto);
-    }
+	    dto.setImage(uniqueFilename);
+	    AnimalImageDto imageDto = new AnimalImageDto();
+	    imageDto.setFilename(uniqueFilename);
+	    dto.setImages(Collections.singletonList(imageDto));
 
-    @Override
-    public List<AnimalDto> getAllDto() {
-        return animalRepository.findAll()
-                .stream()
-                .map(AnimalMapper::toDto)
-                .collect(Collectors.toList());
-    }
+	    ResponseEntity<AnimalDto> response = createDto(dto);
 
-    @Override
-    public ResponseEntity<AnimalDto> getDtoById(Long id) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+	    notifyNewsletterUsers(response.getBody());
 
-        if (animal.getImages() != null) {
-            animal.getImages().size();
-        }
+	    return response;
+	}
 
-        return ResponseEntity.ok(AnimalMapper.toDto(animal));
-    }
+	@Override
+	public List<AnimalDto> getAllDto() {
+		return animalRepository.findAll().stream().map(AnimalMapper::toDto).collect(Collectors.toList());
+	}
 
-    @Override
-    public ResponseEntity<AnimalDto> createDto(AnimalDto dto) {
-        try {
-            Animal animal = AnimalMapper.toEntity(dto);
-            setAnimalImages(animal, dto.getImages());
+	@Override
+	public ResponseEntity<AnimalDto> getDtoById(Long id) {
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
-            if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-                List<Long> tagIds = dto.getTags().stream()
-                        .map(tagDto -> tagDto.getId())
-                        .collect(Collectors.toList());
-                animal.setTags(tagRepository.findByIdIn(tagIds));
-            }
+		if (animal.getImages() != null) {
+			animal.getImages().size();
+		}
 
-            double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
-            animal.setSponsorPrice(precio);
+		return ResponseEntity.ok(AnimalMapper.toDto(animal));
+	}
 
-            ProductAndPrice result = stripeService.ensureActiveProductAndPrice(
-                    animal.getStripeProductId(),
-                    animal.getStripePriceId(),
-                    "Apadrinar a " + animal.getName(),
-                    animal.getDescription(),
-                    precio
-            );
+	@Override
+	public ResponseEntity<AnimalDto> createDto(AnimalDto dto) {
+		try {
+			Animal animal = AnimalMapper.toEntity(dto);
+			setAnimalImages(animal, dto.getImages());
 
-            animal.setStripeProductId(result.getProductId());
-            animal.setStripePriceId(result.getPriceId());
+			if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+				List<Long> tagIds = dto.getTags().stream().map(tagDto -> tagDto.getId()).collect(Collectors.toList());
+				animal.setTags(tagRepository.findByIdIn(tagIds));
+			}
 
-            Animal saved = animalRepository.save(animal);
-            return ResponseEntity.ok(AnimalMapper.toDto(saved));
-        } catch (StripeException e) {
-            throw new RuntimeException("Error al crear producto en Stripe: " + e.getMessage(), e);
-        }
-    }
+			double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+			animal.setSponsorPrice(precio);
 
-    @Override
-    public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+			ProductAndPrice result = stripeService.ensureActiveProductAndPrice(animal.getStripeProductId(),
+					animal.getStripePriceId(), "Apadrinar a " + animal.getName(), animal.getDescription(), precio);
 
-        try {
-            if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
-                if (dto.getName() != null && !dto.getName().equals(animal.getName()) ||
-                        dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
-                    stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
-                }
+			animal.setStripeProductId(result.getProductId());
+			animal.setStripePriceId(result.getPriceId());
 
-                if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
-                    String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), dto.getSponsorPrice());
-                    animal.setStripePriceId(newPriceId);
-                }
-            }
-        } catch (StripeException e) {
-            throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
-        }
+			Animal saved = animalRepository.save(animal);
+			return ResponseEntity.ok(AnimalMapper.toDto(saved));
+		} catch (StripeException e) {
+			throw new RuntimeException("Error al crear producto en Stripe: " + e.getMessage(), e);
+		}
+	}
 
-        animal.setName(dto.getName());
-        animal.setDescription(dto.getDescription());
-        animal.setWeight(dto.getWeight());
-        animal.setHeight(dto.getHeight());
-        animal.setLength(dto.getLength());
-        animal.setAge(dto.getAge());
-        animal.setColor(dto.getColor());
-        animal.setImage(dto.getImage());
-        animal.setSpecies(dto.getSpecies());
-        animal.setBreed(dto.getBreed());
-        animal.setCollected(dto.getCollected());
-        animal.setAdoptionPrice(dto.getAdoptionPrice());
-        animal.setSponsorPrice(dto.getSponsorPrice());
+	@Override
+	public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
-        if (dto.getStatus() != null) {
-            animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
-        }
+		try {
+			if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
+				if (dto.getName() != null && !dto.getName().equals(animal.getName())
+						|| dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
+					stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
+				}
 
-        setAnimalImages(animal, dto.getImages());
+				if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
+					String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(),
+							dto.getSponsorPrice());
+					animal.setStripePriceId(newPriceId);
+				}
+			}
+		} catch (StripeException e) {
+			throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
+		}
 
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            List<Long> tagIds = dto.getTags().stream()
-                    .map(tagDto -> tagDto.getId())
-                    .collect(Collectors.toList());
-            animal.setTags(tagRepository.findByIdIn(tagIds));
-        }
+		animal.setName(dto.getName());
+		animal.setDescription(dto.getDescription());
+		animal.setWeight(dto.getWeight());
+		animal.setHeight(dto.getHeight());
+		animal.setLength(dto.getLength());
+		animal.setAge(dto.getAge());
+		animal.setColor(dto.getColor());
+		animal.setImage(dto.getImage());
+		animal.setSpecies(dto.getSpecies());
+		animal.setBreed(dto.getBreed());
+		animal.setCollected(dto.getCollected());
+		animal.setAdoptionPrice(dto.getAdoptionPrice());
+		animal.setSponsorPrice(dto.getSponsorPrice());
 
-        return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
-    }
+		if (dto.getStatus() != null) {
+			animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+		}
 
-    @Override
-    public ResponseEntity<Void> delete(Long id) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+		setAnimalImages(animal, dto.getImages());
 
-        if (animal.getStripeProductId() != null) {
-            try {
-                stripeService.archiveProduct(animal.getStripeProductId());
-            } catch (StripeException e) {
-                throw new RuntimeException("Error al archivar producto en Stripe: " + e.getMessage(), e);
-            }
-        }
+		if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+			List<Long> tagIds = dto.getTags().stream().map(tagDto -> tagDto.getId()).collect(Collectors.toList());
+			animal.setTags(tagRepository.findByIdIn(tagIds));
+		}
 
-        animalRepository.delete(animal);
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
+	}
 
-    @Override
-    public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
-        Page<Animal> animals;
+	@Override
+	public ResponseEntity<Void> delete(Long id) {
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
-        if (species != null && genderText != null) {
-            boolean gender = convertGender(genderText);
-            animals = animalRepository.findBySpeciesAndGender(species, gender, pageable);
-        } else if (species != null) {
-            animals = animalRepository.findBySpecies(species, pageable);
-        } else if (genderText != null) {
-            boolean gender = convertGender(genderText);
-            animals = animalRepository.findByGender(gender, pageable);
-        } else {
-            animals = animalRepository.findAll(pageable);
-        }
+		if (animal.getStripeProductId() != null) {
+			try {
+				stripeService.archiveProduct(animal.getStripeProductId());
+			} catch (StripeException e) {
+				throw new RuntimeException("Error al archivar producto en Stripe: " + e.getMessage(), e);
+			}
+		}
 
-        animals.forEach(animal -> animal.getImages().size());
+		animalRepository.delete(animal);
+		return ResponseEntity.noContent().build();
+	}
 
-        return animals.map(AnimalMapper::toDto);
-    }
+	@Override
+	public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
+		Page<Animal> animals;
 
-    @Override
-    public ResponseEntity<AnimalDto> updateImage(Long id, String filename) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
-        animal.setImage(filename);
-        return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
-    }
+		if (species != null && genderText != null) {
+			boolean gender = convertGender(genderText);
+			animals = animalRepository.findBySpeciesAndGender(species, gender, pageable);
+		} else if (species != null) {
+			animals = animalRepository.findBySpecies(species, pageable);
+		} else if (genderText != null) {
+			boolean gender = convertGender(genderText);
+			animals = animalRepository.findByGender(gender, pageable);
+		} else {
+			animals = animalRepository.findAll(pageable);
+		}
 
-    @Override
-    public ResponseEntity<Double> getSponsorPrice(Long id) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
-        return ResponseEntity.ok(animal.getSponsorPrice());
-    }
+		animals.forEach(animal -> animal.getImages().size());
 
-    private boolean convertGender(String genderText) {
-        if ("masculino".equalsIgnoreCase(genderText)) return true;
-        if ("femenino".equalsIgnoreCase(genderText)) return false;
-        throw new IllegalArgumentException("Género inválido: debe ser 'masculino' o 'femenino'");
-    }
+		return animals.map(AnimalMapper::toDto);
+	}
 
-    private void setAnimalImages(Animal animal, List<AnimalImageDto> imageDtos) {
-        if (imageDtos != null) {
-            animal.getImages().clear();
-            imageDtos.forEach(dto -> {
-                AnimalImage image = new AnimalImage();
-                image.setFilename(dto.getFilename());
-                image.setFechaSubida(dto.getFechaSubida());
-                image.setAnimal(animal);
-                animal.getImages().add(image);
-            });
-        }
-    }
+	@Override
+	public ResponseEntity<AnimalDto> updateImage(Long id, String filename) {
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+		animal.setImage(filename);
+		return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
+	}
+
+	@Override
+	public ResponseEntity<Double> getSponsorPrice(Long id) {
+		Animal animal = animalRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+		return ResponseEntity.ok(animal.getSponsorPrice());
+	}
+
+	private boolean convertGender(String genderText) {
+		if ("masculino".equalsIgnoreCase(genderText))
+			return true;
+		if ("femenino".equalsIgnoreCase(genderText))
+			return false;
+		throw new IllegalArgumentException("Género inválido: debe ser 'masculino' o 'femenino'");
+	}
+
+	private void setAnimalImages(Animal animal, List<AnimalImageDto> imageDtos) {
+		if (imageDtos != null) {
+			animal.getImages().clear();
+			imageDtos.forEach(dto -> {
+				AnimalImage image = new AnimalImage();
+				image.setFilename(dto.getFilename());
+				image.setFechaSubida(dto.getFechaSubida());
+				image.setAnimal(animal);
+				animal.getImages().add(image);
+			});
+		}
+	}
+
+	private void notifyNewsletterUsers(AnimalDto animal) {
+	    List<User> subscribers = userRepository.findByNewsletterTrue();
+
+	    for (User user : subscribers) {
+	        try {
+	            MimeMessage message = mailSender.createMimeMessage();
+	            MimeMessageHelper helper = new MimeMessageHelper(message, true); // true = multipart
+
+	            helper.setFrom(senderEmail);
+	            helper.setTo(user.getEmail());
+	            helper.setSubject("🐾 ¡Nueva mascota disponible en el refugio!");
+
+	            String body = String.format(
+	                "Hola %s,<br><br>" +
+	                "Tenemos una nueva mascota disponible para adopción o apadrinamiento:<br><br>" +
+	                "<strong>Nombre:</strong> %s<br>" +
+	                "<strong>Especie:</strong> %s<br>" +
+	                "<strong>Raza:</strong> %s<br>" +
+	                "<strong>Edad:</strong> %d años<br>" +
+	                "<strong>Descripción:</strong> %s<br><br>" +
+	                "Puedes verla aquí: <a href=\"http://localhost:5173/detalles/%d\">Ver mascota</a><br><br>" +
+	                "¡Gracias por apoyar nuestra causa!",
+	                user.getName() != null ? user.getName() : user.getUsername(),
+	                animal.getName(),
+	                animal.getSpecies(),
+	                animal.getBreed(),
+	                animal.getAge(),
+	                animal.getDescription(),
+	                animal.getId()
+	            );
+
+	            helper.setText(body, true); // true = HTML
+
+	            // Adjuntar imagen
+	            Path imagePath = resolvedUploadPath.resolve(animal.getImage());
+	            if (Files.exists(imagePath)) {
+	                helper.addAttachment(animal.getImage(), imagePath.toFile());
+	            }
+
+	            mailSender.send(message);
+	        } catch (Exception e) {
+	            // Puedes loguearlo si quieres hacer seguimiento de fallos individuales
+	            System.err.println("Error al enviar email a " + user.getEmail() + ": " + e.getMessage());
+	        }
+	    }
+	}
+
 }
