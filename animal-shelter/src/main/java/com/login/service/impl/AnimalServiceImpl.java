@@ -13,6 +13,7 @@ import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -40,18 +41,22 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Autowired
     private StripeService stripeService;
-    
+
     @Value("${upload.path.animals:uploads/animals}")
     private String uploadPath;
 
-    public AnimalServiceImpl(AnimalRepository animalRepository,
-                             TagRepository tagRepository,
-                             StripeService stripeService) {
-        this.animalRepository = animalRepository;
-        this.tagRepository = tagRepository;
-        this.stripeService = stripeService;
+    private Path resolvedUploadPath;
+
+    @PostConstruct
+    public void init() {
+        this.resolvedUploadPath = Paths.get(uploadPath);
+        try {
+            Files.createDirectories(resolvedUploadPath);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear el directorio de uploads", e);
+        }
     }
-    
+
     @Override
     @Transactional
     public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
@@ -61,10 +66,9 @@ public class AnimalServiceImpl implements AnimalService {
                 : "";
         String uniqueFilename = UUID.randomUUID().toString() + extension;
 
-        File destination = new File(uploadPath, uniqueFilename);
-        destination.getParentFile().mkdirs();
+        Path fullPath = resolvedUploadPath.resolve(uniqueFilename);
         try {
-            file.transferTo(destination);
+            Files.copy(file.getInputStream(), fullPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException("Failed to save image file", e);
         }
