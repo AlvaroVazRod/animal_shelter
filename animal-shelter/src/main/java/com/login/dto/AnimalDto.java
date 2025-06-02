@@ -56,7 +56,6 @@ public class AnimalDto {
     @Schema(description = "Adoption price in euros", example = "50.0")
     private Double adoptionPrice;
 
-    @NotNull(message = "El precio de apadrinamiento es obligatorio")
     @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
     @Schema(description = "Monthly sponsor price in euros", example = "20.0")
     private Double sponsorPrice;

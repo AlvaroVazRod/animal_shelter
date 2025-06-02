@@ -190,7 +190,6 @@ public class AnimalServiceImpl implements AnimalService {
 		animal.setBreed(dto.getBreed());
 		animal.setCollected(dto.getCollected());
 		animal.setAdoptionPrice(dto.getAdoptionPrice());
-		animal.setSponsorPrice(dto.getSponsorPrice());
 
 		if (dto.getStatus() != null) {
 			animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));

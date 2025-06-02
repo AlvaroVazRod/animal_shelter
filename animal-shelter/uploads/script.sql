@@ -1,3 +1,4 @@
+
 DROP DATABASE IF EXISTS db_animal_shelter;
 CREATE DATABASE db_animal_shelter;
 USE db_animal_shelter;
@@ -5,16 +6,16 @@ USE db_animal_shelter;
 -- Tabla de usuarios
 CREATE TABLE users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(32) NOT NULL UNIQUE, -- En un inicio, sera el email, obligaremos a definirlo cuando entre al perfil
+  username VARCHAR(32) NOT NULL UNIQUE,
   email VARCHAR(100) NOT NULL,
-  password CHAR(64) NOT NULL, -- Encriptada con BCrypt
+  password CHAR(64) NOT NULL,
   name VARCHAR(100) NOT NULL,
   surname VARCHAR(100),
-  phone VARCHAR(20), -- Opcional
-  newsletter TINYINT(1) DEFAULT 0, -- Lo mismo que un boolean
+  phone VARCHAR(20),
+  newsletter TINYINT(1) DEFAULT 0,
   role ENUM('USER', 'ADMIN') DEFAULT 'USER',
-  image VARCHAR(255), -- El nombre de la imagen sera el username o el id mas la extension
-  status ENUM('active', 'inactive') DEFAULT 'active' -- Gestionar softdelete de los usuarios para mantener ciertos datos
+  image VARCHAR(255),
+  status ENUM('active', 'inactive') DEFAULT 'active'
 );
 
 -- Tabla de animales
@@ -22,9 +23,9 @@ CREATE TABLE animals (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   description TEXT,
-  weight DECIMAL(6,2),
-  height DECIMAL(6,2),
-  length DECIMAL(6,2),
+  weight DECIMAL(10,2),
+  height DECIMAL(10,2),
+  length DECIMAL(10,2),
   age INT,
   gender BOOLEAN,
   color VARCHAR(50),
@@ -39,7 +40,6 @@ CREATE TABLE animals (
   stripe_product_id VARCHAR(100),
   stripe_price_id VARCHAR(100)
 );
-
 
 -- Tabla de imágenes de animales
 CREATE TABLE animals_image (
@@ -114,12 +114,14 @@ CREATE TABLE adoptions (
   FOREIGN KEY (id_animal) REFERENCES animals(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (id_form) REFERENCES forms(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
+
 CREATE TABLE webhook_log (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   event_type VARCHAR(100) NOT NULL,
   raw_payload LONGTEXT NOT NULL,
   received_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 -- Insertar usuarios
 INSERT INTO users (username, email, password, name, surname, phone, role, image) VALUES
 ('jdoe', 'jdoe@example.com', SHA2('password123', 256), 'John', 'Doe', '+123456789', 'USER', NULL),
