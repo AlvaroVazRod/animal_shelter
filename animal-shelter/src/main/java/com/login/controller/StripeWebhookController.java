@@ -16,6 +16,10 @@ import com.login.service.EmailService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +29,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Tag(name = "Stripe Webhook", description = "Handles Stripe webhook events for donations and sponsorships")
 @RestController
 @RequestMapping("/webhook")
 @CrossOrigin
@@ -56,6 +61,11 @@ public class StripeWebhookController {
         this.emailService = emailService;
     }
 
+    @Operation(summary = "Handle Stripe webhook", description = "Receives and processes webhook events from Stripe, including donations and sponsorships")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event processed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid signature or JSON format")
+    })
     @PostMapping
     public ResponseEntity<String> handleWebhook(@RequestBody String payload,
                                                 @RequestHeader("Stripe-Signature") String sigHeader) {
@@ -65,8 +75,6 @@ public class StripeWebhookController {
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
-
-        // Guardar log del webhook recibido
         webhookLogRepository.save(WebhookLog.builder()
                 .eventType(event.getType())
                 .receivedAt(LocalDateTime.now())
@@ -140,10 +148,10 @@ public class StripeWebhookController {
             if (status == Sponsor.Status.cancelled || status == Sponsor.Status.failed) {
                 User user = sponsor.getIdUser();
                 if (user != null && user.getEmail() != null) {
-                    String subject = "Tu apadrinamiento ha sido " + (status == Sponsor.Status.cancelled ? "cancelado" : "fallido");
-                    String body = "Hola " + user.getName() + ",\n\n" +
-                            "Tu suscripción fue marcada como " + status.name() + ". " +
-                            "Revisa tu método de pago o contáctanos si fue un error.\n\nGracias por tu apoyo.";
+                    String subject = "Your sponsorship has been " + (status == Sponsor.Status.cancelled ? "cancelled" : "failed");
+                    String body = "Hello " + user.getName() + ",\n\n" +
+                            "Your subscription was marked as " + status.name() + ". " +
+                            "Please check your payment method or contact us if this was a mistake.\n\nThank you for your support.";
                     emailService.sendSimpleMessage(user.getEmail(), subject, body);
                 }
             }
@@ -182,5 +190,3 @@ public class StripeWebhookController {
         donationRepository.save(donation);
     }
 }
-
-

@@ -7,6 +7,10 @@ import com.login.service.DonationService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -14,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Tag(name = "Donations", description = "Operations related to donations")
 @RestController
 @RequestMapping("/api/donaciones")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -25,6 +30,11 @@ public class DonationController {
         this.donationService = donationService;
     }
 
+    @Operation(summary = "Create Stripe Checkout session", description = "Creates a Stripe payment session for donations")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Checkout session created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PostMapping("/checkout")
     public Map<String, String> createCheckoutSession(
         @RequestBody Map<String, Object> data
@@ -67,11 +77,12 @@ public class DonationController {
         Session session = Session.create(params);
 
         Map<String, String> response = new HashMap<>();
-        response.put("id", session.getId()); 
+        response.put("id", session.getId());
         return response;
     }
 
-
+    @Operation(summary = "Get filtered donations", description = "Retrieves donations optionally filtered by status and user ID")
+    @ApiResponse(responseCode = "200", description = "Donations retrieved successfully")
     @GetMapping
     public List<DonationDto> getFiltered(
         @RequestParam(required = false) String status,
@@ -82,6 +93,11 @@ public class DonationController {
                 .toList();
     }
 
+    @Operation(summary = "Get donation by Stripe PaymentIntent ID", description = "Finds a donation by its associated Stripe payment intent ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Donation found"),
+        @ApiResponse(responseCode = "404", description = "Donation not found")
+    })
     @GetMapping("/stripe/{stripeId}")
     public Optional<Donation> getByStripePaymentIntentId(@PathVariable String stripeId) {
         return donationService.findByStripePaymentIntentId(stripeId);

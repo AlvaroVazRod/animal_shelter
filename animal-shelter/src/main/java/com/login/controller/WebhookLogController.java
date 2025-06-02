@@ -2,11 +2,15 @@ package com.login.controller;
 
 import com.login.dto.WebhookLogDto;
 import com.login.service.WebhookLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Webhook Logs", description = "Endpoints to retrieve Stripe webhook logs with pagination and filtering")
 @RestController
 @RequestMapping("/api/webhook-logs")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -18,6 +22,11 @@ public class WebhookLogController {
         this.webhookLogService = webhookLogService;
     }
 
+    @Operation(
+        summary = "Get webhook logs",
+        description = "Retrieves paginated logs of received Stripe webhook events, filtered by event type"
+    )
+    @ApiResponse(responseCode = "200", description = "Webhook logs retrieved successfully")
     @GetMapping
     public Page<WebhookLogDto> getLogs(
             @RequestParam(defaultValue = "") String eventType,

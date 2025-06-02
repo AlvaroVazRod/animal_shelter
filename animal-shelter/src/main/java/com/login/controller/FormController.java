@@ -1,6 +1,10 @@
 package com.login.controller;
 
 import com.login.dto.AdoptionFormDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Adoption Forms", description = "Operations for sending adoption request forms")
 @RestController
 @RequestMapping("/api/forms")
 @CrossOrigin
@@ -21,7 +26,13 @@ public class FormController {
     public FormController(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
-    
+
+    @Operation(summary = "Send adoption form", description = "Sends an adoption request form via email to the configured destination")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Form sent successfully"),
+        @ApiResponse(responseCode = "400", description = "User did not agree to terms"),
+        @ApiResponse(responseCode = "500", description = "Error sending email")
+    })
     @PostMapping("/send")
     public ResponseEntity<String> sendForm(@Valid @RequestBody AdoptionFormDto form) {
         if (!form.isAgreeToTerms()) {
@@ -48,6 +59,4 @@ public class FormController {
             return ResponseEntity.status(500).body("Error al enviar el formulario: " + e.getMessage());
         }
     }
-
-
 }
