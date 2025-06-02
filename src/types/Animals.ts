@@ -8,7 +8,7 @@ export interface Animal {
   length: number;
   age: number;
   color: string;
-  image: string; 
+  image: string | null; 
   species: string;
   breed: string;
   gender: string;
@@ -19,6 +19,7 @@ export interface Animal {
   adoptionPrice: number;
   images?: AnimalImage[];
   tags?: AnimalTag[];
+  arrivalDate: string;
 }
 export interface AnimalImage {
   id: number;

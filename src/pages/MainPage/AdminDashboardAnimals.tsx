@@ -1,226 +1,335 @@
-import { useEffect, useState, useRef } from "react";
-import { AdminPageTemplate } from "../templates/AdminTemplate";
-import { FiTrash2, FiEdit, FiAlertCircle, FiInfo } from "react-icons/fi";
-import type { Animal } from "../../types/Animals";
-import { useUser } from "../../services/users/useUser";
-import AnimalTable from "../../components/tables/AnimalsTable";
-import { EditAnimalModal } from "../../components/modals/EditAnimalModal";
+"use client"
 
-export default function AdminDashboardAnimals() {
-  const { getToken } = useUser();
-  const [animals, setAnimals] = useState<Animal[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+import type React from "react"
+import { useEffect, useState } from "react"
+import { Button } from "../../components/ui/Button"
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card"
+import { Badge } from "../../components/ui/Badge"
+import { Loader2, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "../../components/icons/Icons"
+import { EditAnimalModal } from "../../components/EditAnimalModal"
+import { useUser } from "../../services/users/useUser"
 
-  // Edición de animales
-  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Animal>>({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+interface Animal {
+  id: number
+  name: string
+  species: string
+  breed: string
+  age: number
+  gender: string
+  status: string
+  weight?: number
+  color: string
+  arrivalDate: string
+  height?: number
+  length?: number
+  description: string
+  image?: string | null
+  adoptionPrice: number
+  sponsorPrice: number
+  tags?: AnimalTag[]
+}
 
-  const handleCreateAnimal = () => {
-    setEditingAnimal(null);
-    setEditForm({});
-    setEditError(null);
-    setIsModalOpen(true);
-  };
+interface AnimalTag {
+  id: number
+  name: string
+  color?: string
+}
 
-  const handleSubmitAnimal = async (form: Partial<Animal>) => {
-    setIsSaving(true);
-    try {
-      const token = getToken();
-      console.log(form)
-      const response = await fetch(
-        editingAnimal
-          ? `http://localhost:8080/api/animales/${editingAnimal.id}`
-          : `http://localhost:8080/api/animales`,
-        {
-          method: editingAnimal ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(form),
-        }
-      );
-
-      if (!response.ok) throw new Error("Error al guardar el animal");
-      await fetchAnimals(0);
-      closeEditModal();
-    } catch (err) {
-      setEditError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-
-  // Abrir modal con animación y focus
-  const openEditModal = (animal: Animal) => {
-    setEditingAnimal(animal);
-    setEditForm(animal);
-    setEditError(null);
-    setIsModalOpen(true);
-    setTimeout(() => nameInputRef.current?.focus(), 100);
-  };
-
-  // Cerrar modal con animación
-  const closeEditModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => {
-      setEditingAnimal(null);
-      setEditForm({});
-      setEditError(null);
-    }, 300);
-  };
-
-  const handleChange = (field: keyof Animal, value: string | number) => {
-    setEditForm((prev) => ({ ...prev, [field]: value }));
-  };
-
+export const AdminAnimalsPage: React.FC = () => {
+  const [animals, setAnimals] = useState<Animal[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { getToken } = useUser()
+  const [uploadedFile, setUploadedFile] = useState<File | null>()
 
   const fetchAnimals = async (pageNumber: number) => {
-    setLoading(true);
+    setLoading(true)
+    setError(null)
     try {
-      const token = getToken();
+      const token = getToken()
       const query = new URLSearchParams({
         page: String(pageNumber),
         size: "10",
-      });
+      })
 
       const response = await fetch(
         `http://localhost:8080/api/animales?${query.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
+      )
 
-      if (!response.ok) throw new Error("Error al obtener los animales");
-      const data = await response.json();
-      setAnimals(data.content);
-      setTotalPages(data.totalPages);
-      setPage(data.number);
+      if (!response.ok) throw new Error("Error al obtener los animales")
+      const data = await response.json()
+
+      const animalsWithFormattedDate = data.content.map((animal: any) => {
+        if (animal.arrivalDate) {
+          return {
+            ...animal,
+            arrivalDate: animal.arrivalDate.substring(0, 10),
+          }
+        }
+        return animal
+      })
+
+      setAnimals(animalsWithFormattedDate)
+      setTotalPages(data.totalPages)
+      setPage(data.number)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(err instanceof Error ? err.message : "Error desconocido")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const deleteAnimal = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de eliminar este animal?")) return;
+  useEffect(() => {
+    fetchAnimals(page)
+  }, [page])
+
+  const handleCreateAnimal = () => {
+    setEditingAnimal(null)
+    setIsModalOpen(true)
+  }
+
+  const handleEditAnimal = (animal: Animal) => {
+    setEditingAnimal(animal)
+    setIsModalOpen(true)
+  }
+
+  const handleDeleteAnimal = async (id: number) => {
+    if (!window.confirm("¿Estás seguro de eliminar este animal?")) return
 
     try {
-      const token = getToken();
+      const token = getToken()
       const response = await fetch(`http://localhost:8080/api/animales/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
-      });
+      })
 
-      if (!response.ok) throw new Error("Error al eliminar animal");
+      if (!response.ok) throw new Error("Error al eliminar animal")
 
-      setAnimals((prev) => prev.filter((a) => a.id !== id));
+      // Refrescar la lista tras eliminar
+      await fetchAnimals(page)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al eliminar animal");
+      setError(err instanceof Error ? err.message : "Error al eliminar animal")
+    }
+  }
+
+
+  const handleSubmitAnimal = async (formData: Partial<Animal>) => {
+    try {
+      const token = getToken();
+
+      if (editingAnimal) {
+        // Implementa aquí la lógica para actualizar, si lo deseas
+        setAnimals((prev) =>
+          prev.map((a) => (a.id === editingAnimal.id ? { ...a, ...formData } : a))
+        );
+      } else {
+        const form = new FormData();
+
+        // Append each field to FormData
+        if (formData) form.append("animal", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+
+        // Soportar archivo de imagen (solo si es File)
+        if (uploadedFile) {
+          form.append("file", uploadedFile); // "file" debe coincidir con tu backend
+        }
+
+        console.log(JSON.stringify(form))
+
+        const response = await fetch(`http://localhost:8080/api/animales`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // NO pongas Content-Type aquí
+          },
+          body: form,
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al crear el animal");
+        }
+
+        await fetchAnimals(page);
+      }
+
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      throw new Error("Error al guardar el animal");
     }
   };
 
-  useEffect(() => {
-    fetchAnimals(0);
-  }, []);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      fetchAnimals(newPage);
+
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      active: { label: "Disponible", variant: "default" as const },
+      requires_funding: { label: "Adoptado", variant: "secondary" as const },
+      draft: { label: "En proceso", variant: "outline" as const },
     }
-  };
+    const statusInfo = statusMap[status as keyof typeof statusMap] || {
+      label: status,
+      variant: "outline" as const,
+    }
+    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+  }
 
   if (loading) {
     return (
-      <AdminPageTemplate>
+      <div className="min-h-screen bg-slate-900 p-8">
         <div className="flex justify-center items-center h-64">
-          <div className="text-2xl" style={{ color: "#4ECCA320" }}>
-            Cargando animales...
+          <div className="flex items-center space-x-2 text-emerald-400">
+            <Loader2 size={24} />
+            <span className="text-xl">Cargando animales...</span>
           </div>
         </div>
-      </AdminPageTemplate>
-    );
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <AdminPageTemplate>
+      <div className="min-h-screen bg-slate-900 p-8">
         <div className="flex justify-center items-center h-64">
-          <div className="text-2xl text-red-500">Error: {error}</div>
+          <div className="text-xl text-red-400">Error: {error}</div>
         </div>
-      </AdminPageTemplate>
-    );
-  }
-
-  function handleSubmitEdit(form: Partial<Animal>): Promise<void> {
-    throw new Error("Function not implemented.");
+      </div>
+    )
   }
 
   return (
-    <AdminPageTemplate>
-      <div
-        className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-20"
-        style={{ backgroundColor: "#2D2A32" }}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: "#e8e8e8" }}>
-              Panel de Administración
-            </h1>
-            <p className="text-lg" style={{ color: "#e8e8e8" }}>
-              Gestión de animales registrados
-            </p>
-            <button
-              onClick={handleCreateAnimal}
-              className="mb-6 px-4 py-2 bg-[#4ECCA3] text-[#2D2A32] rounded-md font-semibold"
-            >
-              + Nuevo Animal
-            </button>
-
-          </div>
-
-          {animals.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl" style={{ color: "#4ECCA320" }}>
-                No hay animales registrados
-              </p>
-            </div>
-          ) : (
-            <AnimalTable
-              animals={animals}
-              page={page}
-              totalPages={totalPages}
-              onDelete={deleteAnimal}
-              onEdit={openEditModal}
-              onPageChange={handlePageChange}
-            />)}
+    <div className="min-h-screen bg-slate-900 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-2 text-slate-100">Panel de Administración</h1>
+          <p className="text-lg text-slate-300 mb-6">Gestión de animales registrados</p>
+          <Button onClick={handleCreateAnimal}>
+            <Plus className="mr-2" size={16} />
+            Nuevo Animal
+          </Button>
         </div>
 
-        {/* Modal edición */}
-        {isModalOpen && (
-          <EditAnimalModal
-            isOpen={isModalOpen}
-            animal={editingAnimal ?? undefined}
-            mode={editingAnimal ? "edit" : "create"}
-            editForm={editForm}
-            onClose={closeEditModal}
-            onChange={handleChange}
-            onSubmit={handleSubmitAnimal}
-            isSaving={isSaving}
-            editError={editError}
-          />
+        {animals.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-emerald-400/60">No hay animales registrados</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {animals.map((animal) => (
+                <Card key={animal.id}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-slate-100">{animal.name}</CardTitle>
+                      <div className="flex space-x-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditAnimal(animal)}
+                          className="text-emerald-400 hover:text-emerald-300 hover:bg-slate-700"
+                        >
+                          <Edit size={16} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteAnimal(animal.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-slate-700"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {animal.image && (
+                      <img
+                        src={"http://localhost:8080/images/animal/" + animal.image || "/placeholder.svg"}
+                        alt={animal.name}
+                        className="w-full h-32 object-cover rounded-md"
+                      />
+                    )}
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="text-slate-300">
+                        <span className="font-medium">Especie:</span> {animal.species === "dog" ? "Perro" : "Gato"}
+                      </div>
+                      <div className="text-slate-300">
+                        <span className="font-medium">Raza:</span> {animal.breed}
+                      </div>
+                      <div className="text-slate-300">
+                        <span className="font-medium">Edad:</span> {animal.age} años
+                      </div>
+                      <div className="text-slate-300">
+                        <span className="font-medium">Género:</span> {animal.gender}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      {getStatusBadge(animal.status)}
+                      <div className="text-right text-sm text-slate-300">
+                        <div>Adopción: ${animal.adoptionPrice}</div>
+                        <div>Patrocinio: ${animal.sponsorPrice}</div>
+                      </div>
+                    </div>
+                    {animal.tags && animal.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {animal.tags.map((tag) => (
+                          <Badge
+                            key={tag.id}
+                            variant="outline"
+                            className="text-xs"
+                            style={{ borderColor: tag.color, color: tag.color }}
+                          >
+                            {tag.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                <span className="text-slate-300">
+                  Página {page + 1} de {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page === totalPages - 1}
+                >
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+            )}
+          </div>
         )}
+
+        <EditAnimalModal
+          isOpen={isModalOpen}
+          animal={editingAnimal}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleSubmitAnimal}
+          onImageUploaded={setUploadedFile}
+        />
       </div>
-    </AdminPageTemplate>
-  );
+    </div>
+  )
 }
+
+export default AdminAnimalsPage
