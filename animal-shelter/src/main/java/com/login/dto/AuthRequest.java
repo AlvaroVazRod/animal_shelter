@@ -1,10 +1,17 @@
 package com.login.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Request object for user authentication")
 public class AuthRequest {
+
+    @Schema(description = "User's username", example = "johndoe")
     private String username;
+
+    @Schema(description = "User's password", example = "securePassword123")
     private String password;
 
-    // Getters y setters
+    // Getters and setters
     public String getUsername() {
         return username;
     }

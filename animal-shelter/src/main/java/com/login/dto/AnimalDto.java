@@ -1,56 +1,77 @@
 package com.login.dto;
 
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+@Schema(description = "Data transfer object representing an animal")
 public class AnimalDto {
 
-	private Long id;
+    @Schema(description = "Unique identifier of the animal", example = "12")
+    private Long id;
 
-	@NotBlank(message = "El nombre no puede estar vacío")
-	private String name;
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Schema(description = "Name of the animal", example = "Luna")
+    private String name;
 
-	private String description;
+    @Schema(description = "Brief description or biography of the animal", example = "Friendly dog looking for a home")
+    private String description;
 
-	@DecimalMin(value = "0.0", message = "El peso debe ser positivo")
-	private Double weight;
+    @DecimalMin(value = "0.0", message = "El peso debe ser positivo")
+    @Schema(description = "Weight in kilograms", example = "10.5")
+    private Double weight;
 
-	@DecimalMin(value = "0.0", message = "La altura debe ser positiva")
-	private Double height;
+    @DecimalMin(value = "0.0", message = "La altura debe ser positiva")
+    @Schema(description = "Height in centimeters", example = "40.0")
+    private Double height;
 
-	@DecimalMin(value = "0.0", message = "La longitud debe ser positiva")
-	private Double length;
+    @DecimalMin(value = "0.0", message = "La longitud debe ser positiva")
+    @Schema(description = "Length in centimeters", example = "60.0")
+    private Double length;
 
-	@Min(value = 0, message = "La edad debe ser positiva")
-	private Integer age;
-	
-	@Pattern(regexp = "^(masculino|femenino)?$", message = "El género debe ser 'masculino', 'femenino' o estar vacío")
-	private String gender;
+    @Min(value = 0, message = "La edad debe ser positiva")
+    @Schema(description = "Age in years", example = "3")
+    private Integer age;
 
-	private String color;
+    @Pattern(regexp = "^(masculino|femenino)?$", message = "El género debe ser 'masculino', 'femenino' o estar vacío")
+    @Schema(description = "Gender of the animal", example = "femenino")
+    private String gender;
 
-	private String image;
+    @Schema(description = "Color of the animal", example = "Brown and white")
+    private String color;
 
-	private String species;
+    @Schema(description = "Filename or URL of the main image", example = "luna.jpg")
+    private String image;
 
-	private String breed;
+    @Schema(description = "Species of the animal (e.g., dog, cat)", example = "dog")
+    private String species;
 
-	@NotNull(message = "El precio de adopción es obligatorio")
-	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-	private Double adoptionPrice;
+    @Schema(description = "Breed of the animal", example = "Labrador")
+    private String breed;
 
-	@NotNull(message = "El precio de apadrinamiento es obligatorio")
-	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-	private Double sponsorPrice;
+    @NotNull(message = "El precio de adopción es obligatorio")
+    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+    @Schema(description = "Adoption price in euros", example = "50.0")
+    private Double adoptionPrice;
 
-	@DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
-	private Double collected;
+    @NotNull(message = "El precio de apadrinamiento es obligatorio")
+    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+    @Schema(description = "Monthly sponsor price in euros", example = "20.0")
+    private Double sponsorPrice;
 
-	private String status;
+    @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
+    @Schema(description = "Amount collected so far in donations", example = "75.0")
+    private Double collected;
 
-	private List<AnimalImageDto> images;
-	
-	private List<TagDto> tags;
+    @Schema(description = "Current adoption status", example = "available")
+    private String status;
+
+    @Schema(description = "List of associated images", implementation = AnimalImageDto.class)
+    private List<AnimalImageDto> images;
+
+    @Schema(description = "List of associated tags", implementation = TagDto.class)
+    private List<TagDto> tags;
 
 
 	public Long getId() {

@@ -1,11 +1,23 @@
-
 package com.login.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Data transfer object representing a tag or category associated with animals")
 public class TagDto {
+
+    @Schema(description = "Unique identifier of the tag", example = "101")
     private Long id;
+
+    @Schema(description = "Name of the tag", example = "Puppy")
     private String name;
+
+    @Schema(description = "Short description of the tag", example = "Animals younger than 1 year")
     private String description;
+
+    @Schema(description = "Hexadecimal color used to represent the tag", example = "#FFD700")
     private String color;
+
+    @Schema(description = "Filename or path of the icon image", example = "puppy-icon.png")
     private String icon;
 
     // Getters and setters

@@ -3,97 +3,112 @@ package com.login.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object representing a user")
 public class UserDto {
-	private Long id;
 
-	@NotBlank
-	private String username;
+    @Schema(description = "Unique identifier of the user", example = "1")
+    private Long id;
 
-	@Email
-	private String email;
+    @NotBlank
+    @Schema(description = "Unique username for login", example = "johndoe")
+    private String username;
 
-	private String role;
+    @Email
+    @Schema(description = "User's email address", example = "johndoe@example.com")
+    private String email;
 
-	@Size(max = 100)
-	private String name;
+    @Schema(description = "Role assigned to the user", example = "USER")
+    private String role;
 
-	private String surname;
-	private String phone;
-	private String image;
-	private String status;
+    @Size(max = 100)
+    @Schema(description = "First name of the user", example = "John")
+    private String name;
 
-	// Getters y setters
+    @Schema(description = "Last name of the user", example = "Doe")
+    private String surname;
 
-	public Long getId() {
-		return id;
-	}
+    @Schema(description = "Phone number of the user", example = "+34 600 123 456")
+    private String phone;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Schema(description = "Filename or path to the profile image", example = "profile_john.jpg")
+    private String image;
 
-	public String getUsername() {
-		return username;
-	}
+    @Schema(description = "Account status", example = "active")
+    private String status;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    // Getters and setters
 
-	public String getEmail() {
-		return email;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getRole() {
-		return role;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getSurname() {
-		return surname;
-	}
+    public String getRole() {
+        return role;
+    }
 
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getImage() {
-		return image;
-	}
+    public String getSurname() {
+        return surname;
+    }
 
-	public void setImage(String image) {
-		this.image = image;
-	}
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
