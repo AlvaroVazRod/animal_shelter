@@ -1,5 +1,6 @@
 package com.login.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -63,6 +64,9 @@ public class AnimalDto {
     @DecimalMin(value = "0.0", message = "Debe ser un valor positivo")
     @Schema(description = "Amount collected so far in donations", example = "75.0")
     private Double collected;
+    
+    @Schema(description = "Arrival date in ISO format", example = "2024-06-02T00:00:00")
+    private LocalDateTime arrivalDate;
 
     @Schema(description = "Current adoption status", example = "available")
     private String status;
@@ -200,6 +204,15 @@ public class AnimalDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public LocalDateTime getArrivalDate() {
+	    return arrivalDate;
+	}
+
+	public void setArrivalDate(LocalDateTime arrivalDate) {
+	    this.arrivalDate = arrivalDate;
+	}
+
 
 	public List<AnimalImageDto> getImages() {
 		return images;

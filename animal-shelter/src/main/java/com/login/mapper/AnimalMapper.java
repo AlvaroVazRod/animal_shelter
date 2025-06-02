@@ -26,7 +26,7 @@ public class AnimalMapper {
         dto.setCollected(animal.getCollected());
         dto.setAdoptionPrice(animal.getAdoptionPrice());
         dto.setSponsorPrice(animal.getSponsorPrice());
-
+        dto.setArrivalDate(animal.getArrivalDate());
         if (animal.getStatus() != null) {
             dto.setStatus(animal.getStatus().name());
         }
@@ -72,6 +72,7 @@ public class AnimalMapper {
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
+        animal.setArrivalDate(dto.getArrivalDate());
         if (dto.getImages() != null) {
             animal.setImages(dto.getImages().stream()
                 .map(AnimalImageMapper::toEntity)

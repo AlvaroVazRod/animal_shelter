@@ -9,6 +9,9 @@ import com.stripe.model.Product;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
 import com.stripe.param.ProductUpdateParams;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +77,13 @@ public class StripeServiceImpl implements StripeService {
         product.update(paramsBuilder.build());
     }
     
+    @Override
+    public void archivePrice(String priceId) throws StripeException {
+        Price price = Price.retrieve(priceId);
+        Price updated = price.update(Map.of("active", false));
+    }
+    
+    @Override
     public ProductAndPrice ensureActiveProductAndPrice(String currentProductId, String currentPriceId, String name, String description, double priceValue) throws StripeException {
         boolean createNew = false;
 

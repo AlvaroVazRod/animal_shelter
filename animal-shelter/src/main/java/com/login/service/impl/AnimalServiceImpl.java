@@ -75,32 +75,33 @@ public class AnimalServiceImpl implements AnimalService {
 	}
 
 	@Override
-	@Transactional
-	public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
-	    String originalFilename = file.getOriginalFilename();
-	    String extension = originalFilename != null && originalFilename.contains(".")
-	            ? originalFilename.substring(originalFilename.lastIndexOf("."))
-	            : "";
-	    String uniqueFilename = UUID.randomUUID().toString() + extension;
+    @Transactional
+    public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                : "";
+        String uniqueFilename = UUID.randomUUID().toString() + extension;
 
-	    Path fullPath = resolvedUploadPath.resolve(uniqueFilename);
-	    try {
-	        Files.copy(file.getInputStream(), fullPath, StandardCopyOption.REPLACE_EXISTING);
-	    } catch (IOException e) {
-	        throw new RuntimeException("Failed to save image file", e);
-	    }
+        Path fullPath = resolvedUploadPath.resolve(uniqueFilename);
+        try {
+            Files.copy(file.getInputStream(), fullPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image file", e);
+        }
 
-	    dto.setImage(uniqueFilename);
-	    AnimalImageDto imageDto = new AnimalImageDto();
-	    imageDto.setFilename(uniqueFilename);
-	    dto.setImages(Collections.singletonList(imageDto));
+        dto.setImage(uniqueFilename);
 
-	    ResponseEntity<AnimalDto> response = createDto(dto);
+        AnimalImageDto imageDto = new AnimalImageDto();
+        imageDto.setFilename(uniqueFilename);
+        dto.setImages(Collections.singletonList(imageDto));
 
-	    notifyNewsletterUsers(response.getBody());
+        ResponseEntity<AnimalDto> response = createDto(dto);
 
-	    return response;
-	}
+        notifyNewsletterUsers(response.getBody());
+
+        return response;
+    }
 
 	@Override
 	public List<AnimalDto> getAllDto() {
@@ -158,11 +159,20 @@ public class AnimalServiceImpl implements AnimalService {
 					stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
 				}
 
-				if (dto.getSponsorPrice() != null && !dto.getSponsorPrice().equals(animal.getSponsorPrice())) {
-					String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(),
-							dto.getSponsorPrice());
-					animal.setStripePriceId(newPriceId);
+				double recalculatedPrice = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+
+				if (recalculatedPrice != animal.getSponsorPrice()) {
+				    String oldPriceId = animal.getStripePriceId();
+				    animal.setSponsorPrice(recalculatedPrice);
+
+				    String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), recalculatedPrice);
+				    animal.setStripePriceId(newPriceId);
+
+				    if (oldPriceId != null && !oldPriceId.equals(newPriceId)) {
+				        stripeService.archivePrice(oldPriceId);
+				    }
 				}
+
 			}
 		} catch (StripeException e) {
 			throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
@@ -270,51 +280,50 @@ public class AnimalServiceImpl implements AnimalService {
 		}
 	}
 
-	private void notifyNewsletterUsers(AnimalDto animal) {
-	    List<User> subscribers = userRepository.findByNewsletterTrue();
+	 private void notifyNewsletterUsers(AnimalDto animal) {
+	        List<User> subscribers = userRepository.findByNewsletterTrue();
 
-	    for (User user : subscribers) {
-	        try {
-	            MimeMessage message = mailSender.createMimeMessage();
-	            MimeMessageHelper helper = new MimeMessageHelper(message, true); // true = multipart
+	        for (User user : subscribers) {
+	            try {
+	                MimeMessage message = mailSender.createMimeMessage();
+	                MimeMessageHelper helper = new MimeMessageHelper(message, true); // true = multipart
 
-	            helper.setFrom(senderEmail);
-	            helper.setTo(user.getEmail());
-	            helper.setSubject("🐾 ¡Nueva mascota disponible en el refugio!");
+	                helper.setFrom(senderEmail);
+	                helper.setTo(user.getEmail());
+	                helper.setSubject("🐾 ¡Nueva mascota disponible en el refugio!");
 
-	            String body = String.format(
-	                "Hola %s,<br><br>" +
-	                "Tenemos una nueva mascota disponible para adopción o apadrinamiento:<br><br>" +
-	                "<strong>Nombre:</strong> %s<br>" +
-	                "<strong>Especie:</strong> %s<br>" +
-	                "<strong>Raza:</strong> %s<br>" +
-	                "<strong>Edad:</strong> %d años<br>" +
-	                "<strong>Descripción:</strong> %s<br><br>" +
-	                "Puedes verla aquí: <a href=\"http://localhost:5173/detalles/%d\">Ver mascota</a><br><br>" +
-	                "¡Gracias por apoyar nuestra causa!",
-	                user.getName() != null ? user.getName() : user.getUsername(),
-	                animal.getName(),
-	                animal.getSpecies(),
-	                animal.getBreed(),
-	                animal.getAge(),
-	                animal.getDescription(),
-	                animal.getId()
-	            );
+	                String body = String.format(
+	                        "Hola %s,<br><br>" +
+	                        "Tenemos una nueva mascota disponible para adopción o apadrinamiento:<br><br>" +
+	                        "<strong>Nombre:</strong> %s<br>" +
+	                        "<strong>Especie:</strong> %s<br>" +
+	                        "<strong>Raza:</strong> %s<br>" +
+	                        "<strong>Edad:</strong> %d años<br>" +
+	                        "<strong>Descripción:</strong> %s<br><br>" +
+	                        "Puedes verla aquí: <a href=\"http://localhost:5173//%d\">Ver mascota</a><br><br>" +
+	                        "¡Gracias por apoyar nuestra causa!",
+	                        user.getName() != null ? user.getName() : user.getUsername(),
+	                        animal.getName(),
+	                        animal.getSpecies(),
+	                        animal.getBreed(),
+	                        animal.getAge(),
+	                        animal.getDescription(),
+	                        animal.getId()
+	                );
 
-	            helper.setText(body, true); // true = HTML
+	                helper.setText(body, true); // true = HTML
 
-	            // Adjuntar imagen
-	            Path imagePath = resolvedUploadPath.resolve(animal.getImage());
-	            if (Files.exists(imagePath)) {
-	                helper.addAttachment(animal.getImage(), imagePath.toFile());
+	                // Adjuntar imagen
+	                Path imagePath = resolvedUploadPath.resolve(animal.getImage());
+	                if (Files.exists(imagePath)) {
+	                    helper.addAttachment(animal.getImage(), imagePath.toFile());
+	                }
+
+	                mailSender.send(message);
+	            } catch (Exception e) {
+	                System.err.println("Error al enviar email a " + user.getEmail() + ": " + e.getMessage());
 	            }
-
-	            mailSender.send(message);
-	        } catch (Exception e) {
-	            // Puedes loguearlo si quieres hacer seguimiento de fallos individuales
-	            System.err.println("Error al enviar email a " + user.getEmail() + ": " + e.getMessage());
 	        }
 	    }
-	}
 
 }

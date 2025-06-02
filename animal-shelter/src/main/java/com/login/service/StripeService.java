@@ -14,5 +14,6 @@ public interface StripeService {
             String description,
             double priceValue
         ) throws StripeException;
+	void archivePrice(String priceId) throws StripeException;
 
 }
