@@ -72,10 +72,12 @@ CREATE TABLE animals_tags (
 CREATE TABLE donations (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   quantity DECIMAL(10,2) NOT NULL,
+  payment_method VARCHAR(50),
   status ENUM('refunded', 'cancelled', 'failed', 'completed') NOT NULL,
-  stripe_ref VARCHAR(50) NOT NULL,
+  stripe_payment_intent_id VARCHAR(50) NOT NULL,
   id_user INT UNSIGNED,
   id_animal INT UNSIGNED,
+  date DATETIME NOT NULL,
   FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (id_animal) REFERENCES animals(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -112,7 +114,6 @@ CREATE TABLE adoptions (
   FOREIGN KEY (id_animal) REFERENCES animals(id) ON DELETE SET NULL ON UPDATE CASCADE,
   FOREIGN KEY (id_form) REFERENCES forms(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
--- Tabla de Transacciones
 CREATE TABLE webhook_log (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   event_type VARCHAR(100) NOT NULL,
@@ -152,11 +153,6 @@ INSERT INTO animals_tags (id_animal, id_tag) VALUES
 (1, 1),
 (1, 2),
 (2, 1);
-
--- Donaciones
-INSERT INTO donations (quantity, status, stripe_ref, id_user, id_animal) VALUES
-(20.00, 'completed', 'ref_001', 1, 1),
-(15.00, 'completed', 'ref_002', 1, 2);
 
 -- Apadrinamientos
 INSERT INTO sponsors (quantity, status, stripe_ref, id_user, id_animal) VALUES

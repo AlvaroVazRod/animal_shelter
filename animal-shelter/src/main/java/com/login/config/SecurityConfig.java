@@ -36,6 +36,7 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/images/animal/**").permitAll()
 						.requestMatchers("/images/user/**").permitAll()
+						.requestMatchers("/webhook").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/sponsor/**").permitAll().requestMatchers("/tags/**")
 						.permitAll().requestMatchers(HttpMethod.POST, "/api/stripe/sponsor-checkout/**").authenticated()

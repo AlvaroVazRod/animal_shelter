@@ -1,6 +1,6 @@
 package com.login.service.impl;
 
-import com.login.dto.AnimalDto;	
+import com.login.dto.AnimalDto;
 import com.login.dto.AnimalImageDto;
 import com.login.exception.ResourceNotFoundException;
 import com.login.mapper.AnimalMapper;
@@ -9,10 +9,10 @@ import com.login.model.AnimalImage;
 import com.login.repository.AnimalRepository;
 import com.login.repository.TagRepository;
 import com.login.service.AnimalService;
+import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +30,11 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Autowired
     private TagRepository tagRepository;
-    
+
     @Autowired
     private StripeService stripeService;
 
-    public AnimalServiceImpl(AnimalRepository animalRepository, 
+    public AnimalServiceImpl(AnimalRepository animalRepository,
                              TagRepository tagRepository,
                              StripeService stripeService) {
         this.animalRepository = animalRepository;
@@ -70,19 +70,24 @@ public class AnimalServiceImpl implements AnimalService {
 
             if (dto.getTags() != null && !dto.getTags().isEmpty()) {
                 List<Long> tagIds = dto.getTags().stream()
-                    .map(tagDto -> tagDto.getId())
-                    .collect(Collectors.toList());
+                        .map(tagDto -> tagDto.getId())
+                        .collect(Collectors.toList());
                 animal.setTags(tagRepository.findByIdIn(tagIds));
             }
 
             double precio = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
             animal.setSponsorPrice(precio);
 
-            String productId = stripeService.createProduct(animal.getName(), animal.getDescription());
-            String priceId = stripeService.createRecurringPrice(productId, precio);
+            ProductAndPrice result = stripeService.ensureActiveProductAndPrice(
+                    animal.getStripeProductId(),
+                    animal.getStripePriceId(),
+                    "Apadrinar a " + animal.getName(),
+                    animal.getDescription(),
+                    precio
+            );
 
-            animal.setStripeProductId(productId);
-            animal.setStripePriceId(priceId);
+            animal.setStripeProductId(result.getProductId());
+            animal.setStripePriceId(result.getPriceId());
 
             Animal saved = animalRepository.save(animal);
             return ResponseEntity.ok(AnimalMapper.toDto(saved));
@@ -90,9 +95,6 @@ public class AnimalServiceImpl implements AnimalService {
             throw new RuntimeException("Error al crear producto en Stripe: " + e.getMessage(), e);
         }
     }
-
-
-
 
     @Override
     public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
@@ -102,7 +104,7 @@ public class AnimalServiceImpl implements AnimalService {
         try {
             if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
                 if (dto.getName() != null && !dto.getName().equals(animal.getName()) ||
-                    dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
+                        dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
                     stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
                 }
 
@@ -145,8 +147,6 @@ public class AnimalServiceImpl implements AnimalService {
         return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
 
-
-
     @Override
     public ResponseEntity<Void> delete(Long id) {
         Animal animal = animalRepository.findById(id)
@@ -163,7 +163,6 @@ public class AnimalServiceImpl implements AnimalService {
         animalRepository.delete(animal);
         return ResponseEntity.noContent().build();
     }
-
 
     @Override
     public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
@@ -193,14 +192,13 @@ public class AnimalServiceImpl implements AnimalService {
         animal.setImage(filename);
         return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
     }
-    
+
     @Override
     public ResponseEntity<Double> getSponsorPrice(Long id) {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
         return ResponseEntity.ok(animal.getSponsorPrice());
     }
-
 
     private boolean convertGender(String genderText) {
         if ("masculino".equalsIgnoreCase(genderText)) return true;

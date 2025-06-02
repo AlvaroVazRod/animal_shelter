@@ -1,15 +1,18 @@
 package com.login.controller;
 
-import com.login.config.StripeProperties;
+import com.login.dto.DonationDto;
+import com.login.mapper.DonationMapper;
 import com.login.model.Donation;
 import com.login.service.DonationService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/donaciones")
@@ -18,7 +21,6 @@ public class DonationController {
 
     private final DonationService donationService;
 
-    @Autowired
     public DonationController(DonationService donationService) {
         this.donationService = donationService;
     }
@@ -71,19 +73,13 @@ public class DonationController {
 
 
     @GetMapping
-    public List<Donation> getFiltered(
+    public List<DonationDto> getFiltered(
         @RequestParam(required = false) String status,
         @RequestParam(required = false) Long userId
     ) {
-        if (status != null && userId != null) {
-            return donationService.findByStatusAndUser(status, userId);
-        } else if (status != null) {
-            return donationService.findByStatus(status);
-        } else if (userId != null) {
-            return donationService.findByUserId(userId);
-        } else {
-            return donationService.getAll();
-        }
+        return donationService.getFiltered(status, userId).stream()
+                .map(DonationMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/stripe/{stripeId}")

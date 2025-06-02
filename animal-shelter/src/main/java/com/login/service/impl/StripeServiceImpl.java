@@ -1,5 +1,6 @@
 package com.login.service.impl;
 
+import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -72,5 +73,27 @@ public class StripeServiceImpl implements StripeService {
 
         product.update(paramsBuilder.build());
     }
+    
+    public ProductAndPrice ensureActiveProductAndPrice(String currentProductId, String currentPriceId, String name, String description, double priceValue) throws StripeException {
+        boolean createNew = false;
+
+        if (currentProductId == null || currentProductId.isBlank()) {
+            createNew = true;
+        } else {
+            Product product = Product.retrieve(currentProductId);
+            if (!product.getActive()) {
+                createNew = true;
+            }
+        }
+
+        if (createNew) {
+            String newProductId = createProduct(name, description);
+            String newPriceId = createRecurringPrice(newProductId, priceValue);
+            return new ProductAndPrice(newProductId, newPriceId);
+        }
+
+        return new ProductAndPrice(currentProductId, currentPriceId);
+    }
+
 
 }

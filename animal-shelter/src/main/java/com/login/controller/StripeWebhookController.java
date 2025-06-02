@@ -41,12 +41,13 @@ public class StripeWebhookController {
     private final EmailService emailService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public StripeWebhookController(DonationRepository donationRepository,
-                                   UserRepository userRepository,
-                                   AnimalRepository animalRepository,
-                                   WebhookLogRepository webhookLogRepository,
-                                   SponsorRepository sponsorRepository,
-                                   EmailService emailService) {
+    public StripeWebhookController(
+            DonationRepository donationRepository,
+            UserRepository userRepository,
+            AnimalRepository animalRepository,
+            WebhookLogRepository webhookLogRepository,
+            SponsorRepository sponsorRepository,
+            EmailService emailService) {
         this.donationRepository = donationRepository;
         this.userRepository = userRepository;
         this.animalRepository = animalRepository;
@@ -56,129 +57,130 @@ public class StripeWebhookController {
     }
 
     @PostMapping
-    public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload,
-                                                      @RequestHeader("Stripe-Signature") String sigHeader) {
+    public ResponseEntity<String> handleWebhook(@RequestBody String payload,
+                                                @RequestHeader("Stripe-Signature") String sigHeader) {
         Event event;
-
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
 
-        WebhookLog log = new WebhookLog();
-        log.setReceivedAt(LocalDateTime.now());
-        log.setEventType(event.getType());
-        log.setRawPayload(payload);
-        webhookLogRepository.save(log);
+        // Guardar log del webhook recibido
+        webhookLogRepository.save(WebhookLog.builder()
+                .eventType(event.getType())
+                .receivedAt(LocalDateTime.now())
+                .rawPayload(payload)
+                .build());
 
         try {
-            JsonNode json = objectMapper.readTree(payload);
-            JsonNode object = json.at("/data/object");
+            JsonNode object = objectMapper.readTree(payload).at("/data/object");
 
-            if ("checkout.session.completed".equals(event.getType())) {
-                String mode = object.get("mode").asText();
-                if ("subscription".equals(mode)) {
-                    String stripeSessionId = object.get("id").asText();
-                    String customerEmail = object.get("customer_email").asText();
-                    String clientReferenceId = object.has("client_reference_id") ? object.get("client_reference_id").asText() : null;
-
-                    if (clientReferenceId != null && customerEmail != null) {
-                        Long animalId = Long.parseLong(clientReferenceId);
-                        Optional<User> userOpt = userRepository.findByEmail(customerEmail);
-                        Optional<Animal> animalOpt = animalRepository.findById(animalId);
-
-                        if (userOpt.isPresent() && animalOpt.isPresent()) {
-                            boolean exists = sponsorRepository.existsByStripeRef(stripeSessionId);
-                            if (!exists) {
-                                Sponsor sponsor = new Sponsor();
-                                sponsor.setStripeRef(stripeSessionId);
-                                sponsor.setStatus(Sponsor.Status.completed);
-                                sponsor.setQuantity(animalOpt.get().getSponsorPrice());
-                                sponsor.setIdUser(userOpt.get());
-                                sponsor.setIdAnimal(animalOpt.get());
-                                sponsorRepository.save(sponsor);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (event.getType().startsWith("invoice.")) {
-                String subscriptionId = object.get("subscription").asText();
-                String invoiceStatus = object.get("status").asText();
-                double amountPaid = object.has("amount_paid") ? object.get("amount_paid").asDouble() / 100.0 : 0.0;
-
-                Sponsor.Status status;
-                switch (invoiceStatus) {
-                    case "paid" -> status = Sponsor.Status.completed;
-                    case "unpaid", "incomplete", "past_due" -> status = Sponsor.Status.failed;
-                    case "canceled" -> status = Sponsor.Status.cancelled;
-                    default -> status = Sponsor.Status.failed;
-                }
-
-                sponsorRepository.findByStripeRef(subscriptionId).ifPresent(sponsor -> {
-                    sponsor.setStatus(status);
-                    sponsor.setQuantity(amountPaid);
-                    sponsorRepository.save(sponsor);
-
-                    if (status == Sponsor.Status.cancelled || status == Sponsor.Status.failed) {
-                        User user = sponsor.getIdUser();
-                        if (user != null && user.getEmail() != null) {
-                            String subject = "Tu apadrinamiento ha sido " + (status == Sponsor.Status.cancelled ? "cancelado" : "fallido");
-                            String body = "Hola " + user.getName() + ",\n\n" +
-                                    "Te informamos que tu suscripción de apadrinamiento ha sido " +
-                                    (status == Sponsor.Status.cancelled ? "cancelada." : "fallida.") +
-                                    "\nPor favor revisa tu método de pago o contacta con nosotros si fue un error.\n\nGracias por tu apoyo.";
-                            emailService.sendSimpleMessage(user.getEmail(), subject, body);
-                        }
-                    }
-                });
-            }
-
-            String stripePaymentIntentId = object.get("id").asText();
-            String amountStr = object.has("amount") ? object.get("amount").asText() : "0";
-
-            if (donationRepository.findByStripePaymentIntentId(stripePaymentIntentId).isPresent()) {
-                return ResponseEntity.ok("Evento duplicado ignorado: " + stripePaymentIntentId);
-            }
-
-            Donation donation = new Donation();
-            donation.setStripePaymentIntentId(stripePaymentIntentId);
-            donation.setPaymentMethod("stripe");
-            donation.setDate(LocalDateTime.now());
-            donation.setQuantity(Double.parseDouble(amountStr) / 100);
-
-            Donation.Status status;
             switch (event.getType()) {
-                case "payment_intent.succeeded" -> status = Donation.Status.completed;
-                case "payment_intent.canceled" -> status = Donation.Status.cancelled;
-                case "payment_intent.payment_failed" -> status = Donation.Status.failed;
-                case "charge.refunded" -> status = Donation.Status.refunded;
+                case "checkout.session.completed" -> handleCheckoutCompleted(object);
+                case "invoice.paid", "invoice.payment_failed", "invoice.canceled" -> handleInvoice(object);
+                case "payment_intent.succeeded", "payment_intent.canceled", "payment_intent.payment_failed", "charge.refunded" -> handleDonation(event.getType(), object);
                 default -> {
                     return ResponseEntity.ok("Evento ignorado: " + event.getType());
                 }
             }
 
-            donation.setStatus(status);
-
-            JsonNode metadata = object.get("metadata");
-            if (metadata != null) {
-                if (metadata.has("id_user")) {
-                    Long userId = metadata.get("id_user").asLong();
-                    userRepository.findById(userId).ifPresent(donation::setUser);
-                }
-                if (metadata.has("id_animal")) {
-                    Long animalId = metadata.get("id_animal").asLong();
-                    animalRepository.findById(animalId).ifPresent(donation::setAnimal);
-                }
-            }
-
-            donationRepository.save(donation);
-            return ResponseEntity.ok("Webhook recibido | ID de Stripe: " + stripePaymentIntentId);
-
-        } catch (IOException | NullPointerException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al procesar JSON");
+            return ResponseEntity.ok("Evento procesado: " + event.getType());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error procesando JSON");
         }
     }
+
+    private void handleCheckoutCompleted(JsonNode object) {
+        if (!object.has("mode")) return;
+
+        String mode = object.get("mode").asText();
+        if ("subscription".equals(mode)) {
+            String sessionId = object.get("id").asText();
+            String email = object.path("customer_email").asText(null);
+            String clientReferenceId = object.path("client_reference_id").asText(null);
+
+            if (email != null && clientReferenceId != null) {
+                Long animalId = Long.parseLong(clientReferenceId);
+                Optional<User> userOpt = userRepository.findByEmail(email);
+                Optional<Animal> animalOpt = animalRepository.findById(animalId);
+
+                if (userOpt.isPresent() && animalOpt.isPresent() && !sponsorRepository.existsByStripeRef(sessionId)) {
+                    Sponsor sponsor = new Sponsor();
+                    sponsor.setStripeRef(sessionId);
+                    sponsor.setStatus(Sponsor.Status.completed);
+                    sponsor.setQuantity(animalOpt.get().getSponsorPrice());
+                    sponsor.setIdUser(userOpt.get());
+                    sponsor.setIdAnimal(animalOpt.get());
+                    sponsorRepository.save(sponsor);
+                }
+            }
+        }
+    }
+
+    private void handleInvoice(JsonNode object) {
+        String subscriptionId = object.path("subscription").asText(null);
+        String statusStr = object.path("status").asText(null);
+        double amount = object.path("amount_paid").asDouble(0.0) / 100;
+
+        if (subscriptionId == null || statusStr == null) return;
+
+        Sponsor.Status status = switch (statusStr) {
+            case "paid" -> Sponsor.Status.completed;
+            case "unpaid", "incomplete", "past_due" -> Sponsor.Status.failed;
+            case "canceled" -> Sponsor.Status.cancelled;
+            default -> Sponsor.Status.failed;
+        };
+
+        sponsorRepository.findByStripeRef(subscriptionId).ifPresent(sponsor -> {
+            sponsor.setStatus(status);
+            sponsor.setQuantity(amount);
+            sponsorRepository.save(sponsor);
+
+            if (status == Sponsor.Status.cancelled || status == Sponsor.Status.failed) {
+                User user = sponsor.getIdUser();
+                if (user != null && user.getEmail() != null) {
+                    String subject = "Tu apadrinamiento ha sido " + (status == Sponsor.Status.cancelled ? "cancelado" : "fallido");
+                    String body = "Hola " + user.getName() + ",\n\n" +
+                            "Tu suscripción fue marcada como " + status.name() + ". " +
+                            "Revisa tu método de pago o contáctanos si fue un error.\n\nGracias por tu apoyo.";
+                    emailService.sendSimpleMessage(user.getEmail(), subject, body);
+                }
+            }
+        });
+    }
+
+    private void handleDonation(String eventType, JsonNode object) {
+        String intentId = object.path("id").asText(null);
+        if (intentId == null || donationRepository.findByStripePaymentIntentId(intentId).isPresent()) return;
+
+        Donation donation = new Donation();
+        donation.setStripePaymentIntentId(intentId);
+        donation.setDate(LocalDateTime.now());
+        donation.setPaymentMethod("stripe");
+        donation.setQuantity(object.path("amount").asDouble(0.0) / 100);
+
+        Donation.Status status = switch (eventType) {
+            case "payment_intent.succeeded" -> Donation.Status.completed;
+            case "payment_intent.canceled" -> Donation.Status.cancelled;
+            case "payment_intent.payment_failed" -> Donation.Status.failed;
+            case "charge.refunded" -> Donation.Status.refunded;
+            default -> Donation.Status.failed;
+        };
+        donation.setStatus(status);
+
+        JsonNode metadata = object.path("metadata");
+        if (metadata != null && metadata.isObject()) {
+            Optional.ofNullable(metadata.path("id_user").asLong())
+                    .flatMap(userRepository::findById)
+                    .ifPresent(donation::setUser);
+            Optional.ofNullable(metadata.path("id_animal").asLong())
+                    .flatMap(animalRepository::findById)
+                    .ifPresent(donation::setAnimal);
+        }
+
+        donationRepository.save(donation);
+    }
 }
+
+
