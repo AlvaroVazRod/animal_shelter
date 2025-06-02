@@ -14,12 +14,19 @@ import com.login.service.StripeService;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +40,9 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Autowired
     private StripeService stripeService;
+    
+    @Value("${upload.path.animals:uploads/animals}")
+    private String uploadPath;
 
     public AnimalServiceImpl(AnimalRepository animalRepository,
                              TagRepository tagRepository,
@@ -40,6 +50,32 @@ public class AnimalServiceImpl implements AnimalService {
         this.animalRepository = animalRepository;
         this.tagRepository = tagRepository;
         this.stripeService = stripeService;
+    }
+    
+    @Override
+    @Transactional
+    public ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException {
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                : "";
+        String uniqueFilename = UUID.randomUUID().toString() + extension;
+
+        File destination = new File(uploadPath, uniqueFilename);
+        destination.getParentFile().mkdirs();
+        try {
+            file.transferTo(destination);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image file", e);
+        }
+
+        dto.setImage(uniqueFilename);
+
+        AnimalImageDto imageDto = new AnimalImageDto();
+        imageDto.setFilename(uniqueFilename);
+        dto.setImages(Collections.singletonList(imageDto));
+
+        return createDto(dto);
     }
 
     @Override

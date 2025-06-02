@@ -72,7 +72,12 @@ public class AnimalMapper {
         animal.setCollected(dto.getCollected());
         animal.setAdoptionPrice(dto.getAdoptionPrice());
         animal.setSponsorPrice(dto.getSponsorPrice());
-
+        if (dto.getImages() != null) {
+            animal.setImages(dto.getImages().stream()
+                .map(AnimalImageMapper::toEntity)
+                .peek(img -> img.setAnimal(animal))
+                .collect(Collectors.toList()));
+        }
         if (dto.getStatus() != null) {
             animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
         }

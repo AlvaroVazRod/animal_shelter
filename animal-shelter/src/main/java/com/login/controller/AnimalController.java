@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Animals", description = "Operations related to animal data")
 @RestController
@@ -65,11 +66,14 @@ public class AnimalController {
         return animalService.getDtoById(id);
     }
 
-    @Operation(summary = "Create animal", description = "Creates a new animal")
+    @Operation(summary = "Create animal with image", description = "Creates a new animal and stores a base image for it")
     @ApiResponse(responseCode = "200", description = "Animal created successfully")
-    @PostMapping
-    public ResponseEntity<AnimalDto> create(@Valid @RequestBody AnimalDto animalDto) throws StripeException {
-        return animalService.createDto(animalDto);
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<AnimalDto> create(
+            @RequestPart("animal") @Valid AnimalDto animalDto,
+            @RequestPart("file") MultipartFile file
+    ) throws StripeException {
+        return animalService.createDtoWithImage(animalDto, file);
     }
 
     @Operation(summary = "Update animal", description = "Updates an existing animal")
