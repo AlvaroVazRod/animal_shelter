@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "../services/users/useUser";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const Navbar = () => {
@@ -84,42 +85,41 @@ export const Navbar = () => {
             </button>
 
             {/* Logo */}
-            <a
-              href="/"
-              className="text-xl font-bold transition duration-300 hover:scale-115 hover:text-[#AD03CB]"
-            >
+            <Link
+              to="/"
+              className="text-xl font-bold transition duration-300 hover:scale-115 hover:text-[#AD03CB]">
               🐶 Protectora
-            </a>
+            </Link>
 
             {/* Menú de escritorio */}
             <div className="hidden md:flex items-center space-x-9">
-              <a
-                href="/animales"
+              <Link
+                to="/animales"
                 className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
               >
                 🐈 Mascotas
-              </a>
+              </Link>
               <div className="w-px h-5 bg-[#AD03CB]/40" />
-              <a
-                href="/contacto"
+              <Link
+                to="/contacto"
                 className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
               >
                 📋 Contacto
-              </a>
+              </Link>
               <div className="w-px h-5 bg-[#AD03CB]/40" />
-              <a
-                href="/donate"
+              <Link
+                to="/donate"
                 className="transition duration-300 text-[#AD03CB] hover:text-purple-500 font-medium hover:scale-105"
               >
                 🐾 Donar
-              </a>
+              </Link>
             </div>
 
             {/* Panel Admin + Perfil */}
             <div className="flex items-center">
               {user && user.role === "ADMIN" && (
-                <a
-                  href="/adminU"
+                <Link
+                  to="/adminU"
                   className="hidden md:inline-block px-3 py-1 rounded transition duration-300 hover:scale-107 hover:-rotate-2 mr-4"
                   style={{
                     color: "#f5f5f5",
@@ -127,7 +127,7 @@ export const Navbar = () => {
                   }}
                 >
                   🛠️ Panel Admin
-                </a>
+                </Link>
               )}
               {user ? (
                 <div
@@ -169,18 +169,18 @@ export const Navbar = () => {
                           border: "1px solid rgb(208, 0, 187)",
                         }}
                       >
-                        <a
-                          href="/profile"
+                        <Link
+                          to="/profile"
                           className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
                         >
                           👤 Mi perfil
-                        </a>
-                        <a
-                          href="#"
+                        </Link>
+                        <Link
+                          to="#"
                           className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
                         >
                           ⚙️ Configuración
-                        </a>
+                        </Link>
                         <button
                           onClick={() => {
                             logout();
@@ -196,23 +196,23 @@ export const Navbar = () => {
                 </div>
               ) : (
                 <div className="hidden md:flex space-x-2">
-                  <a href="/login">
+                  <Link to="/login">
                     <button className="text-sm font-bold transition duration-300 hover:scale-105 text-[#AD03CB]">
                       Iniciar sesión
                     </button>
-                  </a>
-                  <a href="/register">
+                  </Link>
+                  <Link to="/register">
                     <button className="text-sm font-bold transition duration-300 hover:scale-105 text-[#AD03CB]">
                       Registrarse
                     </button>
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
             {/* Icono de usuario en versión móvil */}
             {user && (
-              <a
-                href="/profile"
+              <Link
+                to="/profile"
                 className="md:hidden ml-4 w-10 h-10 rounded-full overflow-hidden border-2 border-[#AD03CB] flex-shrink-0"
                 aria-label="Perfil"
               >
@@ -233,7 +233,7 @@ export const Navbar = () => {
                     {user?.username?.charAt(0).toUpperCase()}
                   </div>
                 )}
-              </a>
+              </Link>
             )}
           </div>
         </div>
@@ -250,46 +250,46 @@ export const Navbar = () => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden fixed top-0 left-0 w-full h-screen px-6 pt-24 pb-16 space-y-4 bg-[#f5f5f5]/90 z-40 text-left text-2xl backdrop-blur-md"
           >
-            <a
-              href="/animales"
+            <Link
+              to="/animales"
               className="block text-[#AD03CB] font-bold hover:text-purple-500"
             >
               🐈 Mascotas
-            </a>
-            <a
-              href="/contacto"
+            </Link>
+            <Link
+              to="/contacto"
               className="block text-[#AD03CB] font-bold hover:text-purple-500"
             >
               📋 Contacto
-            </a>
-            <a
-              href="/donate"
+            </Link>
+            <Link
+              to="/donate"
               className="block text-[#AD03CB] font-bold hover:text-purple-500"
             >
               🐾 Donar
-            </a>
+            </Link>
             {user && user.role === "ADMIN" && (
-              <a
-                href="/adminU"
+              <Link
+                to="/adminU"
                 className="block text-[#AD03CB] font-bold hover:text-purple-500"
               >
                 🛠️ Panel Admin
-              </a>
+              </Link>
             )}
             {user ? (
               <>
-                <a
-                  href="/profile"
+                <Link
+                  to="/profile"
                   className="block text-[#AD03CB] font-bold hover:text-purple-500"
                 >
                   👤 Mi perfil
-                </a>
-                <a
-                  href="#"
+                </Link>
+                <Link
+                  to="#"
                   className="block text-[#AD03CB] font-bold hover:text-purple-500"
                 >
                   ⚙️ Configuración
-                </a>
+                </Link>
                 <button
                   onClick={() => {
                     logout();
@@ -302,18 +302,18 @@ export const Navbar = () => {
               </>
             ) : (
               <>
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="block text-[#AD03CB] font-medium hover:text-purple-500"
                 >
                   Iniciar sesión
-                </a>
-                <a
-                  href="/register"
+                </Link>
+                <Link
+                  to="/register"
                   className="block text-[#AD03CB] font-medium hover:text-purple-500"
                 >
                   Registrarse
-                </a>
+                </Link>
               </>
             )}
           </motion.div>

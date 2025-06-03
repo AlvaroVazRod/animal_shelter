@@ -97,7 +97,7 @@ export const AnimalsPage = () => {
           </h1>
 
           {/* Filtros */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+          <div className="w-full max-w-[400px] sm:max-w-full mx-auto flex flex-col px-auto sm:flex-row justify-center items-center gap-4 mb-8">
             <select
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
@@ -121,12 +121,16 @@ export const AnimalsPage = () => {
 
           {/* Animales */}
           {loading ? (
-            <div className="text-xl text-center text-[#AD03CB]">Cargando...</div>
+            <div className="text-xl text-center text-[#AD03CB]">
+              Cargando...
+            </div>
           ) : error ? (
-            <div className="text-xl text-center text-red-500">Error: {error}</div>
+            <div className="text-xl text-center text-red-500">
+              Error: {error}
+            </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="w-full max-w-[400px] sm:max-w-full mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {animals.map((animal) => (
                   <AnimalCard
                     key={animal.id}
@@ -163,15 +167,7 @@ export const AnimalsPage = () => {
         {/* Modal */}
         {isModalOpen && selectedAnimal && (
           <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-2 sm:px-4">
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl relative max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-              <button
-                className="absolute top-2 right-4 text-gray-500 hover:text-gray-800 text-xl font-bold"
-                onClick={closeModal}
-              >
-                ×
-              </button>
-              <AnimalDetails animal={selectedAnimal} onClose={closeModal} />
-            </div>
+            <AnimalDetails animal={selectedAnimal} onClose={closeModal} />
           </div>
         )}
       </div>
