@@ -133,7 +133,7 @@ export const Contact = () => {
             {/* Mapa e información */}
             <div className="flex flex-col gap-6 flex-1">
               {/* Mapa */}
-              <div className="h-64 lg:h-96 rounded-lg overflow-hidden shadow-xl">
+              <div className="h-64 lg:h-96 rounded-lg overflow-hidden shadow-xl border-2 border-[#AD03CB]">
                 <iframe
                   title="Ubicación Protectora"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3028.215041820962!2d1.1062233154043932!3d41.15404697929862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a160e6a6b8a8a1%3A0x5a1a5a5a5a5a5a5a!2sAv.%20de%20Bellissens%2C%2040%2C%2043204%20Reus%2C%20Tarragona!5e0!3m2!1ses!2ses!4v1620000000000!5m2!1ses!2ses"

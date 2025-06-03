@@ -14,14 +14,14 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-3xl shadow-lg flex flex-col sm:flex-row h-50 w-full overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
+      className="bg-white rounded-3xl shadow-lg flex flex-col sm:flex-row w-full overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
     >
       {/* Imagen */}
-      <div className="relative w-1/2 h-full">
+      <div className="relative w-full sm:w-1/2 h-48 sm:h-auto">
         <img
           src={imageUrl}
           alt={animal.name}
-          className="object-cover w-full h-full rounded-l-3xl"
+          className="object-cover w-full h-full sm:rounded-l-3xl"
         />
         {animal.status === "requires_funding" && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
@@ -31,23 +31,23 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col justify-center w-1/2 bg-[#fdf3ff] h-full">
-        <h3 className="text-lg font-bold text-purple-700 mb-2 text-center truncate">
+      <div className="p-4 flex flex-col justify-center items-center sm:items-start w-full sm:w-1/2 bg-[#fdf3ff] gap-y-1.5 text-base sm:text-sm">
+        <h3 className="text-xl font-bold text-purple-700 mb-2 text-center truncate w-full">
           {animal.name}
         </h3>
-        <p className="text-sm">
+        <p>
           <span className="font-semibold text-fuchsia-700">Edad:</span>{" "}
           {animal.age} {animal.age === 1 ? "año" : "años"}
         </p>
-        <p className="text-sm">
+        <p>
           <span className="font-semibold text-fuchsia-700">Sexo:</span>{" "}
           {animal.gender}
         </p>
-        <p className="text-sm">
+        <p>
           <span className="font-semibold text-fuchsia-700">Peso:</span>{" "}
           {animal.weight} Kg
         </p>
-        <p className="text-sm truncate">
+        <p className="truncate">
           <span className="font-semibold text-fuchsia-700">Raza:</span>{" "}
           {animal.breed}
         </p>

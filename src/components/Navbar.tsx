@@ -49,7 +49,38 @@ export const Navbar = () => {
               className="md:hidden text-3xl text-[#AD03CB]"
               aria-label="Abrir o cerrar menú"
             >
-              {isMobileMenuOpen ? "✖" : "☰"}
+              {isMobileMenuOpen ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-[#AD03CB]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                // Ícono de hamburguesa
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-[#AD03CB]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
             </button>
 
             {/* Logo */}
@@ -103,12 +134,6 @@ export const Navbar = () => {
                   className="hidden md:flex items-center space-x-3 relative"
                   ref={profileMenuRef}
                 >
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: "#AD03CB" }}
-                  >
-                    {user.username}
-                  </span>
                   <div className="relative">
                     <button
                       onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -184,6 +209,32 @@ export const Navbar = () => {
                 </div>
               )}
             </div>
+            {/* Icono de usuario en versión móvil */}
+            {user && (
+              <a
+                href="/profile"
+                className="md:hidden ml-4 w-10 h-10 rounded-full overflow-hidden border-2 border-[#AD03CB] flex-shrink-0"
+                aria-label="Perfil"
+              >
+                {user.image ? (
+                  <img
+                    src={`http://localhost:8080/images/user/${user.image}`}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center text-sm font-bold"
+                    style={{
+                      backgroundColor: base,
+                      color: complementary,
+                    }}
+                  >
+                    {user?.username?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </a>
+            )}
           </div>
         </div>
       </nav>
@@ -197,9 +248,8 @@ export const Navbar = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden fixed top-0 left-0 w-full h-screen px-6 pt-24 pb-16 space-y-4 bg-[#f5f5f5]/90 z-40 text-left backdrop-blur-md"
+            className="md:hidden fixed top-0 left-0 w-full h-screen px-6 pt-24 pb-16 space-y-4 bg-[#f5f5f5]/90 z-40 text-left text-2xl backdrop-blur-md"
           >
-            {" "}
             <a
               href="/animales"
               className="block text-[#AD03CB] font-bold hover:text-purple-500"
