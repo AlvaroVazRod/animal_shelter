@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AnimalService {
@@ -22,13 +23,15 @@ public interface AnimalService {
 
     ResponseEntity<Void> delete(Long id);
     
-    Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable);
 
     ResponseEntity<AnimalDto> updateImage(Long id, String filename);
     
     ResponseEntity<Double> getSponsorPrice(Long id);
 
 	ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException;
+
+	Page<AnimalDto> getFilteredAnimals(String species, String genderText, LocalDate arrivalAfter,
+			LocalDate arrivalBefore, Pageable pageable);
 
 }
 

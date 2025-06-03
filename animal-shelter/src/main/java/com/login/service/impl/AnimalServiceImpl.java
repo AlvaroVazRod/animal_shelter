@@ -13,6 +13,7 @@ import com.login.repository.UserRepository;
 import com.login.service.AnimalService;
 import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
+import com.login.specificactions.AnimalSpecifications;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
 import jakarta.annotation.PostConstruct;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -223,24 +226,30 @@ public class AnimalServiceImpl implements AnimalService {
 	}
 
 	@Override
-	public Page<AnimalDto> getFilteredAnimals(String species, String genderText, Pageable pageable) {
-		Page<Animal> animals;
+	public Page<AnimalDto> getFilteredAnimals(String species, String genderText, LocalDate arrivalAfter, LocalDate arrivalBefore, Pageable pageable) {
+	    Specification<Animal> spec = Specification.where(null);
 
-		if (species != null && genderText != null) {
-			boolean gender = convertGender(genderText);
-			animals = animalRepository.findBySpeciesAndGender(species, gender, pageable);
-		} else if (species != null) {
-			animals = animalRepository.findBySpecies(species, pageable);
-		} else if (genderText != null) {
-			boolean gender = convertGender(genderText);
-			animals = animalRepository.findByGender(gender, pageable);
-		} else {
-			animals = animalRepository.findAll(pageable);
-		}
+	    if (species != null) {
+	        spec = spec.and(AnimalSpecifications.hasSpecies(species));
+	    }
 
-		animals.forEach(animal -> animal.getImages().size());
+	    if (genderText != null) {
+	        Boolean gender = convertGender(genderText);
+	        spec = spec.and(AnimalSpecifications.hasGender(gender));
+	    }
 
-		return animals.map(AnimalMapper::toDto);
+	    if (arrivalAfter != null) {
+	        spec = spec.and(AnimalSpecifications.hasArrivalDateAfter(arrivalAfter));
+	    }
+
+	    if (arrivalBefore != null) {
+	        spec = spec.and(AnimalSpecifications.hasArrivalDateBefore(arrivalBefore));
+	    }
+
+	    Page<Animal> animals = animalRepository.findAll(spec, pageable);
+	    animals.forEach(animal -> animal.getImages().size());
+
+	    return animals.map(AnimalMapper::toDto);
 	}
 
 	@Override
@@ -324,5 +333,7 @@ public class AnimalServiceImpl implements AnimalService {
 	            }
 	        }
 	    }
+
+
 
 }
