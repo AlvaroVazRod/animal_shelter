@@ -22,6 +22,10 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const { getToken } = useUser();
   const { createSponsorSession } = useSponsorCheckout();
   const [sponsorPrice, setSponsorPrice] = useState<number | null>(null);
+  const [species, setSpecies] = useState("");
+  const [gender, setGender] = useState("");
+  const [arrivalFrom, setArrivalFrom] = useState("");
+  const [arrivalTo, setArrivalTo] = useState("");
 
   const darkenHexColor = (hex: string, amount = 30) => {
     const cleanHex = hex.replace("#", "");
@@ -132,9 +136,8 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           {/* --- Fondo con blur --- */}
           <div className="absolute inset-0 z-0">
             <img
-              src={`http://localhost:8080/images/animal/${
-                animal.images?.[0]?.filename || animal.image
-              }`}
+              src={`http://localhost:8080/images/animal/${animal.images?.[0]?.filename || animal.image
+                }`}
               alt={`Fondo de ${animal.name}`}
               className="w-full h-full object-cover filter blur-md" // ¡Blur aplicado aquí!
             />
