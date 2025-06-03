@@ -137,7 +137,7 @@ export default function Register() {
 
           <button
             onClick={() => navigate("/")}
-            className="w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-[#AD03CB] hover:bg-[#AD03CB] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD03CB] transition-colors"
+            className="w-full py-2 px-4 rounded-md shadow-2xl text-sm font-medium text-white bg-[#AD03CB] hover:bg-[#AD03CB] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD03CB] transition-colors"
           >
             Volver al inicio
           </button>
@@ -149,7 +149,7 @@ export default function Register() {
   return (
     <DefaultPageTemplate>
       <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center mt-21 mb-10">
-        <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
+        <div className="relative z-10 bg-white/90 p-8 rounded-lg shadow-2xl border-2 border-[#AD03CB]">
 
           <div className="text-center">
             <h2 className="text-3xl font-bold text-[#AD03CB]">Registrarse</h2>
@@ -181,7 +181,7 @@ export default function Register() {
                   onChange={handleChange}
                   className={`mt-1 block w-full px-3 py-2 border ${
                     errors.nombre ? "border-red-500" : "border-[#AD03CB]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                  } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
                 />
                 {errors.nombre && (
                   <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
@@ -203,7 +203,7 @@ export default function Register() {
                   onChange={handleChange}
                   className={`mt-1 block w-full px-3 py-2 border ${
                     errors.apellido ? "border-red-500" : "border-[#AD03CB]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                  } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
                 />
                 {errors.apellido && (
                   <p className="mt-1 text-sm text-red-600">{errors.apellido}</p>
@@ -226,7 +226,7 @@ export default function Register() {
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.username ? "border-red-500" : "border-[#AD03CB]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
               />
               {errors.username && (
                 <p className="mt-1 text-sm text-red-600">{errors.username}</p>
@@ -248,7 +248,7 @@ export default function Register() {
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.email ? "border-red-500" : "border-[#AD03CB]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -270,7 +270,7 @@ export default function Register() {
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.telefono ? "border-red-500" : "border-[#AD03CB]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
                 placeholder="+34 123 456 789"
               />
               {errors.telefono && (
@@ -295,7 +295,7 @@ export default function Register() {
                   onChange={handleChange}
                   className={`mt-1 block w-full px-3 py-2 border ${
                     errors.password ? "border-red-500" : "border-[#AD03CB]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                  } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
                 />
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -320,7 +320,7 @@ export default function Register() {
                     errors.confirmPassword
                       ? "border-red-500"
                       : "border-[#AD03CB]"
-                  } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
+                  } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA]/70 text-[#AD03CB]`}
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">
@@ -347,11 +347,11 @@ export default function Register() {
               </label>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center ">
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform ${
+                className={`w-38 h-28 rounded-full bg-transparent hover:scale-105 transition-transform  ${
                   isLoading ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
               >

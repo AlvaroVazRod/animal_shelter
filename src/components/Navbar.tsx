@@ -3,6 +3,7 @@ import { useUser } from "../services/users/useUser";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
+
 export const Navbar = () => {
   const { user, logout } = useUser();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -87,7 +88,8 @@ export const Navbar = () => {
             {/* Logo */}
             <Link
               to="/"
-              className="text-xl font-bold transition duration-300 hover:scale-115 hover:text-[#AD03CB]">
+              className="text-xl font-bold transition duration-300 hover:scale-115 hover:text-[#AD03CB]"
+            >
               🐶 Protectora
             </Link>
 
@@ -198,12 +200,7 @@ export const Navbar = () => {
                 <div className="hidden md:flex space-x-2">
                   <Link to="/login">
                     <button className="text-sm font-bold transition duration-300 hover:scale-105 text-[#AD03CB]">
-                      Iniciar sesión
-                    </button>
-                  </Link>
-                  <Link to="/register">
-                    <button className="text-sm font-bold transition duration-300 hover:scale-105 text-[#AD03CB]">
-                      Registrarse
+                      👤Iniciar sesión
                     </button>
                   </Link>
                 </div>
@@ -248,45 +245,21 @@ export const Navbar = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden fixed top-0 left-0 w-full h-screen px-6 pt-24 pb-16 space-y-4 bg-[#f5f5f5]/90 z-40 text-left text-2xl backdrop-blur-md"
+            className="md:hidden fixed top-0 left-0 w-full h-screen px-6 pt-24 pb-16 space-y-4 bg-[#f5f5f5] z-40 text-left text-2xl backdrop-blur-md"
           >
-            <Link
-              to="/animales"
-              className="block text-[#AD03CB] font-bold hover:text-purple-500"
-            >
-              🐈 Mascotas
-            </Link>
-            <Link
-              to="/contacto"
-              className="block text-[#AD03CB] font-bold hover:text-purple-500"
-            >
-              📋 Contacto
-            </Link>
-            <Link
-              to="/donate"
-              className="block text-[#AD03CB] font-bold hover:text-purple-500"
-            >
-              🐾 Donar
-            </Link>
-            {user && user.role === "ADMIN" && (
-              <Link
-                to="/adminU"
-                className="block text-[#AD03CB] font-bold hover:text-purple-500"
-              >
-                🛠️ Panel Admin
-              </Link>
-            )}
             {user ? (
               <>
                 <Link
                   to="/profile"
-                  className="block text-[#AD03CB] font-bold hover:text-purple-500"
+                  className="block text-[#AD03CB] font-bold "
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   👤 Mi perfil
                 </Link>
                 <Link
                   to="#"
-                  className="block text-[#AD03CB] font-bold hover:text-purple-500"
+                  className="block text-[#AD03CB] font-bold "
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   ⚙️ Configuración
                 </Link>
@@ -295,7 +268,7 @@ export const Navbar = () => {
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="block text-[#AD03CB] font-bold hover:text-purple-500"
+                  className="block text-[#AD03CB] font-bold "
                 >
                   🚪 Cerrar sesión
                 </button>
@@ -304,18 +277,51 @@ export const Navbar = () => {
               <>
                 <Link
                   to="/login"
-                  className="block text-[#AD03CB] font-medium hover:text-purple-500"
+                  className="block text-[#AD03CB] font-bold "
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Iniciar sesión
-                </Link>
-                <Link
-                  to="/register"
-                  className="block text-[#AD03CB] font-medium hover:text-purple-500"
-                >
-                  Registrarse
+                👤Iniciar sesión
                 </Link>
               </>
             )}
+            <div className="border-t border-purple-300 my-4"></div>
+            
+            <Link
+              to="/animales"
+              className="block text-[#AD03CB] font-bold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              🐈 Mascotas
+            </Link>
+            <div className="border-t border-purple-300 my-4"></div>
+            <Link
+              to="/contacto"
+              className="block text-[#AD03CB] font-bold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              📋 Contacto
+            </Link>
+            <div className="border-t border-purple-300 my-4"></div>
+
+            <Link
+              to="/donate"
+              className="block text-[#AD03CB] font-bold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              🐾 Donar
+            </Link>
+            <div className="border-t border-purple-300 my-4"></div>
+
+            {user && user.role === "ADMIN" && (
+              <Link
+                to="/adminU"
+                className="block text-[#AD03CB] font-bold"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🛠️ Panel Admin
+              </Link>
+            )}
+            
           </motion.div>
         )}
       </AnimatePresence>

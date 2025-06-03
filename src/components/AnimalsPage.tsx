@@ -101,7 +101,7 @@ export const AnimalsPage = () => {
             <select
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
+              className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
             >
               <option value="">Todas las especies</option>
               <option value="dog">🐶 Perros</option>
@@ -111,7 +111,7 @@ export const AnimalsPage = () => {
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
+              className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]"
             >
               <option value="">Ambos géneros</option>
               <option value="femenino">♀️ Femenino</option>
