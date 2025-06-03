@@ -2,13 +2,10 @@ package com.login.service;
 
 import com.login.dto.AnimalDto;
 import com.stripe.exception.StripeException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public interface AnimalService {
@@ -30,8 +27,8 @@ public interface AnimalService {
 
 	ResponseEntity<AnimalDto> createDtoWithImage(AnimalDto dto, MultipartFile file) throws StripeException;
 
-	Page<AnimalDto> getFilteredAnimals(String species, String genderText, LocalDate arrivalAfter,
-			LocalDate arrivalBefore, Pageable pageable);
+
+	Page<AnimalDto> getFilteredAnimals(String species, String genderText, String size, Long tagId, Pageable pageable);
 
 }
 

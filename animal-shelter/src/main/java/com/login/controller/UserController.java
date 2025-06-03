@@ -1,6 +1,8 @@
 package com.login.controller;
 
 import com.login.dto.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.login.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,8 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
+
 
 @Tag(name = "Users", description = "Operations related to user accounts")
 @RestController
@@ -24,12 +27,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Operation(summary = "Get all users", description = "Returns a list of all users")
-    @ApiResponse(responseCode = "200", description = "Users retrieved successfully")
-    @GetMapping
-    public List<UserDto> getAll() {
-        return userService.getAllDto();
+    @Operation(summary = "Get paginated users", description = "Returns a paginated list of users")
+    @ApiResponse(responseCode = "200", description = "Users paginated successfully")
+    @GetMapping("/paged")
+    public ResponseEntity<Page<UserDto>> getPagedUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return userService.getAllPaged(PageRequest.of(page, size));
     }
+
+
 
     @Operation(summary = "Get user by ID", description = "Returns a user based on their ID")
     @ApiResponses({

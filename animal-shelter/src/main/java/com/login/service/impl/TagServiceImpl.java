@@ -69,11 +69,22 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addTagToAnimal(Long animalId, Long tagId) {
+        if (!animalRepository.existsById(animalId)) {
+            throw new RuntimeException("El animal con ID " + animalId + " no existe.");
+        }
+        if (!tagRepository.existsById(tagId)) {
+            throw new RuntimeException("El tag con ID " + tagId + " no existe.");
+        }
+
         tagRepository.insertAnimalTagRelation(animalId, tagId);
     }
 
     @Override
     public void removeTagFromAnimal(Long animalId, Long tagId) {
+        if (!animalRepository.existsById(animalId)) {
+            throw new RuntimeException("El animal con ID " + animalId + " no existe.");
+        }
+
         tagRepository.deleteAnimalTagRelation(animalId, tagId);
     }
 

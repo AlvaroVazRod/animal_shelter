@@ -11,13 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-
-import java.time.LocalDate;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,20 +32,23 @@ public class AnimalController {
 		this.animalService = animalService;
 	}
 
+	@Operation(summary = "Get all animals with filters", description = "Returns a paginated list of animals. Supports optional filters: species, gender, size category, and tag ID.")
+	@ApiResponses({ @ApiResponse(responseCode = "200", description = "Animals retrieved successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid filter or sorting parameter") })
 	@GetMapping
 	public ResponseEntity<Page<AnimalDto>> getAll(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size,
-			@RequestParam(name = "sortby", defaultValue = "gender") String sortBy,
-			@RequestParam(required = false) String gender, @RequestParam(required = false) String species,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalAfter,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate arrivalBefore) {
-		if (!sortBy.equals("gender") && !sortBy.equals("species")) {
-			return ResponseEntity.badRequest().body(Page.empty());
-		}
+			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String gender,
+			@RequestParam(required = false) String species, @RequestParam(required = false) String sizeCategory,
+			@RequestParam(required = false) Long tagId,
+			@RequestParam(name = "sortby", defaultValue = "arrivalDate") String sortBy) {
+		String[] parts = sortBy.split(",");
+		String sortField = parts[0];
+		Sort.Direction direction = (parts.length > 1 && parts[1].equalsIgnoreCase("asc")) ? Sort.Direction.ASC
+				: Sort.Direction.DESC;
 
-		PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
-		Page<AnimalDto> result = animalService.getFilteredAnimals(species, gender, arrivalAfter, arrivalBefore,
-				pageable);
+		PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+		Page<AnimalDto> result = animalService.getFilteredAnimals(species, gender, sizeCategory, tagId, pageable);
 		return ResponseEntity.ok(result);
 	}
 

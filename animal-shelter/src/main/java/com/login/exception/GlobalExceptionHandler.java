@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 /**
  * Manejador global de excepciones para la aplicación.
  *

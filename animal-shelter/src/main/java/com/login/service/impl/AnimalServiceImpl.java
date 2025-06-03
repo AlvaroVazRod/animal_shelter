@@ -13,28 +13,24 @@ import com.login.repository.UserRepository;
 import com.login.service.AnimalService;
 import com.login.service.ProductAndPrice;
 import com.login.service.StripeService;
-import com.login.specificactions.AnimalSpecifications;
+import com.login.specifications.AnimalSpecifications;
 import com.login.utils.AnimalPricingUtils;
 import com.stripe.exception.StripeException;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.internet.MimeMessage;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.*;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -159,7 +155,7 @@ public class AnimalServiceImpl implements AnimalService {
 			if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
 				if (dto.getName() != null && !dto.getName().equals(animal.getName())
 						|| dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
-					stripeService.updateProduct(animal.getStripeProductId(), dto.getName(), dto.getDescription());
+					stripeService.updateProduct(animal.getStripeProductId(), "Apadrinar a " + dto.getName(), dto.getDescription());
 				}
 
 				double recalculatedPrice = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
@@ -226,7 +222,13 @@ public class AnimalServiceImpl implements AnimalService {
 	}
 
 	@Override
-	public Page<AnimalDto> getFilteredAnimals(String species, String genderText, LocalDate arrivalAfter, LocalDate arrivalBefore, Pageable pageable) {
+	public Page<AnimalDto> getFilteredAnimals(
+	        String species,
+	        String genderText,
+	        String size,
+	        Long tagId,
+	        Pageable pageable) {
+
 	    Specification<Animal> spec = Specification.where(null);
 
 	    if (species != null) {
@@ -238,13 +240,14 @@ public class AnimalServiceImpl implements AnimalService {
 	        spec = spec.and(AnimalSpecifications.hasGender(gender));
 	    }
 
-	    if (arrivalAfter != null) {
-	        spec = spec.and(AnimalSpecifications.hasArrivalDateAfter(arrivalAfter));
+	    if (size != null) {
+	        spec = spec.and(AnimalSpecifications.hasSize(size));
 	    }
 
-	    if (arrivalBefore != null) {
-	        spec = spec.and(AnimalSpecifications.hasArrivalDateBefore(arrivalBefore));
+	    if (tagId != null) {
+	        spec = spec.and(AnimalSpecifications.hasTag(tagId));
 	    }
+
 
 	    Page<Animal> animals = animalRepository.findAll(spec, pageable);
 	    animals.forEach(animal -> animal.getImages().size());

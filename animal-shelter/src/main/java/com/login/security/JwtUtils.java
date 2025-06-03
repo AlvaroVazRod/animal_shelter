@@ -2,8 +2,6 @@ package com.login.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import com.login.config.JwtProperties;
 

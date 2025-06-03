@@ -1,6 +1,8 @@
 package com.login.service.impl;
 
 import com.login.dto.UserDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.login.exception.ResourceNotFoundException;
 import com.login.mapper.UserMapper;
 import com.login.model.User;
@@ -13,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,10 +24,12 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 
 	@Override
-	public List<UserDto> getAllDto() {
-		return userRepository.findAll().stream().map(UserMapper::toDto).collect(Collectors.toList());
+	public ResponseEntity<Page<UserDto>> getAllPaged(Pageable pageable) {
+	    Page<User> page = userRepository.findAll(pageable);
+	    Page<UserDto> dtoPage = page.map(UserMapper::toDto);
+	    return ResponseEntity.ok(dtoPage);
 	}
-
+	
 	@Override
 	public ResponseEntity<UserDto> getByIdSecure(Long id, Authentication auth) {
 		User user = userRepository.findById(id)

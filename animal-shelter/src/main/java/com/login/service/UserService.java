@@ -1,15 +1,16 @@
 package com.login.service;
 
-import com.login.dto.UserDto;	
+import com.login.dto.UserDto;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 public interface UserService {
 
-    List<UserDto> getAllDto();
 
     ResponseEntity<UserDto> getByIdSecure(Long id, Authentication authentication);
 
@@ -22,5 +23,8 @@ public interface UserService {
     ResponseEntity<UserDto> getByUsername(String username);
 
 	ResponseEntity<UserDto> updateMyProfile(UserDto dto, Authentication auth);
+
+	ResponseEntity<Page<UserDto>> getAllPaged(Pageable pageable);
+
 
 }

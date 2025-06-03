@@ -35,7 +35,7 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public String createRecurringPrice(String productId, Double amount) throws StripeException {
-        long amountInCents = (long) (amount * 100); // Stripe uses the smallest currency unit
+        long amountInCents = (long) (amount * 100); 
 
         PriceCreateParams.Recurring recurring = PriceCreateParams.Recurring.builder()
                 .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
@@ -81,6 +81,7 @@ public class StripeServiceImpl implements StripeService {
     public void archivePrice(String priceId) throws StripeException {
         Price price = Price.retrieve(priceId);
         Price updated = price.update(Map.of("active", false));
+        System.out.println("Price archived: " + updated.getId());
     }
     
     @Override
