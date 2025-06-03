@@ -10,6 +10,8 @@ import { Select } from "./ui/Select"
 import { Badge } from "./ui/Badge"
 import { Card } from "./ui/Card"
 import { Upload, X, Plus, Loader2 } from "./icons/Icons"
+import { useTags } from "../services/tags/useTags"
+import { useUser } from "../services/users/useUser"
 
 interface Animal {
   id: number
@@ -42,10 +44,11 @@ interface EditAnimalModalProps {
   animal?: Animal | null
   onClose: () => void
   onSubmit: (formData: Partial<Animal>) => Promise<void>
-  onImageUploaded: (file:File|null) => void
+  onImageUploaded: (file: File | null) => void
+  onFirstImageDeleted: (isDeleted:boolean) => void
 }
 
-export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal, onClose, onSubmit, onImageUploaded }) => {
+export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal, onClose, onSubmit, onImageUploaded, onFirstImageDeleted }) => {
   const [formData, setFormData] = useState<Partial<Animal>>({})
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -54,16 +57,9 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
   const [selectedTags, setSelectedTags] = useState<AnimalTag[]>([])
   const [showTagInput, setShowTagInput] = useState(false)
   const [newTagName, setNewTagName] = useState("")
+  const { getToken } = useUser()
+  const { tags, loading, fetchTags } = useTags({ getToken })
 
-  // Mock available tags
-  const availableTags: AnimalTag[] = [
-    { id: 1, name: "Amigable", color: "#4ECCA3" },
-    { id: 2, name: "Entrenado", color: "#45B7D1" },
-    { id: 3, name: "Tranquilo", color: "#96CEB4" },
-    { id: 4, name: "Sociable", color: "#FFEAA7" },
-    { id: 5, name: "Juguetón", color: "#FD79A8" },
-    { id: 6, name: "Protector", color: "#FDCB6E" },
-  ]
 
   const speciesOptions = [
     { value: "dog", label: "Perro" },
@@ -82,10 +78,11 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
   ]
 
   useEffect(() => {
+    fetchTags()
     if (animal) {
       setFormData(animal)
       setSelectedTags(animal.tags || [])
-      setImagePreview(animal.image || null)
+      setImagePreview("http://localhost:8080/images/animal/" + animal.image || null)
     } else {
       setFormData({
         name: "",
@@ -164,7 +161,6 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
       const submitData = {
         ...formData,
         tags: selectedTags,
-        image: imagePreview,
       }
       await onSubmit(submitData)
     } catch (err) {
@@ -174,7 +170,9 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
     }
   }
 
-  const filteredTags = availableTags.filter((tag) => !selectedTags.find((selected) => selected.id === tag.id))
+  const filteredTags = (tags || []).filter(
+    (tag) => !selectedTags.find((selected) => selected.id === tag.id)
+  )
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={animal ? "Editar Animal" : "Crear Animal"}>
@@ -187,16 +185,14 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
             onChange={(e) => handleInputChange("name", e.target.value)}
             required
           />
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              label="Adopción ($) *"
-              type="number"
-              step="0.01"
-              value={formData.adoptionPrice || ""}
-              onChange={(e) => handleInputChange("adoptionPrice", Number.parseFloat(e.target.value))}
-              required
-            />
-          </div>
+          <Input
+            label="Adopción ($) *"
+            type="number"
+            step="0.01"
+            value={formData.adoptionPrice || ""}
+            onChange={(e) => handleInputChange("adoptionPrice", Number.parseFloat(e.target.value))}
+            required
+          />
         </div>
 
         {/* Species, Breed, Age */}
@@ -224,19 +220,12 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
         </div>
 
         {/* Gender, Status, Weight */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select
             label="Género *"
             value={formData.gender || ""}
             onChange={(e) => handleInputChange("gender", e.target.value)}
             options={genderOptions}
-            required
-          />
-          <Select
-            label="Estado *"
-            value={formData.status || ""}
-            onChange={(e) => handleInputChange("status", e.target.value)}
-            options={statusOptions}
             required
           />
           <Input
@@ -299,7 +288,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
               {imagePreview ? (
                 <div className="relative">
                   <img
-                    src={"http://localhost:8080/images/animal/"+imagePreview || "/placeholder.svg"}
+                    src={imagePreview}
                     alt="Preview"
                     className="w-full h-32 object-cover rounded-md"
                   />
@@ -311,6 +300,8 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
                     onClick={() => {
                       setImagePreview(null)
                       setImageFile(null)
+                      onImageUploaded(null)
+                      onFirstImageDeleted(false)
                     }}
                   >
                     <X size={12} />
@@ -362,13 +353,13 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
             )}
 
             <div className="space-y-2">
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1 border-b-1 border-slate-700 pb-2">
                 {selectedTags.map((tag) => (
                   <Badge
                     key={tag.id}
                     variant="outline"
                     className="cursor-pointer"
-                    style={{ borderColor: tag.color, color: tag.color }}
+                    style={{ backgroundColor: "#314158", color: tag.color }}
                     onClick={() => handleRemoveTag(tag.id)}
                   >
                     {tag.name} <X className="ml-1" size={12} />
@@ -381,11 +372,12 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
                   {filteredTags.map((tag) => (
                     <Badge
                       key={tag.id}
-                      variant="secondary"
-                      className="cursor-pointer"
+                      variant="outline"
+                      className="cursor-pointer bg-slate-700"
+                      style={{ borderColor: tag.color, color: tag.color }}
                       onClick={() => handleAddTag(tag)}
                     >
-                      {tag.name}
+                      {tag.name} <Plus className="ml-1" size={12} />
                     </Badge>
                   ))}
                 </div>
