@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Navigation, Keyboard, Pagination } from "swiper/modules";
 import type { Animal } from "../types/Animals";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../services/users/useUser";
@@ -150,6 +151,10 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
               spaceBetween={10}
               slidesPerView={1}
               loop
+              speed={600} // transición suave
+              keyboard={{ enabled: true }}
+              pagination={{ clickable: true }}
+              modules={[Keyboard, Pagination]} // sin Navigation
               className="w-full h-full"
             >
               {(animal.images ?? []).length > 0 ? (
@@ -175,6 +180,7 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
                 </SwiperSlide>
               )}
             </Swiper>
+
           </div>
         </div>
         <div className="flex flex-col gap-4">
@@ -194,6 +200,14 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
             <div className="w-1/2">
               <span className="font-semibold text-[#AD03CB]">Raza:</span>{" "}
               {animal.breed}
+            </div>
+            <div className="w-full">
+              <span className="font-semibold text-[#AD03CB]">Fecha de llegada:</span>{" "}
+              {new Date(animal.arrivalDate).toLocaleDateString("es-ES", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </div>
           </div>
 

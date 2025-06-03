@@ -32,9 +32,9 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
 
       {/* Info */}
       <div className="p-2 flex flex-col justify-center items-center sm:items-start w-full sm:w-1/2 bg-[#fdf3ff] gap-y-1.5 text-base sm:text-sm rounded-b-3xl sm:rounded-bl-none">
-    <h3 className="text-xl font-bold text-purple-700 mb-2 text-center truncate w-full">
-      {animal.name}
-    </h3>
+        <h3 className="text-xl font-bold text-purple-700 mb-2 text-center truncate w-full">
+          {animal.name}
+        </h3>
         <p>
           <span className="font-semibold text-fuchsia-700">Edad:</span>{" "}
           {animal.age} {animal.age === 1 ? "año" : "años"}
@@ -50,6 +50,15 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
         <p className="truncate">
           <span className="font-semibold text-fuchsia-700">Raza:</span>{" "}
           {animal.breed}
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-semibold text-fuchsia-700">Fecha de llegada:</span>
+          {" "}
+          {new Date(animal.arrivalDate).toLocaleDateString("es-ES", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
         </p>
       </div>
     </div>

@@ -12,15 +12,13 @@ import WebhookLogsPage from "../pages/MainPage/AdminDashboardWebhookLogs"
 import Donate from "../components/Donate";
 import SuccessPage from "../pages/SuccessPage";
 import CancelPage from "../pages/CancelPage";
-
 import { Profile } from "../components/Profile";
 import Contact from "../components/Contact";
-import Main from "../components/Main";
-import AnimalsPage from "../components/AnimalsPage";
-import { AnimalDetails } from "../components/AnimalDetails";
+import { AnimalsPage } from "../components/AnimalsPage";
 import AdminDashboardTags from "../pages/MainPage/AdminDashboardTags";
 import AdoptionFormPage from "../pages/MainPage/AdoptionFromPage";
 import EditProfile from "../components/EditForm";
+import ShelterPage from "../pages/ShelterPage";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -33,10 +31,11 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
         <Route path="/contacto" element={<Contact />} />
         {/* <Route path="/animales/:id" element={<AnimalDetails/>}/> */}
         {/* <Route path="/main" element={<Main />} /> */}
-        <Route path="/animales" element={<AnimalsPage/>}/>
+        <Route path="/animales" element={<AnimalsPage />} />
         <Route path="/adopt/:id" element={<AdoptionFormPage />} />
-         <Route path="/success" element={<SuccessPage />} />
-      <Route path="/cancel" element={<CancelPage />} />
+        <Route path="/shelter" element={<ShelterPage />} />
+        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/cancel" element={<CancelPage />} />
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit" element={<EditProfile />} />

@@ -1,9 +1,47 @@
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+
 export const Main = () => {
+  const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const SPECIES_OPTIONS = [
+    { key: "dog", label: "Ver Perros", icon: "🐶" },
+    { key: "cat", label: "Ver Gatos", icon: "🐱" },
+  ];
+
+  const handleAdoptClick = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const goToSpecies = (type: string) => {
+    navigate(`/animales?species=${type}`);
+    setShowDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDropdown]);
+
   return (
     <div className="relative z-0 min-h-screen bg-black px-4 overflow-hidden">
       <video
-        className="absolute inset-0 w-full h-full filter grayscale object-cover z-[-1]"
-        style={{ filter: "sepia(1)" }}
+        className="absolute inset-0 w-full h-full object-cover z-[-1] filter sepia"
         autoPlay
         loop
         muted
@@ -16,46 +54,28 @@ export const Main = () => {
       <div className="absolute inset-0 bg-black/50"></div>
 
       <div className="relative z-15 flex flex-col md:flex-row items-center justify-center min-h-screen gap-10 p-8">
-        {/* VISTA DESKTOP */}
+        {/* Texto izquierdo */}
         <div className="hidden md:flex flex-1 items-center justify-start">
           <div className="space-y-5">
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-1">
-              <span style={{ color: "#AD03CB" }}>A</span>
-              <span style={{ color: "#f5f5f5" }}>yuda</span>
-            </h1>
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-2">
-              <span style={{ color: "#AD03CB" }}>D</span>
-              <span style={{ color: "#f5f5f5" }}>ando</span>
-            </h1>
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-3">
-              <span style={{ color: "#AD03CB" }}>O</span>
-              <span style={{ color: "#f5f5f5" }}>portunidad a</span>
-            </h1>
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-4">
-              <span style={{ color: "#AD03CB" }}>P</span>
-              <span style={{ color: "#f5f5f5" }}>eludos que</span>
-            </h1>
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-5">
-              <span style={{ color: "#AD03CB" }}>T</span>
-              <span style={{ color: "#f5f5f5" }}>ransforman</span>
-            </h1>
-            <h1 className="text-6xl font-bold text-left animate-line fade-delay-6">
-              <span style={{ color: "#AD03CB" }}>A</span>
-              <span style={{ color: "#f5f5f5" }}>lmas</span>
-            </h1>
+            {["Ayuda", "Dando", "Oportunidad a", "Peludos que", "Transforman", "Almas"].map((word, i) => (
+              <h1
+                key={word}
+                className={`text-6xl font-bold text-left animate-line fade-delay-${i + 1}`}
+              >
+                <span style={{ color: "#AD03CB" }}>{word.charAt(0)}</span>
+                <span style={{ color: "#f5f5f5" }}>{word.slice(1)}</span>
+              </h1>
+            ))}
           </div>
         </div>
 
-        {/* VISTA MÓVIL */}
+        {/* Vista Móvil */}
         <div className="block md:hidden w-full text-center flex flex-col items-center animate-fade-in-up mt-20 relative">
           <h1 className="text-5xl font-extrabold text-[#AD03CB] drop-shadow-lg mb-20">
-            {/* HUELLAS ANIMADAS */}
             <div className="absolute top-[-2rem] left-1/2 -translate-x-1/2 flex gap-2">
-              <span className="paw animate-paw1">🐾</span>
-              <span className="paw animate-paw2">🐾</span>
-              <span className="paw animate-paw3">🐾</span>
-              <span className="paw animate-paw4">🐾</span>
-              <span className="paw animate-paw5">🐾</span>
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className={`paw animate-paw${i + 1}`}>🐾</span>
+              ))}
             </div>
             ADOPTA
           </h1>
@@ -64,27 +84,71 @@ export const Main = () => {
             Rescata y dale amor a los peludos que más lo necesitan.
           </p>
 
-          <div className="mt-4 flex flex-wrap justify-center gap-4">
-            <button className="px-6 py-2 rounded-full text-md font-bold shadow-lg transition-all duration-500 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white">
-              🐶 Adoptar
-            </button>
-            <button className="px-6 py-2 rounded-full text-md font-bold shadow-lg transition-all duration-500 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white">
+          <div className="mt-4 flex flex-wrap justify-center gap-4 relative" ref={dropdownRef}>
+            <div className="relative w-[160px]">
+              <button
+                onClick={handleAdoptClick}
+                className="w-full px-6 py-2 rounded-full text-md font-bold shadow-lg transition-all duration-500 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white"
+              >
+                🐶 Adoptar
+              </button>
+              {showDropdown && (
+                <div className="absolute mt-2 w-full bg-white rounded-lg shadow-md z-50 flex flex-col text-[#AD03CB] text-sm font-semibold overflow-hidden">
+                  {SPECIES_OPTIONS.map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => goToSpecies(option.key)}
+                      className="px-4 py-2 hover:bg-[#AD03CB] hover:text-white transition"
+                    >
+                      {option.icon} {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => navigate("/shelter")}
+              className="px-6 py-2 rounded-full text-md font-bold shadow-lg transition-all duration-500 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white"
+            >
               🏡 Shelter
             </button>
           </div>
         </div>
 
-        {/* Contenido a la derecha para desktop */}
+        {/* Vista Desktop */}
         <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center gap-20 animate-fade-in-up">
           <p className="text-3xl text-[#f5f5f5] animate-fade-in-up">
             Rescata y dale amor a los peludos que más lo necesitan.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <button className="px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white">
-              🐶 Adoptar Mascota
-            </button>
-            <button className="px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-3 bg-[#AD03CB] text-white">
+          <div className="flex flex-wrap justify-center gap-4 relative" ref={dropdownRef}>
+            <div className="relative w-[180px]">
+              <button
+                onClick={handleAdoptClick}
+                className="w-full px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white"
+              >
+                🐶 Adoptar
+              </button>
+              {showDropdown && (
+                <div className="absolute mt-2 w-full bg-white rounded-lg shadow-md z-50 flex flex-col text-[#AD03CB] text-sm font-semibold overflow-hidden">
+                  {SPECIES_OPTIONS.map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => goToSpecies(option.key)}
+                      className="px-4 py-2 hover:bg-[#AD03CB] hover:text-white transition"
+                    >
+                      {option.icon} {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => navigate("/shelter")}
+              className="px-8 py-3 rounded-full text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:-rotate-3 bg-[#AD03CB] text-white"
+            >
               🏡 Sobre el Shelter
             </button>
           </div>
@@ -150,3 +214,4 @@ export const Main = () => {
 };
 
 export default Main;
+
