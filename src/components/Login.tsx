@@ -83,7 +83,7 @@ export default function Login() {
     <DefaultPageTemplate>
     <div className="bg-white min-h-screen bg-cover bg-center flex items-center justify-center mt-5">
       <div className="absolute inset-0 z-0" />
-      <div className="relative z-10 max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB]">
+      <div className="relative z-10 max-w-sm bg-white/90 p-8 rounded-lg shadow-2xl border-2 border-[#AD03CB] ">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-[#AD03CB]">Iniciar Sesión</h2>
           <p className="mt-2 text-gray-600">
@@ -115,7 +115,7 @@ export default function Login() {
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.email ? "border-red-500" : "border-[#AD03CB]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
+                } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -138,7 +138,7 @@ export default function Login() {
                 onChange={handleChange}
                 className={`mt-1 block w-full px-3 py-2 border ${
                   errors.password ? "border-red-500" : "border-[#AD03CB]"
-                } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
+                } rounded-md shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#AD03CB] bg-[#F6F0FA] text-[#AD03CB]`}
               />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -171,7 +171,6 @@ export default function Login() {
             </div>
           </div>
 
-          <div>
             <button
               type="submit"
               disabled={isLoading}
@@ -209,7 +208,6 @@ export default function Login() {
                 "Iniciar Sesión"
               )}
             </button>
-          </div>
         </form>
 
         <div className="text-center text-sm text-[#AD03CB] mt-4">

@@ -14,10 +14,10 @@ export const AnimalCard = ({ animal, onClick }: AnimalCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-3xl shadow-lg flex flex-col sm:flex-row w-full overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
+      className="bg-white rounded-3xl shadow-lg flex flex-col sm:flex-row overflow-hidden border border-gray-200 cursor-pointer hover:shadow-xl transition-all duration-300"
     >
       {/* Imagen */}
-      <div className="relative w-full sm:w-1/2 h-70 sm:h-auto">
+      <div className="relative sm:w-1/2 h-70 sm:h-auto">
         <img
           src={imageUrl}
           alt={animal.name}
