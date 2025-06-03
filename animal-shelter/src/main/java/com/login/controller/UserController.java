@@ -47,6 +47,14 @@ public class UserController {
     public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
         return userService.getByUsername(authentication.getName());
     }
+    
+    @Operation(summary = "Update current authenticated user", description = "Updates the currently authenticated user's data")
+    @ApiResponse(responseCode = "200", description = "User updated successfully")
+    @PutMapping("/me")
+    public ResponseEntity<UserDto> updateMe(@Valid @RequestBody UserDto userDto, Authentication authentication) {
+        return userService.updateMyProfile(userDto, authentication);
+    }
+
 
     @Operation(summary = "Update user by ID", description = "Updates a user's information based on ID")
     @ApiResponses({

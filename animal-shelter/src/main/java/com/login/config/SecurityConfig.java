@@ -37,6 +37,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/images/animal/**").permitAll()
 						.requestMatchers("/images/user/**").permitAll()
 						.requestMatchers("/webhook").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/forms/contact").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/animales/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/sponsor/**").permitAll().requestMatchers("/tags/**")
 						.permitAll().requestMatchers(HttpMethod.POST, "/api/stripe/sponsor-checkout/**").authenticated()

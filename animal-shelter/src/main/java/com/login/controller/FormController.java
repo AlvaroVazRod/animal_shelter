@@ -1,6 +1,8 @@
 package com.login.controller;
 
 import com.login.dto.AdoptionFormDto;
+import com.login.dto.ContactMessageDto;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,6 +59,29 @@ public class FormController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error al enviar el formulario: " + e.getMessage());
+        }
+    }
+    @Operation(summary = "Send contact message", description = "Sends a general contact message to the configured email")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Mensaje enviado correctamente"),
+        @ApiResponse(responseCode = "500", description = "Error al enviar el mensaje")
+    })
+    @PostMapping("/contact")
+    public ResponseEntity<String> sendContactMessage(@Valid @RequestBody ContactMessageDto contact) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(destinationEmail);
+            message.setSubject("Nuevo mensaje de contacto");
+            message.setText(
+                "Nombre: " + contact.getName() + "\n" +
+                "Email: " + contact.getEmail() + "\n" +
+                "Mensaje:\n" + contact.getMessage()
+            );
+            mailSender.send(message);
+            return ResponseEntity.ok("Mensaje enviado correctamente.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error al enviar el mensaje: " + e.getMessage());
         }
     }
 }

@@ -38,6 +38,9 @@ public class UserDto {
     @Schema(description = "Account status", example = "active")
     private String status;
 
+    @Schema(description = "User newsletter subscription status", example = "true")
+    private boolean newsletter;
+
     // Getters and setters
 
     public Long getId() {
@@ -110,5 +113,13 @@ public class UserDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public boolean isNewsletter() {
+        return newsletter;
+    }
+
+    public void setNewsletter(boolean newsletter) {
+        this.newsletter = newsletter;
     }
 }

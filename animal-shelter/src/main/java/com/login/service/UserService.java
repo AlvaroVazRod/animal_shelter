@@ -21,4 +21,6 @@ public interface UserService {
     
     ResponseEntity<UserDto> getByUsername(String username);
 
+	ResponseEntity<UserDto> updateMyProfile(UserDto dto, Authentication auth);
+
 }

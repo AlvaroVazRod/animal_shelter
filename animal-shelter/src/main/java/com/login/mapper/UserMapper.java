@@ -12,6 +12,11 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole().name());
         dto.setImage(user.getImage());
+        dto.setNewsletter(user.isNewsletter());
+        dto.setName(user.getName()); // ✅ FALTABA
+        dto.setSurname(user.getSurname()); // ✅ FALTABA
+        dto.setPhone(user.getPhone()); // ✅ FALTABA
+        dto.setStatus(user.getStatus().name()); // ✅ FALTABA
         return dto;
     }
 
@@ -21,6 +26,7 @@ public class UserMapper {
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
         user.setImage(dto.getImage());
+        user.setNewsletter(dto.isNewsletter());
         // NOTA: no se establece la contraseña ni otros campos sensibles desde el DTO
         return user;
     }
