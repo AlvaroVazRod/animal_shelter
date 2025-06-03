@@ -174,15 +174,9 @@ export const Navbar = () => {
                           className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
                         >
                           👤 Mi perfil
-<<<<<<< HEAD
-                        </a>
-                        <a
-                          href="/edit"
-=======
                         </Link>
                         <Link
-                          to="#"
->>>>>>> 83fbc0c8d868cd58d4ed69c0201b045b8e1a82c4
+                          to="/edit"
                           className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
                         >
                           ⚙️ Configuración

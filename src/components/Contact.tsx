@@ -19,12 +19,27 @@ export const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Formulario enviado:", formData);
-    alert("¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.");
-    setFormData({ name: "", email: "", message: "" });
+
+    try {
+      const res = await fetch("http://localhost:8080/api/forms/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const msg = await res.text();
+
+      if (!res.ok) throw new Error(msg);
+
+      alert("✅ " + msg);
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err: any) {
+      alert("❌ Error al enviar el mensaje: " + err.message);
+    }
   };
+
 
   return (
     <DefaultPageTemplate>
