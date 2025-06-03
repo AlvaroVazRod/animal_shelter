@@ -20,6 +20,7 @@ import AnimalsPage from "../components/AnimalsPage";
 import { AnimalDetails } from "../components/AnimalDetails";
 import AdminDashboardTags from "../pages/MainPage/AdminDashboardTags";
 import AdoptionFormPage from "../pages/MainPage/AdoptionFromPage";
+import EditProfile from "../components/EditForm";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -38,6 +39,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
       <Route path="/cancel" element={<CancelPage />} />
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/edit" element={<EditProfile />} />
           <Route path="/donate" element={<Donate />} />
 
 

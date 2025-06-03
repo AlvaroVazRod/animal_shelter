@@ -2,6 +2,16 @@ import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../types/User";
 
+export type UpdateUserData = {
+  username: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone: string | null;
+  newsletter: boolean;
+};
+
+
 export interface UserContextType {
   user: User | null;
   loading: boolean;
@@ -17,11 +27,14 @@ export interface UserContextType {
     newsletter: boolean
   ) => Promise<RegisterResult>;
   getToken: () => string | null;
+  updateUser: (data: UpdateUserData) => Promise<boolean>;
 }
+
+
 
 type RegisterResult = {
   success: boolean;
-  data?: any;      // Puedes poner aquí un tipo más específico si sabes qué devuelve tu backend
+  data?: any;
   error?: string;
 };
 
@@ -52,14 +65,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (!res.ok) throw new Error("No se pudo obtener el usuario actual");
 
       const data = await res.json();
-      if(data.status === 'inactive') logout();
+      if (data.status === "inactive") logout();
+
       setUser({
         id: data.id,
+        name: data.name,
         username: data.username,
+        surname: data.surname,
+        email: data.email,
+        phone: data.phone,
+        newsletter: data.newsletter,
         role: data.role,
         image: data.image,
-        status: data.status
+        status: data.status,
       });
+
       localStorage.setItem("img", data.image || "");
     } catch (err) {
       console.error("Error al cargar el usuario:", err);
@@ -78,10 +98,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = async (
-    username: string,
-    password: string
-  ): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<boolean> => {
     try {
       const res = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -89,8 +106,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok)
-        throw new Error((await res.json()).message || "Login fallido");
+      if (!res.ok) throw new Error((await res.json()).message || "Login fallido");
 
       const { token, role } = await res.json();
 
@@ -100,11 +116,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
       await fetchCurrentUser();
 
-      if (role === "ROLE_ADMIN") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate(role === "ROLE_ADMIN" ? "/admin" : "/");
 
       return true;
     } catch (err) {
@@ -126,7 +138,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     name: string,
     surname: string,
     phone: string | null,
-    newsletter: boolean,
+    newsletter: boolean
   ): Promise<RegisterResult> => {
     try {
       const token = getToken();
@@ -145,7 +157,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           surname,
           phone,
           newsletter,
-          status: "active"
+          status: "active",
         }),
       });
 
@@ -154,19 +166,42 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (!res.ok) {
         return {
           success: false,
-          error: responseBody.error || 'Error inesperado al registrar',
+          error: responseBody.error || "Error inesperado al registrar",
         };
       }
 
       return {
         success: true,
-        data: responseBody, // por si quieres usar lo que devuelve el servidor
+        data: responseBody,
       };
     } catch (err: any) {
       return {
         success: false,
-        error: err.message || 'Error inesperado al registrar',
+        error: err.message || "Error inesperado al registrar",
       };
+    }
+  };
+
+  const updateUser = async (data: UpdateUserData): Promise<boolean> => {
+    try {
+      const token = getToken();
+
+      const res = await fetch("http://localhost:8080/api/usuarios/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) throw new Error("No se pudo actualizar el perfil");
+
+      await fetchCurrentUser();
+      return true;
+    } catch (err) {
+      console.error("Error al actualizar usuario:", err);
+      return false;
     }
   };
 
@@ -179,6 +214,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         register,
         getToken,
+        updateUser,
       }}
     >
       {children}
