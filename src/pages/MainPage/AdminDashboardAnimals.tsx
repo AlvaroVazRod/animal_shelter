@@ -15,6 +15,9 @@ import { AnimalImagesModal } from "../../components/modals/AnimalImagesModel"
 import { FiTrash2, FiEdit, FiAlertCircle, FiInfo } from "react-icons/fi";
 import type { AnimalImage } from "../../types/Animals"
 import { Swiper, SwiperSlide } from "swiper/react"
+import { IoIosFemale, IoIosMale } from "react-icons/io";
+import CountUp from 'react-countup';
+
 
 
 interface Animal {
@@ -54,7 +57,7 @@ export const AdminAnimalsPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(0)
   const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [viewMode, setViewMode] = useState<ViewMode>("grid")
+  const [viewMode, setViewMode] = useState<ViewMode>("table")
   const { getToken } = useUser()
   const [uploadedFile, setUploadedFile] = useState<File | null>()
   const [usingFirstImage, setUsingFirstImage] = useState<boolean>(true)
@@ -73,7 +76,7 @@ export const AdminAnimalsPage: React.FC = () => {
       const token = getToken()
       const query = new URLSearchParams({
         page: String(pageNumber),
-        size: "10",
+        size: "4",
       })
 
       const response = await fetch(`http://localhost:8080/api/animales?${query.toString()}`, {
@@ -243,132 +246,156 @@ export const AdminAnimalsPage: React.FC = () => {
   }
 
   const renderGridView = () => (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 p-4">
-      {animals.map((animal) => (
-        <Card key={animal.id} className="">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-[#e8e8e8]">{animal.name}</CardTitle>
-              <div className="flex space-x-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleEditAnimal(animal)}
-                  className="hover:text-[#7ddbc8]"
-                >
-                  <Edit size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleOpenImagesModal(animal)}
-                  className="hover:text-blue-300"
-                >
-                  <ImageIcon size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDeleteAnimal(animal.id)}
-                  className="hover:text-red-600"
-                >
-                  <Trash2 size={16} />
-                </Button>
+    <div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 p-4">
+        {animals.map((animal) => (
+          <Card key={animal.id} className="">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-[#e8e8e8]">{animal.name}</CardTitle>
+                <div className="flex space-x-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleEditAnimal(animal)}
+                    className="hover:text-[#7ddbc8]"
+                  >
+                    <Edit size={16} />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleOpenImagesModal(animal)}
+                    className="hover:text-blue-300"
+                  >
+                    <ImageIcon size={16} />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDeleteAnimal(animal.id)}
+                    className="hover:text-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {animal.image && (
-        <div className="w-full h-48 rounded-xl mb-4 relative overflow-hidden bg-gray-200">
-        {/* --- Fondo con blur --- */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={`http://localhost:8080/images/animal/${
-              animal.images?.[0]?.filename || animal.image
-            }`}
-            alt={`Fondo de ${animal.name}`}
-            className="w-full h-full object-cover filter blur-md" // ¡Blur aplicado aquí!
-          />
-        </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {animal.image && (
+                <div className="w-full h-48 rounded-xl mb-4 relative overflow-hidden bg-gray-200">
+                  {/* --- Fondo con blur --- */}
+                  <div className="absolute inset-0 z-0">
+                    <img
+                      src={`http://localhost:8080/images/animal/${animal.images?.[0]?.filename || animal.image
+                        }`}
+                      alt={`Fondo de ${animal.name}`}
+                      className="w-full h-full object-cover filter blur-md" // ¡Blur aplicado aquí!
+                    />
+                  </div>
 
-        {/* --- Carrusel (imagen principal centrada) --- */}
-        <div className="relative z-10 w-full h-full flex items-center justify-center">
-          <Swiper
-            spaceBetween={10}
-            slidesPerView={1}
-            loop
-            className="w-full h-full"
-          >
-            {(animal.images ?? []).length > 0 ? (
-              animal.images?.map((img, index) => (
-                <SwiperSlide
-                  key={`${animal.id}-${index}`}
-                  className="flex items-center justify-center h-full"
-                >
-                  <img
-                    src={`http://localhost:8080/images/animal/${img.filename}`}
-                    alt={animal.name}
-                    className="max-h-full max-w-full object-contain mx-auto shadow-lg"
-                  />
-                </SwiperSlide>
-              ))
-            ) : (
-              <SwiperSlide className="flex items-center justify-center h-full">
-                <img
-                  src={`http://localhost:8080/images/animal/${animal.image}`}
-                  alt={animal.name}
-                  className="max-h-full max-w-full object-contain mx-auto shadow-lg"
-                />
-              </SwiperSlide>
-            )}
-          </Swiper>
-        </div>
-      </div>
-            )}
-            <div className="grid grid-cols-2 gap-2 text-sm text-[#e8e8e8]">
-              <div>
-                <span className="text-[#a4ebd4] font-medium">Especie:</span> {animal.species === "dog" ? "Perro" : "Gato"}
+                  {/* --- Carrusel (imagen principal centrada) --- */}
+                  <div className="relative z-10 w-full h-full flex items-center justify-center">
+                    <Swiper
+                      spaceBetween={10}
+                      slidesPerView={1}
+                      loop
+                      className="w-full h-full"
+                    >
+                      {(animal.images ?? []).length > 0 ? (
+                        animal.images?.map((img, index) => (
+                          <SwiperSlide
+                            key={`${animal.id}-${index}`}
+                            className="flex items-center justify-center h-full"
+                          >
+                            <img
+                              src={`http://localhost:8080/images/animal/${img.filename}`}
+                              alt={animal.name}
+                              className="max-h-full max-w-full object-contain mx-auto shadow-lg"
+                            />
+                          </SwiperSlide>
+                        ))
+                      ) : (
+                        <SwiperSlide className="flex items-center justify-center h-full">
+                          <img
+                            src={`http://localhost:8080/images/animal/${animal.image}`}
+                            alt={animal.name}
+                            className="max-h-full max-w-full object-contain mx-auto shadow-lg"
+                          />
+                        </SwiperSlide>
+                      )}
+                    </Swiper>
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-2 text-sm text-[#e8e8e8]">
+                <div>
+                  <span className="text-[#a4ebd4] font-medium">Especie:</span> {animal.species === "dog" ? "Perro" : "Gato"}
+                </div>
+                <div>
+                  <span className="text-[#a4ebd4] font-medium">Raza:</span> {animal.breed}
+                </div>
+                <div>
+                  <span className="text-[#a4ebd4] font-medium">Edad:</span> {animal.age} años
+                </div>
+                <div>
+                  <span className="text-[#a4ebd4] font-medium">Género:</span> {animal.gender}
+                </div>
               </div>
-              <div>
-                <span className="text-[#a4ebd4] font-medium">Raza:</span> {animal.breed}
-              </div>
-              <div>
-                <span className="text-[#a4ebd4] font-medium">Edad:</span> {animal.age} años
-              </div>
-              <div>
-                <span className="text-[#a4ebd4] font-medium">Género:</span> {animal.gender}
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              {/* <div className="text-right text-sm text-[#e8e8e8]">
+              <div className="flex justify-between items-center">
+                {/* <div className="text-right text-sm text-[#e8e8e8]">
                 <div>Adopción: ${animal.adoptionPrice}</div>
                 <div>Patrocinio: ${animal.sponsorPrice}</div>
               </div> */}
-            </div>
-            {animal.tags && animal.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {animal.tags.map((tag) => (
-                  <Badge
-                    key={tag.id}
-                    variant="outline"
-                    className="text-xs"
-                    style={{ borderColor: tag.color, color: tag.color }}
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+              {animal.tags && animal.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {animal.tags.map((tag) => (
+                    <Badge
+                      key={tag.id}
+                      variant="outline"
+                      className="text-xs"
+                      style={{ borderColor: tag.color, color: tag.color }}
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+          >
+            <ChevronLeft size={16} />
+          </Button>
+          <span className="text-[#a800b714]">
+            Página {page + 1} de {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+          >
+            <ChevronRight size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 
 
   const renderTableView = () => (
     <div className="rounded-lg overflow-hidden">
-      <div className=" rounded-lg shadow-lg border-2 border-[#8200db] overflow-hidden">
+      <div className="rounded-lg shadow-lg border-2 border-[#8200db] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-[#8200db]/50">
             <thead className="bg-[#8200db]">
@@ -380,10 +407,13 @@ export const AdminAnimalsPage: React.FC = () => {
                   Información
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider">
-                  Prioridad
+                  Dimensiones
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider">
-                  Estado
+                  Adopción
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-[#e8e8e8] uppercase tracking-wider">
+                  Apadrinar
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-bold text-[#e8e8e8] uppercase tracking-wider">
                   Acciones
@@ -392,55 +422,73 @@ export const AdminAnimalsPage: React.FC = () => {
             </thead>
             <tbody className="bg-[#a800b714]/80 divide-y divide-[#c27aff]/30">
               {animals.map((animal) => (
-                <tr
-                  key={animal.id}
-                  className="hover:bg-[#a800b714] transition-colors"
-                >
+                <tr key={animal.id} className="hover:bg-[#a800b714] transition-colors">
+                  {/* Animal */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#8200db] flex items-center justify-center text-[#e8e8e8]">
-                        <FiInfo className="h-5 w-5" />
+                        {animal.gender === "masculino" ? <IoIosFemale className="h-5 w-5" /> : <IoIosMale className="h-5 w-5" />}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-[#e8e8e8]">
-                          {animal.name}
-                        </div>
-                        <div className="text-sm text-[#e8e8e8]/80">
-                          ID: {animal.id}
-                        </div>
+                        <div className="text-sm font-medium text-[#e8e8e8]">{animal.name}</div>
+                        <div className="text-sm text-[#e8e8e8]/80">ID: {animal.id}</div>
                       </div>
                     </div>
                   </td>
+
+                  {/* Información */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-[#e8e8e8]">
                       <div className="flex items-center">
-                        <span className="mr-2 font-bold text-[#c27aff]">Especie:</span>
-                        {animal.species}
+                        <span className="mr-2 font-bold text-[#c27aff]">Especie:</span>{animal.species}
                       </div>
                       <div className="flex items-center mt-1">
-                        <span className="mr-2 font-bold text-[#c27aff]">Raza:</span>
-                        {animal.breed}
+                        <span className="mr-2 font-bold text-[#c27aff]">Raza:</span>{animal.breed}
                       </div>
                       <div className="flex items-center mt-1">
-                        <span className="mr-2 font-bold text-[#c27aff]">Edad:</span>
-                        {animal.age} años
+                        <span className="mr-2 font-bold text-[#c27aff]">Edad:</span>{animal.age} años
                       </div>
                     </div>
                   </td>
+
+                  {/* Dimensiones */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {/* Puedes completar aquí la prioridad si es necesario */}
+                    <div className="text-sm text-[#e8e8e8]">
+                      <div className="flex items-center">
+                        <span className="mr-2 font-bold text-[#c27aff]">Altura:</span>{animal.height} cm
+                      </div>
+                      <div className="flex items-center mt-1">
+                        <span className="mr-2 font-bold text-[#c27aff]">Largo:</span>{animal.length} cm
+                      </div>
+                      <div className="flex items-center mt-1">
+                        <span className="mr-2 font-bold text-[#c27aff]">Peso:</span>{animal.weight} kg
+                      </div>
+                    </div>
                   </td>
+
+                  {/* Precio Adopción */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${animal.status === "disponible"
-                        ? "bg-[#a4ebd4] text-[#3d5950]"
-                        : "bg-[#a4ebad] text-[#3d5950]"
-                        }`}
-                    >
-                      {animal.status}
+                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#c27aff] text-white">
+                      <CountUp end={animal.adoptionPrice} duration={1.2} decimals={2} suffix=" €" />
                     </span>
                   </td>
+
+                  {/* Precio Apadrinar */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#c27aff] text-white">
+                      <CountUp end={animal.sponsorPrice} duration={1.2} decimals={2} suffix=" €" />
+                    </span>
+                  </td>
+
+                  {/* Acciones */}
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      onClick={() => handleDeleteAnimal(animal.id)}
+                      className="text-[#c27aff] hover:text-red-600 mr-4 transition-colors"
+                      title="Eliminar animal"
+                    >
+                      <ImageIcon size={16} />
+                    </button>
                     <button
                       onClick={() => handleDeleteAnimal(animal.id)}
                       className="text-[#c27aff] hover:text-red-600 mr-4 transition-colors"
@@ -471,20 +519,14 @@ export const AdminAnimalsPage: React.FC = () => {
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
-              className={`px-4 py-2 rounded-md font-semibold ${page === 0
-                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                : "w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors"
-                } transition-colors`}
+              className={`w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors`}
             >
               Anterior
             </button>
             <button
               onClick={() => setPage(page + 1)}
               disabled={page + 1 >= totalPages}
-              className={`px-4 py-2 rounded-md font-semibold ${page + 1 >= totalPages
-                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                : "w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors"
-                } transition-colors`}
+              className={`w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors`}
             >
               Siguiente
             </button>
@@ -493,6 +535,7 @@ export const AdminAnimalsPage: React.FC = () => {
       </div>
     </div>
   );
+
 
 
   if (loading) {
@@ -566,30 +609,6 @@ export const AdminAnimalsPage: React.FC = () => {
           ) : (
             <div className="space-y-6">
               {viewMode === "grid" ? renderGridView() : renderTableView()}
-
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.max(0, p - 1))}
-                    disabled={page === 0}
-                  >
-                    <ChevronLeft size={16} />
-                  </Button>
-                  <span className="text-[#a800b714]">
-                    Página {page + 1} de {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                    disabled={page === totalPages - 1}
-                  >
-                    <ChevronRight size={16} />
-                  </Button>
-                </div>
-              )}
             </div>
           )}
 

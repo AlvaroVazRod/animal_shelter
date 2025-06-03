@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../services/users/useUser";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSponsorCheckout } from "../services/stripe/useSponsorCheckout";
+import CountUp from "react-countup";
 
 interface AnimalDetailsProps {
   animal: Animal;
@@ -231,7 +232,7 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
               <p>
                 Apadrina a este animal por{" "}
                 <span className="font-semibold text-[#AD03CB]">
-                  {sponsorPrice.toFixed(2)} €/mes
+                  <CountUp end={sponsorPrice} duration={1.2} decimals={2} suffix=" €/mes" />
                 </span>
               </p>
             )}
