@@ -240,18 +240,15 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
           <div className="flex justify-center gap-3 mt-6">
             <button
               onClick={handleSponsor}
-              className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors"
+              className="bg-[#AD03CB] hover:bg-[#9202ad] text-white font-semibold px-4 py-2 rounded-full transition-colors"
             >
               Apadrinar
             </button>
             <button
               onClick={handleAdopt}
-              className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors"
+              className="bg-[#AD03CB] hover:bg-[#9202ad] text-white font-semibold px-4 py-2 rounded-full transition-colors"
             >
               Adóptame
-            </button>
-            <button className="bg-[#AD03CB] hover:bg-[#bd5f28] text-white font-semibold px-4 py-2 rounded-full transition-colors">
-              Dóname
             </button>
           </div>
         </div>
