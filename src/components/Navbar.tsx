@@ -257,7 +257,7 @@ export const Navbar = () => {
                   👤 Mi perfil
                 </Link>
                 <Link
-                  to="#"
+                  to="/edit"
                   className="block text-[#AD03CB] font-bold "
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
