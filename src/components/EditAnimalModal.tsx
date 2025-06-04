@@ -45,7 +45,7 @@ interface EditAnimalModalProps {
   onClose: () => void
   onSubmit: (formData: Partial<Animal>) => Promise<void>
   onImageUploaded: (file: File | null) => void
-  onFirstImageDeleted: (isDeleted:boolean) => void
+  onFirstImageDeleted: (isDeleted: boolean) => void
 }
 
 export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal, onClose, onSubmit, onImageUploaded, onFirstImageDeleted }) => {
@@ -245,13 +245,19 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
             onChange={(e) => handleInputChange("color", e.target.value)}
             required
           />
-          <Input
-            label="Fecha de Llegada *"
-            type="date"
-            value={formData.arrivalDate ? formData.arrivalDate.slice(0, 10) : ""}
-            onChange={(e) => handleInputChange("arrivalDate", e.target.value)}
-            required
-          />
+          <div className="relative w-full">
+            <label className="block text-sm font-medium text-slate-200 mb-1">Fecha llegada *</label>
+            <input
+              value={formData.arrivalDate ? formData.arrivalDate.slice(0, 10) : ""}
+              onChange={(e) => handleInputChange("arrivalDate", e.target.value)}
+              required
+              type="date"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ad03cb] focus:border-transparent bg-[#35273a] border-[#c27aff] text-slate-100 pr-10"
+            />
+            <svg className="absolute right-4 top-8 h-5 w-5 text-slate-200 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 4h12M4 5h16a2 2 0 012 2v14a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z" />
+            </svg>
+          </div>
         </div>
 
         {/* Height and Length */}
@@ -308,16 +314,16 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-slate-600 rounded-md p-4 text-center">
-                  <Upload className="mx-auto text-slate-400 mb-2" size={32} />
-                  <p className="text-sm text-slate-400">Subir imagen</p>
+                <div className="border-2 border-dashed border-[#5f4075] rounded-md p-4 text-center">
+                  <Upload className="mx-auto text-slate-200 mb-2" size={32} />
+                  <p className="text-sm text-slate-200">Subir imagen</p>
                 </div>
               )}
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="mt-2 w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-slate-600 file:text-slate-200 hover:file:bg-slate-500"
+                className="mt-2 w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-[#8200db] file:text-slate-200 hover:file:bg-[#AD03CB]"
               />
             </Card>
           </div>
@@ -326,40 +332,16 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-slate-200">Etiquetas</label>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowTagInput(!showTagInput)}
-                className="text-emerald-400 hover:text-emerald-300"
-              >
-                <Plus size={16} />
-              </Button>
             </div>
 
-            {showTagInput && (
-              <div className="flex gap-2 mb-2">
-                <input
-                  value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                  placeholder="Nueva etiqueta"
-                  className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  onKeyPress={(e) => e.key === "Enter" && handleCreateTag()}
-                />
-                <Button type="button" size="sm" onClick={handleCreateTag}>
-                  Crear
-                </Button>
-              </div>
-            )}
-
             <div className="space-y-2">
-              <div className="flex flex-wrap gap-1 border-b-1 border-slate-700 pb-2">
+              <div className="flex flex-wrap gap-1 border-b-1 border-[#5f4075] pb-2">
                 {selectedTags.map((tag) => (
                   <Badge
                     key={tag.id}
                     variant="outline"
                     className="cursor-pointer"
-                    style={{ backgroundColor: "#314158", color: tag.color }}
+                    style={{ backgroundColor: "#35273a", color: tag.color }}
                     onClick={() => handleRemoveTag(tag.id)}
                   >
                     {tag.name} <X className="ml-1" size={12} />
@@ -373,7 +355,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
                     <Badge
                       key={tag.id}
                       variant="outline"
-                      className="cursor-pointer bg-slate-700"
+                      className="cursor-pointer bg-[#3e2443]"
                       style={{ borderColor: tag.color, color: tag.color }}
                       onClick={() => handleAddTag(tag)}
                     >
@@ -390,7 +372,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
+          <Button type="button" onClick={onClose} disabled={isSaving}>
             Cancelar
           </Button>
           <Button type="submit" disabled={isSaving}>

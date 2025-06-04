@@ -89,8 +89,8 @@ export const AnimalImagesModal: React.FC<AnimalImagesModalProps> = ({ isOpen, an
                         type="file"
                         accept="image/*"
                         onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-                        className="text-sm text-slate-100 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-slate-700 file:text-slate-100 hover:file:bg-slate-600"
-                    />
+                        className="mt-2 w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-[#8200db] file:text-slate-200 hover:file:bg-[#AD03CB]"
+                        />
                     <Button onClick={handleUpload} disabled={!selectedFile || loading} className="mt-2">
                         <Upload size={16} className="mr-1" /> Subir imagen
                     </Button>

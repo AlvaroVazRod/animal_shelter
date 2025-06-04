@@ -48,7 +48,7 @@ export const AdminNavbar = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-3xl"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#AD03CB" }}
               aria-label="Abrir o cerrar menú"
             >
               {isMobileMenuOpen ? (
@@ -87,8 +87,7 @@ export const AdminNavbar = () => {
             {/* Logo */}
             <Link
               to="/"
-              className="text-xl font-bold px-3 py-1 rounded-lg transition duration-300 hover:scale-110"
-              style={{ color: "#F5F5F5", backgroundColor: "#4ECCA3" }}
+              className="text-white text-xl font-bold transition duration-300 hover:scale-115 hover:text-[#ad03cb] min-w-36"
             >
               🐶 Protectora
             </Link>
@@ -97,29 +96,31 @@ export const AdminNavbar = () => {
             <div className="hidden md:flex items-center space-x-4">
               <Link
                 to="/adminW"
-                className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
-                style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Transacciones
               </Link>
+              <div className="w-px h-5 bg-purple-500" />
+
               <Link
                 to="/adminU"
-                className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
-                style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Usuarios
               </Link>
+              <div className="w-px h-5 bg-purple-500" />
+
               <Link
                 to="/adminP"
-                className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
-                style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Mascotas
               </Link>
+              <div className="w-px h-5 bg-purple-500" />
+
               <Link
                 to="/adminT"
-                className="px-4 py-1 rounded-md text-sm font-semibold transition duration-300 hover:scale-105"
-                style={{ backgroundColor: "#4ECCA3", color: "#2D2A32" }}
+                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Etiquetas
               </Link>
@@ -131,9 +132,9 @@ export const AdminNavbar = () => {
                 className="hidden md:flex items-center space-x-3 relative"
                 ref={profileMenuRef}
               >
-                <span className="text-sm font-medium" style={{ color: "#F5F5F5" }}>
+                {/* <span className="text-sm font-medium" style={{ color: "#F5F5F5" }}>
                   {user.username}
-                </span>
+                </span> */}
                 <div className="relative">
                   <button
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -146,15 +147,15 @@ export const AdminNavbar = () => {
                         src={`http://localhost:8080/images/user/${user.image}`}
                         alt="Avatar"
                         className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 transition duration-300 hover:scale-110"
-                        style={{ borderColor: "#4ECCA3" }}
+                        style={{ borderColor: "#c27aff" }}
                       />
                     ) : (
                       <div
                         className="w-10 h-10 rounded-full text-l flex items-center justify-center mb-4 object-cover cursor-pointer border-2 transition duration-300 hover:scale-115"
                         style={{
                           backgroundColor: base,
-                          color: complementary,
-                          borderColor: complementary,
+                          color: "#ad03cb",
+                          borderColor: "#c27aff",
                           margin: "auto",
                         }}
                       >
@@ -164,42 +165,34 @@ export const AdminNavbar = () => {
                   </button>
                   {isProfileMenuOpen && (
                     <div
-                      className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1"
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        border: "1px solid #4ECCA3",
-                      }}
+                    className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1"
+                    style={{
+                      backgroundColor: "#FFE2FE",
+                      border: "1px solid rgb(208, 0, 187)",
+                    }}
+                  >
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
                     >
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm"
-                        style={{ color: "#2D2A32" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#E0F7F1")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
-                        }
-                      >
-                        👤 Mi perfil
-                      </Link>
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsProfileMenuOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm"
-                        style={{ color: "#2D2A32" }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#E0F7F1")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "transparent")
-                        }
-                      >
-                        🚪 Cerrar sesión
-                      </button>
-                    </div>
+                      👤 Mi perfil
+                    </Link>
+                    <Link
+                      to="/edit"
+                      className="block px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
+                    >
+                      ⚙️ Configuración
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-[#40170E] hover:bg-[#FFBDFD]"
+                    >
+                      🚪 Cerrar sesión
+                    </button>
+                  </div>
                   )}
                 </div>
               </div>
@@ -210,7 +203,7 @@ export const AdminNavbar = () => {
               <Link
                 to="/profile"
                 className="md:hidden ml-4 w-10 h-10 rounded-full overflow-hidden border-2 flex-shrink-0"
-                style={{ borderColor: "#4ECCA3" }}
+                style={{ borderColor: "#c27aff" }}
                 aria-label="Perfil"
               >
                 {user.image ? (
@@ -224,7 +217,7 @@ export const AdminNavbar = () => {
                     className="w-full h-full flex items-center justify-center text-sm font-bold"
                     style={{
                       backgroundColor: base,
-                      color: complementary,
+                      color: "#AD03CB",
                     }}
                   >
                     {user?.username?.charAt(0).toUpperCase()}
@@ -251,52 +244,52 @@ export const AdminNavbar = () => {
             <Link
               to="/adminW"
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Panel Transacciones
             </Link>
-            <div className="border-t" style={{ borderColor: "#4ECCA3" }}></div>
+            <div className="border-t" style={{ borderColor: "#c27aff" }}></div>
             
             <Link
               to="/adminU"
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Panel Usuarios
             </Link>
-            <div className="border-t" style={{ borderColor: "#4ECCA3" }}></div>
+            <div className="border-t" style={{ borderColor: "#c27aff" }}></div>
             
             <Link
               to="/adminP"
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Panel Mascotas
             </Link>
-            <div className="border-t" style={{ borderColor: "#4ECCA3" }}></div>
+            <div className="border-t" style={{ borderColor: "#c27aff" }}></div>
             
             <Link
               to="/adminT"
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Panel Etiquetas
             </Link>
-            <div className="border-t" style={{ borderColor: "#4ECCA3" }}></div>
+            <div className="border-t" style={{ borderColor: "#c27aff" }}></div>
             
             <Link
               to="/profile"
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               👤 Mi perfil
             </Link>
-            <div className="border-t" style={{ borderColor: "#4ECCA3" }}></div>
+            <div className="border-t" style={{ borderColor: "#c27aff" }}></div>
             
             <button
               onClick={() => {
@@ -304,7 +297,7 @@ export const AdminNavbar = () => {
                 setIsMobileMenuOpen(false);
               }}
               className="block font-bold"
-              style={{ color: "#4ECCA3" }}
+              style={{ color: "#c27aff" }}
             >
               🚪 Cerrar sesión
             </button>

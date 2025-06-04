@@ -31,11 +31,11 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }
       onClick={onClose}
     >
       <div
-        className="bg-slate-800 border border-slate-700 rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[#3e2443] border border-[#c27aff] rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="p-6 pb-4 border-b border-slate-700">
+          <div className="p-6 pb-4 border-b border-[#c27aff]">
             <h2 className="text-xl font-semibold text-slate-100">{title}</h2>
           </div>
         )}

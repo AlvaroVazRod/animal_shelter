@@ -17,9 +17,9 @@ export const Button: React.FC<ButtonProps> = ({
     "inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none"
 
   const variants = {
-    default: "bg-[#8200db] text-white",
-    outline: "border border-slate-600 text-slate-300",
-    ghost: "text-[#7ddb8f]",
+    default: "bg-[#ad03cb] text-white",
+    outline: "border border-[#ad03cb] text-slate-200",
+    ghost: "text-[#c27aff]",
     destructive: "bg-red-500 text-white hover:bg-red-600",
   }
 
