@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_animal_shelter
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./animal-shelter-backend
+    depends_on:
+      - mysql
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/db_animal_shelter
+      DB_USERNAME: user
+      DB_PASSWORD: password
+      JWT_SECRET: tu_clave_secreta
+      JWT_EXPIRATION: 86400000
+      STRIPE_API_KEY: tu_stripe_key
+      STRIPE_WEBHOOK_SECRET: tu_stripe_webhook
+      MAIL_SECRET: tu_contraseña_correo
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./animal-shelter-backend/uploads:/app/uploads
+
+  frontend:
+    build: ./animal-shelter-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
