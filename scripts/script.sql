@@ -1,6 +1,8 @@
-
-DROP DATABASE IF EXISTS db_animal_shelter;
-CREATE DATABASE db_animal_shelter;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+CREATE DATABASE IF NOT EXISTS db_animal_shelter
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
 USE db_animal_shelter;
 
 -- Tabla de usuarios

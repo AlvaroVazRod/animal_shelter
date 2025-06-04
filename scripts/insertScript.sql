@@ -1,64 +1,6 @@
-
--- Insertar usuarios
-INSERT INTO users (username, email, password, name, surname, phone, role, image) VALUES
-('jdoe', 'jdoe@example.com', SHA2('password123', 256), 'John', 'Doe', '+123456789', 'USER', NULL),
-('admin', 'admin@example.com', SHA2('adminpass', 256), 'Admin', 'Root', NULL, 'ADMIN', NULL),
-('admin2', 'admin2@gmail.com', '$2a$10$1TSHHZqGhoQY80HlCZWPN.a5V9ZTYShicj3VuRa.Cs2A/I7gS4TQm', 'admin2', 'admin2', NULL, 'ADMIN', NULL);
-
--- Insertar animales
-INSERT INTO animals (name, description, weight, height, length, age, gender, color, image, species, breed, adoption_price, sponsor_price, collected, status) VALUES
-('Luna', 'Friendly female dog rescued from the street.', 15.20, 45.00, 80.00, 3, FALSE, 'Brown', 'luna.jpg', 'Dog', 'Mixed', 120.00, null, 100.00, 'active'),
-('Milo', 'Playful kitten who loves attention.', 2.50, 20.00, 30.00, 1, TRUE, 'Black', 'milo.jpg', 'Cat', 'Siamese', 90.00, null, 50.00, 'active'),
-('Bella', 'Needs urgent surgery for her leg.', 12.00, 40.00, 75.00, 4, FALSE, 'White', 'bella.jpg', 'Dog', 'Terrier', 150.00, null, 30.00, 'requires_funding'),
-('Rocky', 'Large dog with a calm personality.', 25.00, 60.00, 100.00, 6, TRUE, 'Black and Brown', 'rocky.jpg', 'Dog', 'Rottweiler', 130.00, null, 0.00, 'draft'),
-('Nina', 'Shy but affectionate cat.', 3.00, 22.00, 35.00, 2, FALSE, 'Grey', 'nina.jpg', 'Cat', 'Persian', 100.00, null, 0.00, 'active');
-
--- Insertar imágenes de animales
-INSERT INTO animals_image (filename, animal_id) VALUES
-('luna.jpg', 1),
-('bella.jpg', 3),
-('nina.jpg',5),
-('nina2.jpg',5),
-('milo.jpg', 2);
-
--- Insertar etiquetas
-INSERT INTO tags (name, description, color, icon) VALUES
-('Vaccinated', 'This animal is fully vaccinated.', '#00FF00', 'vaccine.png'),
-('Neutered', 'This animal is neutered/spayed.', '#FFA500', 'neutered.png'),
-('Special Needs', 'This animal requires special care.', '#FF0000', 'care.png');
-
--- Relación animal-tag
-INSERT INTO animals_tags (id_animal, id_tag) VALUES
-(1, 1),
-(1, 2),
-(2, 1);
-
--- Apadrinamientos
-INSERT INTO sponsors (quantity, status, stripe_ref, id_user, id_animal) VALUES
-(15.00, 'completed', 'spon_001', 1, 1),
-(10.00, 'completed', 'spon_002', 1, 2);
-
--- Formularios
-INSERT INTO forms (formdata) VALUES
-('{"employment": "yes", "has_other_pets": "no", "home_type": "apartment"}');
-
--- Adopciones
-INSERT INTO adoptions (quantity, status, data, stripe_ref, id_user, id_animal, id_form) VALUES
-(120.00, 'completed', '2024-10-01', 'adopt_001', 1, 1, 1);
-
--- Transferencias
-INSERT INTO webhook_log (event_type, raw_payload, received_at) VALUES
-('checkout.session.completed', '{"id":"evt_001","object":"event","data":{"object":{"id":"sess_001"}}}', '2024-12-01 10:15:00'),
-('payment_intent.succeeded', '{"id":"evt_002","object":"event","data":{"object":{"id":"pi_001"}}}', '2025-01-15 14:22:30'),
-('payment_intent.failed', '{"id":"evt_003","object":"event","data":{"object":{"id":"pi_002"}}}', '2025-02-05 18:45:00'),
-('charge.refunded', '{"id":"evt_004","object":"event","data":{"object":{"id":"ch_001"}}}', '2025-02-10 12:05:45'),
-('checkout.session.completed', '{"id":"evt_005","object":"event","data":{"object":{"id":"sess_002"}}}', '2025-03-01 08:00:00'),
-('invoice.payment_succeeded', '{"id":"evt_006","object":"event","data":{"object":{"id":"in_001"}}}', '2025-03-10 09:30:00'),
-('invoice.payment_failed', '{"id":"evt_007","object":"event","data":{"object":{"id":"in_002"}}}', '2025-03-15 13:15:00'),
-('customer.subscription.deleted', '{"id":"evt_008","object":"event","data":{"object":{"id":"sub_001"}}}', '2025-03-20 16:40:00'),
-('customer.subscription.updated', '{"id":"evt_009","object":"event","data":{"object":{"id":"sub_002"}}}', '2025-04-01 11:10:10');
-
-INSERT INTO users (username, email, password, name, surname, phone, role) VALUES ('user1', 'user1@example.com', '$2b$12$K7soNJw1LmAdZloNvOMf4urPGZK6bfjll625SGKwdP9ODVRlAvWG.', 'Teodoro', 'Cobo', '+34816888602', 'USER');
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+INSERT INTO users (username, email, password, name, surname, phone, role) VALUES ('user1a', 'user1a@example.com', '$2b$12$K7soNJw1LmAdZloNvOMf4urPGZK6bfjll625SGKwdP9ODVRlAvWG.', 'Teodoro', 'Cobo', '+34816888602', 'USER');
 INSERT INTO users (username, email, password, name, surname, phone, role) VALUES ('user2', 'user2@example.com', '$2b$12$k3bnoYjKFiVTKWd0ixqvBO.4uR9DvQn.uvR4crh7.ssBpfTNmXl7u', 'Bartolomé', 'León', '+34 802368162', 'USER');
 INSERT INTO users (username, email, password, name, surname, phone, role) VALUES ('user3', 'user3@example.com', '$2b$12$kXncmjGr8eV.R6GqpMb.d.kdg1OKG.rcG19jTznVsPgfDdr80uWGe', 'Ester', 'Pina', '+34704049802', 'USER');
 INSERT INTO users (username, email, password, name, surname, phone, role) VALUES ('user4', 'user4@example.com', '$2b$12$2f8iblHpZbNCD1f.MIYrQuOAoVtT5hVCYsigy9cBsnAoqmPWaKi66', 'Sandalio', 'Azorin', '+34731 27 98 08', 'USER');
@@ -168,3 +110,61 @@ INSERT INTO animals_image (filename, animal_id, fecha_subida) VALUES ('teófila1
 INSERT INTO animals_image (filename, animal_id, fecha_subida) VALUES ('teófila2.jpg', 10, '2025-06-03 22:58:01');
 INSERT INTO animals_image (filename, animal_id, fecha_subida) VALUES ('teófila3.jpg', 10, '2025-06-03 22:58:01');
 INSERT INTO animals_image (filename, animal_id, fecha_subida) VALUES ('teófila4.jpg', 10, '2025-06-03 22:58:01');
+-- Insertar usuarios
+INSERT INTO users (username, email, password, name, surname, phone, role, image) VALUES
+('jdoe', 'jdoe@example.com', SHA2('password123', 256), 'John', 'Doe', '+123456789', 'USER', NULL),
+('admin', 'admin@example.com', SHA2('adminpass', 256), 'Admin', 'Root', NULL, 'ADMIN', NULL),
+('admin2', 'admin2@gmail.com', '$2a$10$1TSHHZqGhoQY80HlCZWPN.a5V9ZTYShicj3VuRa.Cs2A/I7gS4TQm', 'admin2', 'admin2', NULL, 'ADMIN', NULL);
+
+-- Insertar animales
+INSERT INTO animals (name, description, weight, height, length, age, gender, color, image, species, breed, adoption_price, sponsor_price, collected, status) VALUES
+('Luna', 'Friendly female dog rescued from the street.', 15.20, 45.00, 80.00, 3, FALSE, 'Brown', 'luna.jpg', 'Dog', 'Mixed', 120.00, null, 100.00, 'active'),
+('Milo', 'Playful kitten who loves attention.', 2.50, 20.00, 30.00, 1, TRUE, 'Black', 'milo.jpg', 'Cat', 'Siamese', 90.00, null, 50.00, 'active'),
+('Bella', 'Needs urgent surgery for her leg.', 12.00, 40.00, 75.00, 4, FALSE, 'White', 'bella.jpg', 'Dog', 'Terrier', 150.00, null, 30.00, 'requires_funding'),
+('Rocky', 'Large dog with a calm personality.', 25.00, 60.00, 100.00, 6, TRUE, 'Black and Brown', 'rocky.jpg', 'Dog', 'Rottweiler', 130.00, null, 0.00, 'draft'),
+('Nina', 'Shy but affectionate cat.', 3.00, 22.00, 35.00, 2, FALSE, 'Grey', 'nina.jpg', 'Cat', 'Persian', 100.00, null, 0.00, 'active');
+
+-- Insertar imágenes de animales
+INSERT INTO animals_image (filename, animal_id) VALUES
+('luna.jpg', 1),
+('bella.jpg', 3),
+('nina.jpg',5),
+('nina2.jpg',5),
+('milo.jpg', 2);
+
+-- Insertar etiquetas
+INSERT INTO tags (name, description, color, icon) VALUES
+('Vaccinated', 'This animal is fully vaccinated.', '#00FF00', 'vaccine.png'),
+('Neutered', 'This animal is neutered/spayed.', '#FFA500', 'neutered.png'),
+('Special Needs', 'This animal requires special care.', '#FF0000', 'care.png');
+
+-- Relación animal-tag
+INSERT INTO animals_tags (id_animal, id_tag) VALUES
+(1, 1),
+(1, 2),
+(2, 1);
+
+-- Apadrinamientos
+INSERT INTO sponsors (quantity, status, stripe_ref, id_user, id_animal) VALUES
+(15.00, 'completed', 'spon_001', 1, 1),
+(10.00, 'completed', 'spon_002', 1, 2);
+
+-- Formularios
+INSERT INTO forms (formdata) VALUES
+('{"employment": "yes", "has_other_pets": "no", "home_type": "apartment"}');
+
+-- Adopciones
+INSERT INTO adoptions (quantity, status, data, stripe_ref, id_user, id_animal, id_form) VALUES
+(120.00, 'completed', '2024-10-01', 'adopt_001', 1, 1, 1);
+
+-- Transferencias
+INSERT INTO webhook_log (event_type, raw_payload, received_at) VALUES
+('checkout.session.completed', '{"id":"evt_001","object":"event","data":{"object":{"id":"sess_001"}}}', '2024-12-01 10:15:00'),
+('payment_intent.succeeded', '{"id":"evt_002","object":"event","data":{"object":{"id":"pi_001"}}}', '2025-01-15 14:22:30'),
+('payment_intent.failed', '{"id":"evt_003","object":"event","data":{"object":{"id":"pi_002"}}}', '2025-02-05 18:45:00'),
+('charge.refunded', '{"id":"evt_004","object":"event","data":{"object":{"id":"ch_001"}}}', '2025-02-10 12:05:45'),
+('checkout.session.completed', '{"id":"evt_005","object":"event","data":{"object":{"id":"sess_002"}}}', '2025-03-01 08:00:00'),
+('invoice.payment_succeeded', '{"id":"evt_006","object":"event","data":{"object":{"id":"in_001"}}}', '2025-03-10 09:30:00'),
+('invoice.payment_failed', '{"id":"evt_007","object":"event","data":{"object":{"id":"in_002"}}}', '2025-03-15 13:15:00'),
+('customer.subscription.deleted', '{"id":"evt_008","object":"event","data":{"object":{"id":"sub_001"}}}', '2025-03-20 16:40:00'),
+('customer.subscription.updated', '{"id":"evt_009","object":"event","data":{"object":{"id":"sub_002"}}}', '2025-04-01 11:10:10');
