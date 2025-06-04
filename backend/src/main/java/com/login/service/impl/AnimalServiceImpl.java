@@ -148,60 +148,76 @@ public class AnimalServiceImpl implements AnimalService {
 
 	@Override
 	public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
-		Animal animal = animalRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
+	    Animal animal = animalRepository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
-		try {
-			if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
-				if (dto.getName() != null && !dto.getName().equals(animal.getName())
-						|| dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
-					stripeService.updateProduct(animal.getStripeProductId(), "Apadrinar a " + dto.getName(), dto.getDescription());
-				}
+	    animal.setName(dto.getName());
+	    animal.setDescription(dto.getDescription());
+	    animal.setWeight(dto.getWeight());
+	    animal.setHeight(dto.getHeight());
+	    animal.setLength(dto.getLength());
+	    animal.setAge(dto.getAge());
+	    animal.setColor(dto.getColor());
+	    animal.setImage(dto.getImage());
+	    animal.setSpecies(dto.getSpecies());
+	    animal.setBreed(dto.getBreed());
+	    animal.setCollected(dto.getCollected());
+	    animal.setAdoptionPrice(dto.getAdoptionPrice());
 
-				double recalculatedPrice = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+	    if (dto.getStatus() != null) {
+	        animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
+	    }
 
-				if (recalculatedPrice != animal.getSponsorPrice()) {
-				    String oldPriceId = animal.getStripePriceId();
-				    animal.setSponsorPrice(recalculatedPrice);
+	    setAnimalImages(animal, dto.getImages());
 
-				    String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), recalculatedPrice);
-				    animal.setStripePriceId(newPriceId);
+	    if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+	        List<Long> tagIds = dto.getTags().stream().map(tagDto -> tagDto.getId()).collect(Collectors.toList());
+	        animal.setTags(tagRepository.findByIdIn(tagIds));
+	    }
+	    if (animal.getStripeProductId() == null || animal.getStripeProductId().isBlank()) {
+	        try {
+	            String productName = "Apadrinar a " + animal.getName();
+	            String description = animal.getDescription();
+	            String productId = stripeService.createProduct(productName, description);
+	            animal.setStripeProductId(productId);
 
-				    if (oldPriceId != null && !oldPriceId.equals(newPriceId)) {
-				        stripeService.archivePrice(oldPriceId);
-				    }
-				}
+	            double sponsorPrice = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
+	            animal.setSponsorPrice(sponsorPrice);
 
-			}
-		} catch (StripeException e) {
-			throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
-		}
+	            String priceId = stripeService.createRecurringPrice(productId, sponsorPrice);
+	            animal.setStripePriceId(priceId);
+	        } catch (StripeException e) {
+	            throw new RuntimeException("Error al crear producto/precio en Stripe: " + e.getMessage(), e);
+	        }
+	    }
 
-		animal.setName(dto.getName());
-		animal.setDescription(dto.getDescription());
-		animal.setWeight(dto.getWeight());
-		animal.setHeight(dto.getHeight());
-		animal.setLength(dto.getLength());
-		animal.setAge(dto.getAge());
-		animal.setColor(dto.getColor());
-		animal.setImage(dto.getImage());
-		animal.setSpecies(dto.getSpecies());
-		animal.setBreed(dto.getBreed());
-		animal.setCollected(dto.getCollected());
-		animal.setAdoptionPrice(dto.getAdoptionPrice());
 
-		if (dto.getStatus() != null) {
-			animal.setStatus(Animal.AnimalStatus.valueOf(dto.getStatus()));
-		}
+	    try {
+	        if (animal.getStripeProductId() != null && !animal.getStripeProductId().isBlank()) {
+	            if (dto.getName() != null && !dto.getName().equals(animal.getName())
+	                    || dto.getDescription() != null && !dto.getDescription().equals(animal.getDescription())) {
+	                stripeService.updateProduct(animal.getStripeProductId(), "Apadrinar a " + dto.getName(), dto.getDescription());
+	            }
 
-		setAnimalImages(animal, dto.getImages());
+	            double recalculatedPrice = AnimalPricingUtils.calcularPrecioApadrinamiento(animal);
 
-		if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-			List<Long> tagIds = dto.getTags().stream().map(tagDto -> tagDto.getId()).collect(Collectors.toList());
-			animal.setTags(tagRepository.findByIdIn(tagIds));
-		}
+	            if (recalculatedPrice != animal.getSponsorPrice()) {
+	                String oldPriceId = animal.getStripePriceId();
+	                animal.setSponsorPrice(recalculatedPrice);
 
-		return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
+	                String newPriceId = stripeService.createRecurringPrice(animal.getStripeProductId(), recalculatedPrice);
+	                animal.setStripePriceId(newPriceId);
+
+	                if (oldPriceId != null && !oldPriceId.equals(newPriceId)) {
+	                    stripeService.archivePrice(oldPriceId);
+	                }
+	            }
+	        }
+	    } catch (StripeException e) {
+	        throw new RuntimeException("Error al actualizar producto/precio en Stripe: " + e.getMessage(), e);
+	    }
+
+	    return ResponseEntity.ok(AnimalMapper.toDto(animalRepository.save(animal)));
 	}
 
 	@Override

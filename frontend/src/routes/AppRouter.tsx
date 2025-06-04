@@ -19,6 +19,7 @@ import AdminDashboardTags from "../pages/MainPage/AdminDashboardTags";
 import AdoptionFormPage from "../pages/MainPage/AdoptionFromPage";
 import EditProfile from "../components/EditForm";
 import ShelterPage from "../pages/ShelterPage";
+import ChangePasswordPage from "../pages/ChangePasswordPage";
 
 // Encapsula todas las rutas de la app
 export const AppRouter = ({ children }: { children: ReactNode }) => {
@@ -39,6 +40,7 @@ export const AppRouter = ({ children }: { children: ReactNode }) => {
         <Route element={<PrivateGuard />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit" element={<EditProfile />} />
+          <Route path="/change-password" element={<ChangePasswordPage />} />
           <Route path="/donate" element={<Donate />} />
 
 

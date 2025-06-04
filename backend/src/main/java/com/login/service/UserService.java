@@ -1,5 +1,6 @@
 package com.login.service;
 
+import com.login.dto.ChangePasswordRequest;
 import com.login.dto.UserDto;
 
 import org.springframework.data.domain.Page;
@@ -25,6 +26,8 @@ public interface UserService {
 	ResponseEntity<UserDto> updateMyProfile(UserDto dto, Authentication auth);
 
 	ResponseEntity<Page<UserDto>> getAllPaged(Pageable pageable);
+
+	void changePassword(String username, ChangePasswordRequest request);
 
 
 }

@@ -37,7 +37,7 @@ export default function IconUploader({ icon, iconUrl, onIconChange, error }: Ico
 
     return (
         <div
-            className="relative flex flex-col items-center justify-center border border-[#4ECCA3] rounded-lg p-4 w-40 h-40 cursor-pointer"
+            className="relative flex flex-col items-center justify-center border border-[#c27aff] bg-[#35273a] rounded-lg w-40 h-40 cursor-pointer"
             onClick={() => document.getElementById(inputId)?.click()}
         >
             {imageSrc ? (
@@ -62,7 +62,7 @@ export default function IconUploader({ icon, iconUrl, onIconChange, error }: Ico
                     </button>
                 </>
             ) : (
-                <div className="w-16 h-16 flex items-center justify-center text-[#4ECCA3] border border-dashed border-[#4ECCA3] rounded-md mb-4">
+                <div className="w-16 h-16 flex items-center justify-center text-[#c27aff] border border-dashed border-[#c27aff] rounded-md mb-4">
                     + Icono
                 </div>
             )}
@@ -75,7 +75,7 @@ export default function IconUploader({ icon, iconUrl, onIconChange, error }: Ico
             />
             {error && <div className="text-red-500 mt-2 text-center">{error}</div>}
             <span className="text-sm text-[#e8e8e8] text-center select-none mt-2">
-                Haz click para subir icono (PNG/JPG max 1MB)
+                Subir icono<br></br> (PNG/JPG max 1MB)
             </span>
         </div>
     );

@@ -1,5 +1,6 @@
 package com.login.service.impl;
 
+import com.login.dto.ChangePasswordRequest;
 import com.login.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,8 @@ import com.login.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -20,8 +23,14 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+	
+    private final PasswordEncoder passwordEncoder;
+    
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 	@Override
 	public ResponseEntity<Page<UserDto>> getAllPaged(Pageable pageable) {
@@ -40,6 +49,20 @@ public class UserServiceImpl implements UserService {
 		}
 		return ResponseEntity.status(403).build();
 	}
+	
+	@Override
+	public void changePassword(String username, ChangePasswordRequest request) {
+	    User user = userRepository.findByUsername(username)
+	                  .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+	    if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+	        throw new IllegalArgumentException("Contraseña actual incorrecta");
+	    }
+
+	    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+	    userRepository.save(user);
+	}
+
 	
 	@Override
 	public ResponseEntity<UserDto> updateMyProfile(UserDto dto, Authentication auth) {

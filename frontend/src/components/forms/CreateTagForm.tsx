@@ -65,7 +65,7 @@ export default function CreateTagForm({ onCreateSuccess, getToken }: CreateTagFo
     };
 
     return (
-        <div className="max-w-7xl mx-auto mb-12 bg-[#4ECCA320]/90 border border-[#4ECCA3] p-6 rounded-lg">
+        <div className="max-w-7xl mx-auto mb-12 bg-[#35273a] border border-[#c27aff] p-6 rounded-lg">
             <h2 className="text-2xl font-bold text-[#e8e8e8] mb-4">Crear nueva etiqueta</h2>
             <form onSubmit={handleCreate} className="space-y-4">
                 <input
@@ -73,40 +73,45 @@ export default function CreateTagForm({ onCreateSuccess, getToken }: CreateTagFo
                     placeholder="Nombre"
                     value={newForm.name || ""}
                     onChange={(e) => setNewForm({ ...newForm, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded border text-[#e8e8e8] bg-transparent border-[#4ECCA3]"
+                    className="placeholder-slate-100 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ad03cb] focus:border-transparent bg-[#35273a] border-[#c27aff] text-slate-100 "
                     required
                 />
-                {/* Descripción, color e icono */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Descripción: 50% */}
-                    <div className="md:col-span-2">
+                <div className="flex flex-wrap gap-4">
+                    {/* Descripción */}
+                    <div className="w-full md:w-1/2">
                         <textarea
                             placeholder="Descripción"
                             value={newForm.description || ""}
                             onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
-                            className="w-full h-full px-3 py-2 rounded border text-[#e8e8e8] bg-transparent border-[#4ECCA3] resize-none"
+                            className="placeholder-slate-100 w-full h-full min-h-38 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ad03cb] focus:border-transparent resize-none bg-[#35273a] border-[#c27aff] text-slate-100"
                         />
                     </div>
 
-                    {/* Color: 25% */}
-                    <div className="md:col-span-1">
-                        <ColorSelector
-                            color={newForm.color || defaultColor}
-                            onChange={(value) => setNewForm({ ...newForm, color: value })}
-                        />
-                    </div>
+                    {/* Contenedor para Color e Icono */}
+                    <div className="flex gap-2">
+                        {/* Color */}
+                        <div className="w-1/2">
+                            <ColorSelector
+                                color={newForm.color || defaultColor}
+                                onChange={(value) => setNewForm({ ...newForm, color: value })}
+                            />
+                        </div>
 
-                    {/* Icono: 25% */}
-                    <div className="md:col-span-1">
-                        <IconUploader icon={newIcon} onIconChange={handleNewIconChange} error={iconError} />
+                        {/* Icono */}
+                        <div className="w-1/2">
+                            <IconUploader icon={newIcon} onIconChange={handleNewIconChange} error={iconError} />
+                        </div>
                     </div>
                 </div>
+
+
+
 
                 {createError && <div className="text-red-500 mt-2">{createError}</div>}
                 <button
                     type="submit"
                     disabled={creating}
-                    className="bg-[#4ECCA3] text-white px-4 py-2 rounded hover:bg-[#3bb995]"
+                    className="bg-[#ad03cb] text-white px-4 py-2 rounded"
                 >
                     {creating ? "Creando..." : "Crear"}
                 </button>
