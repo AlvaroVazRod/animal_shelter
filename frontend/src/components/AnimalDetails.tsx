@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Keyboard, Pagination } from "swiper/modules";
+import { Keyboard, Pagination } from "swiper/modules";
 import type { Animal } from "../types/Animals";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../services/users/useUser";
@@ -24,10 +24,6 @@ export const AnimalDetails = ({ animal, onClose }: AnimalDetailsProps) => {
   const { getToken } = useUser();
   const { createSponsorSession } = useSponsorCheckout();
   const [sponsorPrice, setSponsorPrice] = useState<number | null>(null);
-  const [species, setSpecies] = useState("");
-  const [gender, setGender] = useState("");
-  const [arrivalFrom, setArrivalFrom] = useState("");
-  const [arrivalTo, setArrivalTo] = useState("");
 
   const darkenHexColor = (hex: string, amount = 30) => {
     const cleanHex = hex.replace("#", "");

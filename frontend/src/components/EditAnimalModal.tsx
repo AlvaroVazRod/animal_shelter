@@ -50,15 +50,13 @@ interface EditAnimalModalProps {
 
 export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal, onClose, onSubmit, onImageUploaded, onFirstImageDeleted }) => {
   const [formData, setFormData] = useState<Partial<Animal>>({})
-  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedTags, setSelectedTags] = useState<AnimalTag[]>([])
-  const [showTagInput, setShowTagInput] = useState(false)
-  const [newTagName, setNewTagName] = useState("")
   const { getToken } = useUser()
-  const { tags, loading, fetchTags } = useTags({ getToken })
+  const { tags,  fetchTags } = useTags({ getToken })
 
 
   const speciesOptions = [
@@ -71,11 +69,6 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
     { value: "femenino", label: "Femenino" },
   ]
 
-  const statusOptions = [
-    { value: "active", label: "Disponible" },
-    { value: "requires_funding", label: "Adoptado" },
-    { value: "draft", label: "En proceso" },
-  ]
 
   useEffect(() => {
     fetchTags()
@@ -133,18 +126,6 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({ isOpen, animal
     setSelectedTags((prev) => prev.filter((t) => t.id !== tagId))
   }
 
-  const handleCreateTag = () => {
-    if (newTagName.trim()) {
-      const newTag: AnimalTag = {
-        id: Date.now(),
-        name: newTagName.trim(),
-        color: "#4ECCA3",
-      }
-      handleAddTag(newTag)
-      setNewTagName("")
-      setShowTagInput(false)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

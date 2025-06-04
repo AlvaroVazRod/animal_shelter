@@ -3,7 +3,7 @@ import { Modal } from "../../components/ui/Modal"
 import { Button } from "../../components/ui/Button"
 import { Card } from "../../components/ui/Card"
 import { useUser } from "../../services/users/useUser"
-import { Upload, X, Image as ImageIcon, Edit, Trash2, ChevronLeft, ChevronRight, Plus, Loader2 } from "lucide-react"
+import { Upload, Trash2 } from "lucide-react"
 
 interface AnimalImage {
     id: number

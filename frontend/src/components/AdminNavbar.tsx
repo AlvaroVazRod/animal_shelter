@@ -35,7 +35,7 @@ export const AdminNavbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const { base, complementary } = getComplementaryColorsFromUsername(
+  const { base } = getComplementaryColorsFromUsername(
     user?.username || ""
   );
 

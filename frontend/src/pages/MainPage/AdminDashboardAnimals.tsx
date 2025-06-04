@@ -2,8 +2,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { Button } from "../../components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card"
-import { Badge } from "../../components/ui/Badge"
-import { Loader2, Plus, Edit, Trash2, ChevronLeft, ChevronRight } from "../../components/icons/Icons"
+import { Loader2, Plus, Edit, Trash2 } from "../../components/icons/Icons"
 import { EditAnimalModal } from "../../components/EditAnimalModal"
 import { useUser } from "../../services/users/useUser"
 import { AdminPageTemplate } from "../templates/AdminTemplate"
@@ -268,18 +267,6 @@ export const AdminAnimalsPage: React.FC = () => {
     fetchTags();
   }, []);
 
-  const getStatusBadge = (status: string) => {
-    const statusMap = {
-      active: { label: "Disponible", variant: "default" as const },
-      requires_funding: { label: "Adoptado", variant: "secondary" as const },
-      draft: { label: "En proceso", variant: "outline" as const },
-    }
-    const statusInfo = statusMap[status as keyof typeof statusMap] || {
-      label: status,
-      variant: "outline" as const,
-    }
-    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-  }
 
   const renderGridView = () => (
     <div>

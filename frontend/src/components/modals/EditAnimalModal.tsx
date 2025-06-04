@@ -38,7 +38,7 @@ export const EditAnimalModal = ({
     const [animalTags, setAnimalTags] = useState<AnimalTag[] | null>(null);
     const [showTagsSearch, setShowTagsSearch] = useState<boolean>(false);
     const { getToken } = useUser();
-    const { tags, loading, fetchTags } = useTags({ getToken });
+    const { tags, fetchTags } = useTags({ getToken });
 
     const handleTagDelete = (id: number) => {
         setAnimalTags((prev) => {

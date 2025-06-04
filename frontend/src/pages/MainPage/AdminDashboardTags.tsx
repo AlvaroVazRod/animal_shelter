@@ -12,8 +12,6 @@ export default function AdminDashboardTags() {
   const { getToken } = useUser();
   const {
     tags,
-    loading,
-    error,
     fetchTags,
     deleteTag,
     updateTag,

@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ColorOption {
     name: string;
     value: string;

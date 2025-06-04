@@ -32,7 +32,7 @@ export const AnimalAddTags = ({ tags, onTagAdded }: AnimalAddTagsProps) => {
                         title={tag.description}
                         className="inline-flex min-w-[35px] items-center gap-1 text-xs font-medium px-3 py-1 rounded-full animate-slide-in"
                         style={{ backgroundColor: hexToRgba(tag.color, 0.6), color: "#000000", marginRight: 4, marginBottom: 4 }}
-                        onClick={(e) => {
+                        onClick={() => {
                             onTagAdded(tag.id)
                         }}
                     >

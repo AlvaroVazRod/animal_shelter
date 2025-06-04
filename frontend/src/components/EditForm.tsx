@@ -21,7 +21,7 @@ interface EditErrors {
 
 export default function EditProfile() {
     const { user, updateUser } = useUser();
-    const [success, setSuccess] = useState(false);
+    const [, setSuccess] = useState(false);
     const [formData, setFormData] = useState<EditData>({
         username: "",
         nombre: "",

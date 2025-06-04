@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useUser } from "../services/users/useUser";
-import { useNavigate, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 

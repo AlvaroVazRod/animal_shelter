@@ -7,19 +7,6 @@ interface AnimalTagsEditorProps {
 
 export const AnimalTagsEditor = ({ tags, onTagDeleted }: AnimalTagsEditorProps) => {
 
-    const darkenHexColor = (hex: string, amount = 30) => {
-        const cleanHex = hex.replace('#', '');
-        const num = parseInt(cleanHex, 16);
-        let r = (num >> 16) - amount;
-        let g = ((num >> 8) & 0x00FF) - amount;
-        let b = (num & 0x0000FF) - amount;
-
-        r = Math.max(0, r);
-        g = Math.max(0, g);
-        b = Math.max(0, b);
-
-        return `rgb(${r}, ${g}, ${b})`;
-    };
 
     const hexToRgba = (hex: string, alpha = 0.3) => {
         const cleanHex = hex.replace('#', '');
@@ -49,7 +36,7 @@ export const AnimalTagsEditor = ({ tags, onTagDeleted }: AnimalTagsEditorProps) 
                     )}
                     <span>{tag.name}</span>
                     <button
-                        onClick={(e) => {
+                        onClick={() => {
                             onTagDeleted(tag.id)
                         }}
                         className="ml-1 text-xs text-gray-700 hover:text-red-600 font-bold"

@@ -1,5 +1,4 @@
 import Main from "../../components/Main";
-import Navbar from "../../components/Navbar";
 import { DefaultPageTemplate } from "../templates/DefaultTemplate";
 
 

@@ -1,4 +1,3 @@
-// AnimalTable.tsx
 import { FiTrash2, FiEdit, FiInfo } from "react-icons/fi";
 import type { Animal } from "../../types/Animals";
 
