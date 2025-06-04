@@ -60,7 +60,7 @@ public class StripeController {
         ProductAndPrice result = stripeService.ensureActiveProductAndPrice(
                 animal.getStripeProductId(),
                 animal.getStripePriceId(),
-                "Apadrina " + animal.getName(),
+                "Apadrinar a " + animal.getName(),
                 animal.getDescription(),
                 animal.getSponsorPrice()
         );
