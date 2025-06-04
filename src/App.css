@@ -1,5 +1,0 @@
-@import "tailwindcss";
-input[type="date"]::-webkit-calendar-picker-indicator {
-    color: blueviolet;
-
-}
