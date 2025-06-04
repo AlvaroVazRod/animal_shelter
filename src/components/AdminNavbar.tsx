@@ -96,7 +96,7 @@ export const AdminNavbar = () => {
             <div className="hidden md:flex items-center space-x-4">
               <Link
                 to="/adminW"
-                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
+                className="text-center transition duration-300 text-[#c27aff] hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Transacciones
               </Link>
@@ -104,7 +104,7 @@ export const AdminNavbar = () => {
 
               <Link
                 to="/adminU"
-                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
+                className="text-center transition duration-300 text-[#c27aff] hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Usuarios
               </Link>
@@ -112,7 +112,7 @@ export const AdminNavbar = () => {
 
               <Link
                 to="/adminP"
-                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
+                className="text-center transition duration-300 text-[#c27aff] hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Mascotas
               </Link>
@@ -120,7 +120,7 @@ export const AdminNavbar = () => {
 
               <Link
                 to="/adminT"
-                className="text-center transition duration-300 text-purple-500 hover:text-[#AD03CB] font-medium hover:scale-105"
+                className="text-center transition duration-300 text-[#c27aff] hover:text-[#AD03CB] font-medium hover:scale-105"
               >
                 Panel Etiquetas
               </Link>

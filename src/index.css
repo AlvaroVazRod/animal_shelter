@@ -12,3 +12,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     align-items: center;
     justify-content: center;
 }
+
+.custom-color-icon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  @media (max-width: 400px) {
+    .custom-color-icon-grid {
+      grid-template-columns: 1fr; /* Se apilan en una columna */
+    }
+  }
+  

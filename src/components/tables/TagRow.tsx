@@ -9,10 +9,10 @@ interface TagRowProps {
 
 export default function TagRow({ tag, onEdit, onDelete }: TagRowProps) {
     return (
-        <tr className="hover:bg-[#4ECCA320]">
+        <tr className="hover:bg-[#3e2443]">
             <td className="px-4 py-2 text-[#e8e8e8]">{tag.name}</td>
             <td className="px-4 py-2">
-                <div className="h-4 w-4 rounded-full border" style={{ backgroundColor: tag.color }}></div>
+                <div className="h-4 w-4 rounded-full border border-[#8200db]" style={{ backgroundColor: tag.color }}></div>
             </td>
             <td className="px-4 py-2 text-[#e8e8e8]">{tag.description}</td>
             <td className="px-4 py-2 text-center">
@@ -23,10 +23,10 @@ export default function TagRow({ tag, onEdit, onDelete }: TagRowProps) {
                 )}
             </td>
             <td className="px-4 py-2 text-right">
-                <button onClick={() => onEdit(tag)} className="text-[#4ECCA3] hover:text-white mr-2">
+                <button onClick={() => onEdit(tag)} className="text-[#c27aff] hover:text-[#ad03cb] mr-2">
                     <FiEdit />
                 </button>
-                <button onClick={() => onDelete(tag.id)} className="text-red-500 hover:text-white">
+                <button onClick={() => onDelete(tag.id)} className="text-[#c27aff] hover:text-red-500">
                     <FiTrash2 />
                 </button>
             </td>

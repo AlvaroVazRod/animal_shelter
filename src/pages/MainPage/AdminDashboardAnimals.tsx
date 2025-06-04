@@ -569,9 +569,9 @@ export const AdminAnimalsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 p-8">
+      <div className="min-h-screen bg-[#2D2A32] p-8">
         <div className="flex justify-center items-center h-64">
-          <div className="flex items-center space-x-2 text-emerald-400">
+          <div className="flex items-center space-x-2 text-[#c27aff]">
             <Loader2 size={24} />
             <span className="text-xl">Cargando animales...</span>
           </div>
@@ -582,7 +582,7 @@ export const AdminAnimalsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-900 p-8">
+      <div className="min-h-screen bg-[#2D2A32] p-8">
         <div className="flex justify-center items-center h-64">
           <div className="text-xl text-red-400">Error: {error}</div>
         </div>

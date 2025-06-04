@@ -20,18 +20,18 @@ const colorOptions: ColorOption[] = [
 
 export default function ColorSelector({ color, onChange }: ColorSelectorProps) {
     return (
-        <div className="flex flex-col items-center justify-center border border-[#4ECCA3] rounded-lg p-4 h-full">
+        <div className="flex flex-col w-40 items-center justify-center border border-[#c27aff] bg-[#35273a] rounded-lg p-4 h-full">
             <div
-                className="w-16 h-16 rounded-md border border-[#4ECCA3] mb-4"
+                className="w-16 h-16 rounded-md border border-[#c27aff] mb-4"
                 style={{ backgroundColor: color }}
             />
             <select
                 value={color}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full px-2 py-1 rounded border text-black border-[#4ECCA3]"
+                className="w-full px-2 py-1 rounded border text-white border-[#c27aff]"
             >
                 {colorOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option key={option.value} value={option.value} className="bg-[#35273a]">
                         {option.name}
                     </option>
                 ))}
