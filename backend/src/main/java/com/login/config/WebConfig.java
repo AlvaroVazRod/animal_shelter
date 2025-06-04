@@ -13,19 +13,16 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// Imagenes de animales
 		registry.addResourceHandler("/images/animal/**")
-				.addResourceLocations("file:uploads/animals/")
+				.addResourceLocations("file:/uploads/animals/")
 				.setCacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic());
 
-		// Imagenes de usuarios
 		registry.addResourceHandler("/images/user/**")
-				.addResourceLocations("file:uploads/users/")
+				.addResourceLocations("file:/uploads/users/")
 				.setCacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic());
 
-		// Iconos de etiquetas (ruta recomendada: /images/tag/)
 		registry.addResourceHandler("/images/tag/**")
-				.addResourceLocations("file:uploads/tags/")
+				.addResourceLocations("file:/uploads/tags/")
 				.setCacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic());
 	}
 	
