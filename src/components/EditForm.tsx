@@ -91,7 +91,7 @@ export default function EditProfile() {
 
     return (
         <DefaultPageTemplate>
-            <div className="min-h-screen bg-white flex items-center justify-center p-4">
+            <div className="min-h-screen bg-white flex items-center justify-center p-4 mt-20">
                 <form
                     onSubmit={handleSubmit}
                     className="max-w-md w-full bg-white/90 p-8 rounded-lg shadow-lg border-2 border-[#AD03CB] space-y-4"
