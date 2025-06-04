@@ -1,43 +1,46 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_animal_shelter
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build: ./animal-shelter-backend
+    build: ./backend
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
-      DB_URL: jdbc:mysql://mysql:3306/db_animal_shelter
-      DB_USERNAME: user
-      DB_PASSWORD: password
-      JWT_SECRET: tu_clave_secreta
-      JWT_EXPIRATION: 86400000
-      STRIPE_API_KEY: tu_stripe_key
-      STRIPE_WEBHOOK_SECRET: tu_stripe_webhook
-      MAIL_SECRET: tu_contraseña_correo
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      MAIL_SECRET: ${MAIL_SECRET}
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT}:8080"
     volumes:
-      - ./animal-shelter-backend/uploads:/app/uploads
+      - ./backend/uploads:/uploads
+
 
   frontend:
-    build: ./animal-shelter-frontend
+    build: ./frontend
     depends_on:
       - backend
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT}:80"
 
 volumes:
   mysql_data:

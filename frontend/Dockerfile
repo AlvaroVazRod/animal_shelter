@@ -1,15 +1,12 @@
-# Dockerfile - Backend
-FROM eclipse-temurin:21-jdk-alpine as builder
+# Dockerfile - Frontend
+FROM node:20-alpine as build
 
 WORKDIR /app
 COPY . .
+RUN npm install && npm run build
 
-RUN ./mvnw clean package -DskipTests
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-
-COPY --from=builder /app/target/*.jar app.jar
-
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 80
