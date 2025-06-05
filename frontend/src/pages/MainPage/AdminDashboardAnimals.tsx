@@ -83,21 +83,21 @@ export const AdminAnimalsPage: React.FC = () => {
     setSortBy("arrivalDate");
   };
 
-    const getAnimalsTags = async (animals: Animal[]) => {
-      const animalsWithTags = await Promise.all(
-        animals.map(async (animal) => {
-          try {
-            const response = await fetch(`http://localhost:8080/api/tags/animal/${animal.id}`);
-            const tags = await response.json();
-            return { ...animal, tags };
-          } catch (error) {
-            console.error(`Error al obtener tags para animal ${animal.id}`, error);
-            return { ...animal, tags: [] };
-          }
-        })
-      );
-      return animalsWithTags;
-    };
+  const getAnimalsTags = async (animals: Animal[]) => {
+    const animalsWithTags = await Promise.all(
+      animals.map(async (animal) => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/tags/animal/${animal.id}`);
+          const tags = await response.json();
+          return { ...animal, tags };
+        } catch (error) {
+          console.error(`Error al obtener tags para animal ${animal.id}`, error);
+          return { ...animal, tags: [] };
+        }
+      })
+    );
+    return animalsWithTags;
+  };
 
   const fetchAnimals = async (pageNumber: number) => {
     setLoading(true);
@@ -195,7 +195,11 @@ export const AdminAnimalsPage: React.FC = () => {
           formData.image = uploadedFileName
         }
         formData.status = "active"
-        formData.arrivalDate = `${formData.arrivalDate}T03:00:00`
+        if (formData.arrivalDate) {
+          const date = new Date(formData.arrivalDate)
+          formData.arrivalDate = date.toISOString().slice(0, 19) // formato ISO sin zona horaria
+        }
+        console.log("JSON enviado al backend:", JSON.stringify(formData, null, 2));
 
         const response = await fetch(`http://localhost:8080/api/animales/${formData.id}`, {
           method: "PUT",
@@ -434,10 +438,10 @@ export const AdminAnimalsPage: React.FC = () => {
           <button
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page + 1 >= totalPages}
-                  className="w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors"
-                >
-                  Siguiente →
-                </button>
+            className="w-full sm:w-auto px-4 py-2 rounded-full bg-[#AD03CB] text-white hover:bg-[#eb7cff] disabled:opacity-50 transition-colors"
+          >
+            Siguiente →
+          </button>
         </div>
       )}
     </div>
@@ -628,48 +632,48 @@ export const AdminAnimalsPage: React.FC = () => {
                 <Plus className="mr-2" size={16} />
                 Nuevo Animal
               </Button>
-           {/* Filtros */}
-           <div className="w-full max-w-[400px] sm:max-w-full mx-auto flex flex-col px-auto sm:flex-row justify-center items-center gap-4">
-            <select value={species} onChange={(e) => setSpecies(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
-              <option value="">Todas las especies</option>
-              <option value="dog">🐶 Perros</option>
-              <option value="cat">🐱 Gatos</option>
-            </select>
+              {/* Filtros */}
+              <div className="w-full max-w-[400px] sm:max-w-full mx-auto flex flex-col px-auto sm:flex-row justify-center items-center gap-4">
+                <select value={species} onChange={(e) => setSpecies(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
+                  <option value="">Todas las especies</option>
+                  <option value="dog">🐶 Perros</option>
+                  <option value="cat">🐱 Gatos</option>
+                </select>
 
-            <select value={gender} onChange={(e) => setGender(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
-              <option value="">Ambos géneros</option>
-              <option value="femenino">♀️ Femenino</option>
-              <option value="masculino">♂️ Masculino</option>
-            </select>
+                <select value={gender} onChange={(e) => setGender(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
+                  <option value="">Ambos géneros</option>
+                  <option value="femenino">♀️ Femenino</option>
+                  <option value="masculino">♂️ Masculino</option>
+                </select>
 
-            <select value={sizeCategory} onChange={(e) => setSizeCategory(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
-              <option value="">Todos los tamaños</option>
-              <option value="pequeño">🐾 Pequeño</option>
-              <option value="mediano">🐾 Mediano</option>
-              <option value="grande">🐾 Grande</option>
-            </select>
+                <select value={sizeCategory} onChange={(e) => setSizeCategory(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
+                  <option value="">Todos los tamaños</option>
+                  <option value="pequeño">🐾 Pequeño</option>
+                  <option value="mediano">🐾 Mediano</option>
+                  <option value="grande">🐾 Grande</option>
+                </select>
 
-            {/* <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
+                {/* <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
               <option value="arrivalDate">📅 Llegada (reciente primero)</option>
               <option value="arrivalDate,asc">📅 Llegada (antiguo primero)</option>
             </select> */}
 
-            <select value={tagId} onChange={(e) => setTagId(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
-              <option value="">Todos los tags</option>
-              {availableTags.map((tag) => (
-                <option key={tag.id} value={tag.id}>
-                  {tag.name}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={resetFilters}
-              title="Limpiar filtros"
-              className="text-[#AD03CB] hover:text-[#7a0299] text-xl px-3 py-2 rounded-full transition-colors border border-[#AD03CB] hover:bg-pink-50"
-            >
-              🗑️
-            </button>
-          </div>
+                <select value={tagId} onChange={(e) => setTagId(e.target.value)} className="sm:w-auto px-4 py-2 rounded-md font-semibold shadow-sm bg-[#AD03CB] text-white focus:outline-none focus:ring-2 focus:ring-[#AD03CB]">
+                  <option value="">Todos los tags</option>
+                  {availableTags.map((tag) => (
+                    <option key={tag.id} value={tag.id}>
+                      {tag.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={resetFilters}
+                  title="Limpiar filtros"
+                  className="text-[#AD03CB] hover:text-[#7a0299] text-xl px-3 py-2 rounded-full transition-colors border border-[#AD03CB] hover:bg-pink-50"
+                >
+                  🗑️
+                </button>
+              </div>
 
               <div className="flex items-center bg-[#a800b714] rounded-lg p-1">
                 <Button
@@ -681,8 +685,8 @@ export const AdminAnimalsPage: React.FC = () => {
                     : "text-slate-300 hover:text-slate-100 hover:bg-[#a800b714]"
                     }`}
                 >
-                  <FiGrid className="color-white h8 w8"/>
-                  
+                  <FiGrid className="color-white h8 w8" />
+
                 </Button>
                 <Button
                   variant={viewMode === "table" ? "default" : "ghost"}
@@ -693,7 +697,7 @@ export const AdminAnimalsPage: React.FC = () => {
                     : "text-slate-300 hover:text-slate-100 hover:bg-[#a800b714]"
                     }`}
                 >
-                  <FiTable className="color-white h18 w18"/>
+                  <FiTable className="color-white h18 w18" />
                 </Button>
               </div>
             </div>
