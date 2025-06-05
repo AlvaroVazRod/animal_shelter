@@ -8,6 +8,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./scripts/script.sql:/docker-entrypoint-initdb.d/script.sql
       - ./scripts/insertScript.sql:/docker-entrypoint-initdb.d/insertScript.sql
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -34,8 +35,7 @@ services:
     ports:
       - "${BACKEND_PORT}:8080"
     volumes:
-      - mysql_data:/var/lib/mysql
-
+      - ./backend/uploads:/uploads
 
   frontend:
     build: ./frontend
@@ -46,3 +46,4 @@ services:
 
 volumes:
   mysql_data:
+  backend_uploads:

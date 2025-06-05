@@ -1,0 +1,36 @@
+# Archivos de entorno sensibles
+.env
+*.env
+
+# Carpetas de dependencias (Node.js)
+**/node_modules
+frontend/node_modules/
+
+# Carpetas de compilación y configuración de Maven
+**/target/
+**/.mvn/
+**/mvnw*
+**/pom.xml.versionsBackup
+
+# Subidas locales (no deben incluirse en la imagen Docker)
+backend/uploads/
+**/uploads/
+
+# Archivos multimedia
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.gif
+**/*.webp
+
+# Configuraciones de IDE
+.vscode/
+.idea/
+*.iml
+
+# Archivos temporales y del sistema
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

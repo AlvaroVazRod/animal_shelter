@@ -148,6 +148,7 @@ public class AnimalServiceImpl implements AnimalService {
 
 	@Override
 	public ResponseEntity<AnimalDto> updateDto(Long id, AnimalDto dto) {
+		
 	    Animal animal = animalRepository.findById(id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Animal no encontrado"));
 
