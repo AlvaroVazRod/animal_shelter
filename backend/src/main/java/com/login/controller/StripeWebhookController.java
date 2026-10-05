@@ -158,15 +158,11 @@ public class StripeWebhookController {
         });
     }
 
-    private void handleDonation(String eventType, JsonNode object) {
-        String intentId = object.path("id").asText(null);
-        if (intentId == null || donationRepository.findByStripePaymentIntentId(intentId).isPresent()) return;
-
-        Donation donation = new Donation();
-        donation.setStripePaymentIntentId(intentId);
-        donation.setDate(LocalDateTime.now());
-        donation.setPaymentMethod("stripe");
-        donation.setQuantity(object.path("amount").asDouble(0.0) / 100);
+    void handleDonation(String eventType, JsonNode object) {
+        String intentId = "charge.refunded".equals(eventType)
+                ? object.path("payment_intent").asText(null)
+                : object.path("id").asText(null);
+        if (intentId == null) return;
 
         Donation.Status status = switch (eventType) {
             case "payment_intent.succeeded" -> Donation.Status.completed;
@@ -175,6 +171,22 @@ public class StripeWebhookController {
             case "charge.refunded" -> Donation.Status.refunded;
             default -> Donation.Status.failed;
         };
+
+        Optional<Donation> existing = donationRepository.findByStripePaymentIntentId(intentId);
+        if (existing.isPresent()) {
+            Donation current = existing.get();
+            if (current.getStatus() == null || current.getStatus().canTransitionTo(status)) {
+                current.setStatus(status);
+                donationRepository.save(current);
+            }
+            return;
+        }
+
+        Donation donation = new Donation();
+        donation.setStripePaymentIntentId(intentId);
+        donation.setDate(LocalDateTime.now());
+        donation.setPaymentMethod("stripe");
+        donation.setQuantity(object.path("amount").asDouble(0.0) / 100);
         donation.setStatus(status);
 
         JsonNode metadata = object.path("metadata");

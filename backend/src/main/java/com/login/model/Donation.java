@@ -37,7 +37,15 @@ public class Donation {
         completed,
         cancelled,
         failed,
-        refunded
+        refunded;
+
+        public boolean canTransitionTo(Status next) {
+            return switch (this) {
+                case failed -> next == completed || next == cancelled;
+                case completed -> next == refunded;
+                case cancelled, refunded -> false;
+            };
+        }
     }
 }
 
